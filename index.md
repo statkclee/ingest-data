@@ -1,6 +1,6 @@
 ---
 layout: page
-title: 데이터 과학 -- 네트워크
+title: 다양한 데이터 가져오기
 ---
 
 > ### AI is a Superpower {.callout}
@@ -14,28 +14,12 @@ title: 데이터 과학 -- 네트워크
 
 ## 학습목차 
 
-- **[네트워크 데이터 들어가며 -- 색상과 글꼴](ml-network-overview.html)**
-    - [네트워크 분석 사용자 안내서](ml-network-user-guide.html)
-- **네트워크 자료구조**
-    - [네트워크 데이터](ml-network-data.html)
-    - [네트워크 데이터 연습문제](ml-network-data-ex.html)
-- **시각화**
-    - 정적 네트워크
-        - [정적 네트워크 데이터 시각화](ml-network-static-viz.html)
-        - [맞춤형 정적 네트워크 시각화](ml-network-customized-static-viz.html)
-    - 동적 네트워크
-        - [동적 네트워크 데이터 시각화](ml-network-dynamic-viz.html)
-        - [맞춤형 동적 네트워크 시각화](ml-network-customized-interactive-viz.html)
-    - [기타 네트워크 데이터 분석](ml-network-etc.html)
-- **`tidygraph` & `ggraph`**
-    - [`kateo` 미디어 데이터](tidygraph-media.html)
-    - [메르스 데이터 - shiny](tidygraph-mers.html)
-- **고급 분석**    
-    - [R 팩키지 사회망 분석](ml-sna-r-ecosystem.html)        
-    - [네트워크 유형](ml-network-type.html)
-    - [네트워크 커뮤니티 탐지](ml-network-communities.html)
-    - [메르스 감염 네트워크](ml-mers-infection.html)
-    - [상관분석](tidygraph-correlation.html)
+- [데이터 가져오기 개요](ingest-data.html)
+- 로컬 컴퓨터
+- 웹 - 인터넷
+- 데이터베이스
+- 공공데이터
+
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)
 
@@ -45,35 +29,41 @@ title: 데이터 과학 -- 네트워크
          - [러플](http://statkclee.github.io/rur-ple/)  
     - [파이썬 거북이](http://swcarpentry.github.io/python-novice-turtles/index-kr.html)  
     - [정보과학을 위한 파이썬](https://statkclee.github.io/pythonlearn-kr/)  
+        + [정보 과학을 위한 R - R for Informatics](https://statkclee.github.io/r4inf/)
     - [소프트웨어 카펜트리 5.3](http://statkclee.github.io/swcarpentry-version-5-3-new/)
     - [기호 수학(Symbolic Math)](https://statkclee.github.io/symbolic-math/)
     - [데이터 과학을 위한 R 알고리즘](https://statkclee.github.io/r-algorithm/)
     - [데이터 과학을 위한 저작도구](https://statkclee.github.io/ds-authoring/)
         - [The Official xwMOOC Blog](https://xwmooc.netlify.com/)
-    - [비즈니스를 위한 오픈 소스 소프트웨어](http://statkclee.github.io/open-source-for-business/)
+    - [비즈니스를 위한 오픈 소스 소프트웨어](http://statkclee.github.io/open-source-for-business/)    
 - **데이터 과학**
     - [R 데이터과학](https://statkclee.github.io/data-science/)
     - [시각화](https://statkclee.github.io/viz/)
-    - [텍스트 - 자연어처리(NLP)](https://statkclee.github.io/text/)
     - [데이터 과학– 기초 통계](https://statkclee.github.io/statistics/)    
         - [공개 기초 통계학 - OpenIntro Statistics](https://statkclee.github.io/openIntro-statistics-bookdown/)
-    - [데이터 제품](https://statkclee.github.io/data-product/)
     - [보안 R](https://statkclee.github.io/security/) - TBA
-    - [R 도커](http://statkclee.github.io/r-docker/)
-    - [공간통계를 위한 데이터 과학](https://statkclee.github.io/spatial/)
+    - **다양한 데이터**
+        + [텍스트 - 자연어처리(NLP)](https://statkclee.github.io/text/)
+        + [네트워크(network)](https://statkclee.github.io/network)
+        + [공간통계를 위한 데이터 과학](https://statkclee.github.io/spatial/)        
+        + [고생대 프로젝트](http://statkclee.github.io/trilobite)
+        + [금융(finance)](https://statkclee.github.io/finance/)
+        + [자동차 데이터 분석](https://statkclee.github.io/automotive/)
+        + 비즈니스 프로세스(Business Process) - bupar
     - [~~R 팩키지~~](http://r-pkgs.xwmooc.org/)
     - [~~통계적 사고~~](http://think-stat.xwmooc.org/)
+- **빅데이터**
+    - [빅데이터(Big Data)](http://statkclee.github.io/bigdata)
+    - [데이터 제품](https://statkclee.github.io/data-product/)
+    - [R 도커](http://statkclee.github.io/r-docker/)
 - **기계학습, 딥러닝, 인공지능**
+    - [고성능 컴퓨팅(HPC)](http://statkclee.github.io/hpc)
     - [기계학습](http://statkclee.github.io/ml)
     - [딥러닝](http://statkclee.github.io/deep-learning)
     - [R 병렬 프로그래밍](http://statkclee.github.io/parallel-r/)
-    - [고생대 프로젝트](http://statkclee.github.io/trilobite)
     - [인공지능 연구회](https://statkclee.github.io/ai-lab/)
 - [IoT 오픈 하드웨어(라즈베리 파이)](http://statkclee.github.io/raspberry-pi)
     - [$100 오픈 컴퓨터](https://statkclee.github.io/one-page/)   
     - [$100 오픈 슈퍼컴퓨터](https://statkclee.github.io/hpc/)
 - [선거와 투표](http://statkclee.github.io/politics)
     - [저녁이 있는 삶과 새판짜기 - 제7공화국](https://statkclee.github.io/hq/)
-
-
-
