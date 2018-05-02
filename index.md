@@ -19,7 +19,9 @@ title: 다양한 데이터 가져오기
 - 웹 - 인터넷
 - 데이터베이스
 - 공공데이터
-
+- 연관검색어
+    + [네이버](http://statkclee.github.io/politics/naver-related-search.html)
+    + [다음](daum-related-search.html)
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)
 
