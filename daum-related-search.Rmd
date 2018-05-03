@@ -145,3 +145,141 @@ networkD3::forceNetwork(Links = pre$links, Nodes = pre$nodes,
                          fontSize = 13, fontFamily = "NanumGothic", legend = T,
                          opacityNoHover = 0.9)
 ```
+
+# 함수 - 연관검색어 {#report-related-search}
+
+자동화를 위해서 함수형태로 검색어를 넣으면 연관검색어가 도출되고 이를 시각화하도록 개발해보자.
+
+## 연관검색어 추출 함수 {#daum-related-search-crawl-function}
+
+`daum_crawl_search_terms("드루킹")`와 같은 형태로 "드루킹" 검색어를 넣을 경우 이와 연관된 검색어가
+리스트 형태로 반환되도록 작업한다.
+
+``` {r daum-related-search-term-function}
+## 0.1. 다음 연관검색어 -----
+daum_crawl_search_terms <- function(keyword) {
+    # 1. 데이터 -----
+    ## 1.1. 다음URL + 검색어
+    searchURL <- "https://search.daum.net/search?w=tot&DA=YZR&t__nil_searchbox=btn&sug=&sugo=&q="
+
+    ## 1.2. 첫번째 검색어
+    R1 <- vector(mode="character", length = 0)
+    
+    for(i in 1:10) {
+        tryCatch({
+            R1[i] <- glue(searchURL, keyword) %>%
+                read_html %>%
+                html_nodes(xpath = glue('//*[@id="netizen_lists_top"]/span[', i, ']')) %>%
+                html_text
+        }, error = function(e) {})
+    }
+    
+    ## 1.3. 두번째 검색어
+    R2 <- vector(mode="list", length = 0)
+
+    for(i in 1:10) {
+        R_tmp <- vector(mode="character", length = 0)
+        
+        for(j in 1:10) {
+            tryCatch({
+                R_tmp[j] <- glue(searchURL, url_encode(R1[i])) %>%
+                    read_html %>%
+                    html_nodes(xpath = glue('//*[@id="netizen_lists_top"]/span[', j, ']')) %>%
+                    html_text
+            }, error = function(e) {})
+        }
+        R2[[i]] <- R_tmp %>% as.list
+    }
+    
+    ## 1.4. 첫번째 두번째 검색어 결합
+    names(R2) <- R1
+    
+    ## 1.5. 데이터 반환 저장 
+    return(R2)
+}
+druking_list <- daum_crawl_search_terms("드루킹")
+
+listviewer::jsonedit(druking_list)
+```
+
+
+## 데이터프레임 변환 함수 {#daum-related-search-df-function}
+
+`daum_list2df(druking_list, "드루킹")`와 같은 형태로 리스트(`druking_list`)를 넣을 경우,
+데이터프레임으로 반환하는 함수를 작성한다.
+
+``` {r daum-related-search-term-df-function}
+## 0.2. 리스트를 데이터프레임 변환 -----
+daum_list2df <- function(input_list, keyword) {
+    
+    # NULL 원소 제거 ----
+    input_cl_list <- map(input_list, ~ purrr::compact(.)) %>% 
+        purrr::keep(~length(.) == 10)
+    
+    ## 1.2. 리스트 --> 데이터프레임
+    ### R1 & R2
+    R1R2_df <- map_dfc(input_cl_list, enframe, name="R2") %>% 
+        unnest()  %>% 
+        select(contains("value"))
+    
+    colnames(R1R2_df) <- names(input_cl_list)
+    
+    R1R2_df <- R1R2_df %>% 
+        gather(key="from", value="to")
+    
+    ### R0 & R1
+    R0R1_df <- R1R2_df %>% count(from) %>% 
+        rename(to = from,
+               from = n) %>% 
+        select(from, to) %>% 
+        mutate(from = keyword)
+    
+    ### R0 & R1 & R2
+    list2df_df <- bind_rows(R0R1_df, R1R2_df)
+    
+    daum_list <- list(R0R1_df, list2df_df)
+    
+    return(daum_list)
+}
+
+daum_list2df(druking_list, "드루킹") %>% head
+```
+
+## 네트워크 시각화 {#daum-related-search-network-function}
+
+`daum_related_search("드루킹")`와 같이 검색어를 넣으면 네트워크 시각화를 하는 함수를 작성한다.
+앞서 작성한 `daum_crawl_search_terms()` 함수가 검색어를 넣으면 리스트 형태 연관검색어를 가져왔다면,
+`daum_list2df()` 함수는 리스트를 입력받아 이를 데이터프레임 형태로 반환한다.
+이후, `networkD3::forceNetwork()` 함수를 통해 네트워크 시각화를 한다.
+
+``` {r daum-related-search-term-nw-function}
+# 1. 다음 연관검색어 -----
+daum_related_search <- function(keyword){
+    
+    # 연관검색어
+    daum_keyword_list <- daum_crawl_search_terms(keyword)
+    # 리스트를 데이터프레임 변환
+    daum_list <- do.call(what="daum_list2df", alist(input_list=daum_keyword_list, keyword=keyword)) 
+    # 네트워크 시각화
+    ## 검색어 그룹 지정 
+    pre <- daum_list[[2]] %>%
+        graph_from_data_frame %>%
+        igraph_to_networkD3
+    
+    pre$nodes$group <- ifelse(pre$nodes$name %in% daum_list[[1]]$from, "Keyword",
+                              ifelse(pre$nodes$name %in% daum_list[[1]]$to, "1st Relation", "2nd Relation"))
+    
+    ## 네트워크 시각화 ----
+    networkD3::forceNetwork(Links = pre$links, Nodes = pre$nodes,
+                            colourScale = JS("d3.scaleOrdinal(d3.schemeCategory10);"),
+                            Source = "source", Target = "target",
+                            Group = "group", NodeID = "name",
+                            opacity = 0.7, zoom = T,
+                            fontSize = 13, fontFamily = "NanumGothic", legend = T,
+                            opacityNoHover = 0.9)
+}
+
+daum_related_search("드루킹")
+```
+
+
