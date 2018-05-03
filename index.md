@@ -22,6 +22,7 @@ title: 다양한 데이터 가져오기
 - 연관검색어
     + [네이버](http://statkclee.github.io/politics/naver-related-search.html)
     + [다음](daum-related-search.html)
+    + [구글 제안(Google Suggest)](google-suggest.html)
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)
 
