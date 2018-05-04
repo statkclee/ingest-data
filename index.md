@@ -16,7 +16,21 @@ title: 다양한 데이터 가져오기
 
 - [데이터 가져오기 개요](ingest-data.html)
 - 로컬 컴퓨터
-- 웹 - 인터넷
+- 웹
+    + [파이썬 - 웹에 있는 데이터 작업](http://statkclee.github.io/web-data-python/)
+        * [데이터 입수](http://statkclee.github.io/web-data-python/01-getdata.html)
+        * [CSV 데이터 처리](http://statkclee.github.io/web-data-python/02-csv.html)
+        * [오류(Error) 처리와 일반화](http://statkclee.github.io/web-data-python/03-generalize.html)
+        * [시각화](http://statkclee.github.io/web-data-python/04-visualize.html)
+        * [데이터 게시](http://statkclee.github.io/web-data-python/05-makedata.html)
+        * [데이터를 찾을 수 있게 만들기](http://statkclee.github.io/web-data-python/06-findable.html)
+    + **[웹 데이터](https://statkclee.github.io/data-science/ds-webdata.html)**
+        - [웹 스크래핑(Web Scraping)](https://statkclee.github.io/data-science/data-scraping.html)
+        - [R 팬텀JS (phantomJS) - 방송3사 시청률 경쟁 그리고 JTBC 손석희 앵커](https://statkclee.github.io/data-science/ds-phantomJS.html)
+        - [아마존 알렉사 웹정보(웹API) - KBO 프로야구 웹사이트](https://statkclee.github.io/data-science/data-webapi-aws-alexa.html)
+        - [아마존 알렉사 웹정보(웹API) - 인터넷 쇼핑(쿠팡, 위메프, 티몬)](https://statkclee.github.io/data-science/data-webapi-social-shopping.html)
+        - [아마존 알렉사 웹정보(웹API) - 대한민국 주요 정당](https://statkclee.github.io/data-science/data-webapi-party.html)
+        - [아마존 웹 서비스(AWS) - EC2 사양과 가격](https://statkclee.github.io/data-science/ds-aws-webservice.html)
 - 데이터베이스
 - 공공데이터
 - 연관검색어
