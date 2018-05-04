@@ -16,7 +16,7 @@ title: 다양한 데이터 가져오기
 
 - [데이터 가져오기 개요](ingest-data.html)
 - 로컬 컴퓨터
-- 웹
+- 웹(Web)
     + [파이썬 - 웹에 있는 데이터 작업](http://statkclee.github.io/web-data-python/)
         * [데이터 입수](http://statkclee.github.io/web-data-python/01-getdata.html)
         * [CSV 데이터 처리](http://statkclee.github.io/web-data-python/02-csv.html)
