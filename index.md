@@ -31,6 +31,7 @@ title: 다양한 데이터 가져오기
         - [아마존 알렉사 웹정보(웹API) - 인터넷 쇼핑(쿠팡, 위메프, 티몬)](https://statkclee.github.io/data-science/data-webapi-social-shopping.html)
         - [아마존 알렉사 웹정보(웹API) - 대한민국 주요 정당](https://statkclee.github.io/data-science/data-webapi-party.html)
         - [아마존 웹 서비스(AWS) - EC2 사양과 가격](https://statkclee.github.io/data-science/ds-aws-webservice.html)
+    + [네이버 인물정보](naver-people-info.html)
 - 데이터베이스
 - 공공데이터
 - 연관검색어
