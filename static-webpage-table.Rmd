@@ -1,0 +1,142 @@
+---
+layout: page
+title: 데이터 가져오기
+subtitle: 정적 웹페이지(표) - 대학순위
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_sections: TRUE
+---
+ 
+``` {r, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+# 대학순위 [^wiki-ranking] {#university-ranking}
+
+[^wiki-ranking]: [나무위키, 중앙일보 대학평가](https://namu.wiki/w/%EC%A4%91%EC%95%99%EC%9D%BC%EB%B3%B4%20%EB%8C%80%ED%95%99%ED%8F%89%EA%B0%80)
+
+중앙일보에서 연례적으로 발표하고 있는 대학평가이며 한국 최초의 대학평가로 매년 가을에 발표하고 있다.
+
+- [중앙일보 - 대학평가](http://news.joins.com/university)
+- [舊 중앙일보 대학평가(1994~2015)](http://univ.joongang.co.kr/)
+
+# 대학순위 데이터 [^scraping-html-tables] {#university-ranking-data}
+
+[^scraping-html-tables]: [Bradley Boehmke(2015-12-21), Scraping HTML Tables](http://bradleyboehmke.github.io/2015/12/scraping-html-tables.html)
+
+[나무위키, 중앙일보 대학평가](https://namu.wiki/w/%EC%A4%91%EC%95%99%EC%9D%BC%EB%B3%B4%20%EB%8C%80%ED%95%99%ED%8F%89%EA%B0%80) 웹사이트에서 
+데이터를 가져와서 전처리 작업을 수행한다.
+
+목적이 연도별 대학순위를 가져오는 것이기 때문에 `html_nodes(resp, "table")` 명령어를 통하면 손쉽게 
+표데이터를 `rvest`를 통해서 가져올 수 있다.
+
+``` {r scraping-data}
+# 0. 환경설정 -----
+library(rvest)
+library(tidyverse)
+library(plotly)
+library(extrafont)
+loadfonts()
+
+# 1. 데이터 -----
+## 1.1. URL 
+univ_ranking_url <- "https://namu.wiki/w/%EC%A4%91%EC%95%99%EC%9D%BC%EB%B3%B4%20%EB%8C%80%ED%95%99%ED%8F%89%EA%B0%80"
+
+## 1.2. 표 긁어오기
+ur_list <- vector("list", length=0)
+
+Sys.setlocale("LC_ALL", "C")
+resp <- read_html(univ_ranking_url)
+# html_nodes(resp, "table")
+
+for(i in 1:4) {
+  ur_list[[i]] <- resp %>% 
+    html_nodes("table") %>% 
+    .[[i]] %>% 
+    html_table(fill = TRUE)
+}
+
+Sys.setlocale("LC_ALL", "Korean")
+```
+
+# 데이터 정제 {#university-ranking-data-cleansing}
+
+데이터를 정제한다. 여러 사람이 데이터를 만지다 보니 일관성 측면에서 이슈가 있어 
+데이터프레임 형태로 정제작업을 진행한다.
+
+``` {r scraping-cleansing}
+## 1.3. 데이터 정제 -----
+ur_2014_df <- ur_list[[1]] %>% 
+  select(1:3) %>% 
+  rename(순위=X1, 대학=X2, 총점=X3) %>% 
+  filter(순위 != "순위") %>% 
+  mutate(순위 = as.integer(순위), 
+         총점=as.integer(총점),
+         연도=2014L)
+
+ur_2015_df <- ur_list[[2]] %>% 
+  select(1:2) %>% 
+  rename(순위=X1, 대학=X2) %>% 
+  filter(순위 != "순위") %>% 
+  mutate(순위 = as.integer(순위), 
+         연도=2015L,
+         총점=0)
+
+ur_2016_df <- ur_list[[3]] %>% 
+  rename(순위=X1, 대학=X2, 총점=X3) %>% 
+  filter(순위 != "순위") %>% 
+  mutate(순위 = as.integer(순위), 
+           총점=as.integer(총점),
+           연도=2016L)
+
+ur_2017_df <- ur_list[[4]] %>% 
+  rename(순위=X1, 대학=X2, 총점=X3) %>% 
+  filter(순위 != "순위") %>% 
+  mutate(순위 = as.integer(순위), 
+           총점=as.integer(총점),
+           연도=2017L)
+
+ur_df <- bind_rows(ur_2014_df, ur_2015_df) %>% 
+  bind_rows(ur_2016_df) %>% 
+  bind_rows(ur_2017_df) %>% 
+  mutate(총점 = ifelse(총점==0, NA, 총점)) %>% 
+  mutate(대학 = str_replace(대학, "학교", "")) %>% 
+  mutate(대학 = case_when(str_detect(대학, "고려") ~ "고려대(서울)",
+                          str_detect(대학, "건국") ~ "건국대",
+                          str_detect(대학, "한양대(에리카)") ~ "한양대(ERICA)",
+                        TRUE ~ 대학))
+ur_df %>% 
+  select(-총점) %>% 
+  spread(연도, 순위, convert = TRUE) %>% 
+  DT::datatable()
+```
+
+# 시각화 {#university-ranking-data-cleansing}
+
+인문ㆍ사회ㆍ자연ㆍ공학 등 4개 계열 이상을 갖춘 종합 4년제 대학 대상(포스텍ㆍ카이스트 등은 제외)으로 진행된 
+2017년 상위 10개을 선정해서 과거 대학순위 변화를 시각화해보자.
+
+``` {r scraping-viz}
+# 2. 시각화 -----
+top_10_univ_v <- ur_2017_df %>% 
+  filter(순위 <=10) %>% 
+  pull(대학)
+
+ur_g <- ur_df %>% 
+  filter(대학 %in% top_10_univ_v) %>% 
+  ggplot(aes(x=연도, y= 순위, group=대학, color=대학)) +
+    geom_line(size=1.3) +
+    geom_point(size=2.5) +
+    scale_color_manual(values=c(RColorBrewer::brewer.pal(11, "Set3"))) +
+    theme_minimal(base_family="NanumGothic") +
+    labs(x="", y="",color="상위10대학") +
+    scale_y_continuous(trans = "reverse", breaks = 1:20)
+  
+ggplotly(ur_g)
+```
+
