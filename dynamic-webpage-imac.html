@@ -11,7 +11,7 @@
 
 
 
-<title></title>
+<title>데이터 가져오기</title>
 
 <script src="dynamic-webpage-imac_files/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -26,9 +26,55 @@
 <script src="dynamic-webpage-imac_files/navigation-1.1/codefolding.js"></script>
 <script src="dynamic-webpage-imac_files/htmlwidgets-1.2/htmlwidgets.js"></script>
 <script src="dynamic-webpage-imac_files/trelliscopejs_widget-0.1.20/trelliscope.min.js"></script>
-<script src="dynamic-webpage-imac_files/trelliscopejs_widget-binding-0.1.11/trelliscopejs_widget.js"></script>
+<script src="dynamic-webpage-imac_files/trelliscopejs_widget-binding-0.1.8/trelliscopejs_widget.js"></script>
 
 
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; background-color: #f8f8f8; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+pre, code { background-color: #f8f8f8; }
+code > span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code > span.dt { color: #204a87; } /* DataType */
+code > span.dv { color: #0000cf; } /* DecVal */
+code > span.bn { color: #0000cf; } /* BaseN */
+code > span.fl { color: #0000cf; } /* Float */
+code > span.ch { color: #4e9a06; } /* Char */
+code > span.st { color: #4e9a06; } /* String */
+code > span.co { color: #8f5902; font-style: italic; } /* Comment */
+code > span.ot { color: #8f5902; } /* Other */
+code > span.al { color: #ef2929; } /* Alert */
+code > span.fu { color: #000000; } /* Function */
+code > span.er { color: #a40000; font-weight: bold; } /* Error */
+code > span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #000000; } /* Constant */
+code > span.sc { color: #000000; } /* SpecialChar */
+code > span.vs { color: #4e9a06; } /* VerbatimString */
+code > span.ss { color: #4e9a06; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #000000; } /* Variable */
+code > span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code > span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code > span.ex { } /* Extension */
+code > span.at { color: #c4a000; } /* Attribute */
+code > span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code > span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+div.sourceCode {
+  overflow-x: visible;
+}
+</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
 
 
 <style type="text/css">
@@ -218,12 +264,229 @@ div.tocify {
 
 
 
+<h1 class="title toc-ignore">데이터 가져오기</h1>
+<h3 class="subtitle"><em>동적 웹페이지 - <code>iMac</code></em></h3>
 
 </div>
 
 
+<div id="install-RSelenium-imac" class="section level1">
+<h1><span class="header-section-number">1</span> 애플 iMac 사이트 <a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> <a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a> <a href="#fn3" class="footnoteRef" id="fnref3"><sup>3</sup></a></h1>
+<p><a href="https://www.apple.com/kr-k12/shop/buy-mac/imac/27%ED%98%95">iMac 27형</a>, <a href="https://www.apple.com/kr-k12/shop/buy-mac/imac/21.5%ED%98%95">iMac 21.5형</a> 두가지 크기를 갖는 iMac 웹사이트에서 제품명, 사양, 가격정보를 이미지와 함께 가져와서 종합비교를 해보도록 하자.</p>
+</div>
+<div id="screen-capture" class="section level1">
+<h1><span class="header-section-number">2</span> 화면 캡쳐</h1>
+<p>가장 먼저, 크롤링하는 웹페이지가 맞는지 확인하기 위해서 화면을 캡쳐해보자. R로고도 함께 넣어 정품인증을 해보자.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 0. 환경설정 -----</span>
+<span class="kw">library</span>(RSelenium)
+<span class="kw">library</span>(tidyverse)
+<span class="kw">library</span>(magick)
+<span class="kw">library</span>(rvest)
+<span class="kw">library</span>(base64enc)
+<span class="kw">library</span>(trelliscopejs)
+
+<span class="co"># 1. 데이터 ----</span>
+## 1.1. 애플 사이트 방문 -----
+rem_driver &lt;-<span class="st"> </span><span class="kw">rsDriver</span>(<span class="dt">browser=</span><span class="st">&quot;chrome&quot;</span>)
+remdrv_client &lt;-<span class="st"> </span>rem_driver[[<span class="st">&quot;client&quot;</span>]]
+
+remdrv_client<span class="op">$</span><span class="kw">navigate</span>(<span class="st">&quot;https://www.apple.com/kr-k12/shop/buy-mac/imac/21.5%ED%98%95&quot;</span>)</code></pre></div>
+<p><code>magick</code> 팩키지 <code>image_read()</code> 함수를 활용해서 화면을 캡쳐한 후 이미지 처리를 위한 디코딩작업을 수행하고 적절한 크기로 조정한 후에 R 로고와 겹쳐 이미지를 마무리한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 1.2. 이미지 저장 -----
+rlogo &lt;-<span class="st"> </span><span class="kw">image_read</span>(<span class="st">&quot;https://jeroen.github.io/images/Rlogo.png&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">image_scale</span>(<span class="st">&quot;10%&quot;</span>)
+
+imac_screenshot &lt;-<span class="st"> </span>remdrv_client<span class="op">$</span><span class="kw">screenshot</span>(<span class="dt">display =</span> <span class="ot">FALSE</span>)
+imac_screenshot &lt;-<span class="st"> </span><span class="kw">base64decode</span>(<span class="kw">toString</span>(imac_screenshot), <span class="dt">output =</span> <span class="ot">NULL</span>)
+imac_screenshot_img &lt;-<span class="st"> </span><span class="kw">image_read</span>(imac_screenshot)
+
+imac_screenshot_img <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">image_scale</span>(<span class="st">&quot;500x&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">image_background</span>(<span class="st">&quot;none&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">image_composite</span>(rlogo, <span class="dt">offset=</span><span class="st">&quot;+450+500&quot;</span>)</code></pre></div>
+<p><img src="fig/rselenium-image-1.png" width="250" style="display: block; margin: auto;" /></p>
+</div>
+<div id="screen-capture" class="section level1">
+<h1><span class="header-section-number">3</span> 웹페이지 저장</h1>
+<p><code>21.5</code>인치 제품을 클릭했을 때 웹화면과, <code>27</code>인치 제품을 클릭했을 때 웹화면을 저장한다. <code>rvest()</code> 팩키지 정확하게는 <code>xml2</code> 팩키지 <code>read_html()</code> 함수로 웹페이지로 저장시켜 놓는다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## 1.3. 웹페이지 저장 -----
+### 21.5인치 웹페이지
+imac_21_web_eleml &lt;-<span class="st"> </span>remdrv_client<span class="op">$</span><span class="kw">findElement</span>(<span class="dt">using =</span> <span class="st">&quot;xpath&quot;</span>, <span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[2]/sticky/div/fieldset/div/span/button[1]&#39;</span>)
+imac_21_web_eleml<span class="op">$</span><span class="kw">clickElement</span>()
+imac_21_pg &lt;-<span class="st"> </span>remdrv_client<span class="op">$</span><span class="kw">getPageSource</span>()[[<span class="dv">1</span>]] <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">read_html</span>()
+
+### 27인치 웹페이지
+imac_27_web_eleml &lt;-<span class="st"> </span>remdrv_client<span class="op">$</span><span class="kw">findElement</span>(<span class="dt">using =</span> <span class="st">&quot;xpath&quot;</span>, <span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[2]/sticky/div/fieldset/div/span/button[2]&#39;</span>)
+imac_27_web_eleml<span class="op">$</span><span class="kw">clickElement</span>()
+imac_27_pg &lt;-<span class="st"> </span>remdrv_client<span class="op">$</span><span class="kw">getPageSource</span>()[[<span class="dv">1</span>]] <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">read_html</span>()
+
+remdrv_client<span class="op">$</span><span class="kw">close</span>()</code></pre></div>
+</div>
+<div id="screen-capture-cleansing" class="section level1">
+<h1><span class="header-section-number">4</span> 데이터 정제</h1>
+<p>동적 웹페이지를 두개의 정적 웹페이지로 객체에 저장을 시켜놨다. 이제, 각 웹페이지에서 해당 iMac 제품에 대한 제품명, 제품설명, 가격, 이미지 정보를 추출해서 데이터프레임으로 변환을 시킨다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 2. 데이터 정제 -----</span>
+## 21.5 인치 -------------------------------------
+## 2.1. 21.5인치 첫번째 iMac
+imac_21_01_title &lt;-<span class="st"> </span>imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/h3&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()      
+
+imac_21_01_body &lt;-<span class="st"> </span>imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/ul[1]&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_21_01_price &lt;-<span class="st"> </span>imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_21_01_df &lt;-<span class="st"> </span><span class="kw">tibble</span>(
+  <span class="dt">product =</span> imac_21_01_title,
+  <span class="dt">desc =</span> imac_21_01_body,
+  <span class="dt">price =</span> imac_21_01_price,
+  <span class="dt">image =</span> imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_node</span>(<span class="dt">xpath =</span> <span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[1]/div/bundle-selector/div[1]/div/div/img&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_attr</span>(<span class="st">&#39;src&#39;</span>)
+)
+
+## 2.2. 21.5인치 두번째 iMac
+imac_21_02_title &lt;-<span class="st"> </span>imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/h3&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_21_02_body &lt;-<span class="st"> </span>imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/ul[1]&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_21_02_price &lt;-<span class="st"> </span>imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_21_02_df &lt;-<span class="st"> </span><span class="kw">tibble</span>(
+  <span class="dt">product =</span> imac_21_02_title,
+  <span class="dt">desc =</span> imac_21_02_body,
+  <span class="dt">price =</span> imac_21_02_price,
+  <span class="dt">image =</span> imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_node</span>(<span class="dt">xpath =</span> <span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[2]/div/bundle-selector/div[1]/div/div/img&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_attr</span>(<span class="st">&#39;src&#39;</span>)
+)
+
+## 2.3. 21.5인치 세번째 iMac
+imac_21_03_title &lt;-<span class="st"> </span>imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/h3&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_21_03_body &lt;-<span class="st"> </span>imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/ul[1]&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_21_03_price &lt;-<span class="st"> </span>imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_21_03_df &lt;-<span class="st"> </span><span class="kw">tibble</span>(
+  <span class="dt">product =</span> imac_21_03_title,
+  <span class="dt">desc =</span> imac_21_03_body,
+  <span class="dt">price =</span> imac_21_03_price,
+  <span class="dt">image =</span> imac_21_pg <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_node</span>(<span class="dt">xpath =</span> <span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[3]/div/bundle-selector/div[1]/div/div/img&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_attr</span>(<span class="st">&#39;src&#39;</span>)
+)
+
+## 2.4. 21.5인치 iMac 조합
+imac_21_df &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(imac_21_01_df, imac_21_02_df) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_rows</span>(imac_21_03_df)
+
+## 27 인치 -------------------------------------
+## 3.1. 7인치 첫번째 iMac
+imac_27_01_title &lt;-<span class="st"> </span>imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[2]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/h3&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()      
+
+imac_27_01_body &lt;-<span class="st"> </span>imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[2]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/ul[1]&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_27_01_price &lt;-<span class="st"> </span>imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[2]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_27_01_df &lt;-<span class="st"> </span><span class="kw">tibble</span>(
+  <span class="dt">product =</span> imac_27_01_title,
+  <span class="dt">desc    =</span> imac_27_01_body,
+  <span class="dt">price   =</span> imac_27_01_price,
+  <span class="dt">image   =</span> imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_node</span>(<span class="dt">xpath =</span> <span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[1]/div/bundle-selector/div[1]/div/div/img&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_attr</span>(<span class="st">&#39;src&#39;</span>)
+)
+
+## 3.2. 27인치 두번째 iMac
+imac_27_02_title &lt;-<span class="st"> </span>imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[2]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/h3&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_27_02_body &lt;-<span class="st"> </span>imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[2]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/ul[1]&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_27_02_price &lt;-<span class="st"> </span>imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[2]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_27_02_df &lt;-<span class="st"> </span><span class="kw">tibble</span>(
+  <span class="dt">product =</span> imac_27_02_title,
+  <span class="dt">desc    =</span> imac_27_02_body,
+  <span class="dt">price   =</span> imac_27_02_price,
+  <span class="dt">image   =</span> imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_node</span>(<span class="dt">xpath =</span> <span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[2]/div/bundle-selector/div[1]/div/div/img&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_attr</span>(<span class="st">&#39;src&#39;</span>)
+)
+
+## 3.3. 27인치 세번째 iMac
+imac_27_03_title &lt;-<span class="st"> </span>imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[2]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/h3&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_27_03_body &lt;-<span class="st"> </span>imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[2]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/ul[1]&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_27_03_price &lt;-<span class="st"> </span>imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_node</span>(<span class="dt">xpath=</span><span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[2]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">html_text</span>()
+
+imac_27_03_df &lt;-<span class="st"> </span><span class="kw">tibble</span>(
+  <span class="dt">product =</span> imac_27_03_title,
+  <span class="dt">desc    =</span> imac_27_03_body,
+  <span class="dt">price   =</span> imac_27_03_price,
+  <span class="dt">image   =</span> imac_27_pg <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_node</span>(<span class="dt">xpath =</span> <span class="st">&#39;//*[@id=&quot;model-selection&quot;]/bundle-selection/div[3]/div[1]/div[2]/div/div[3]/div/bundle-selector/div[1]/div/div/img&#39;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">html_attr</span>(<span class="st">&#39;src&#39;</span>)
+)
+
+## 3.4. 27인치 iMac 조합
+imac_27_df &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(imac_27_01_df, imac_27_02_df) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">bind_rows</span>(imac_27_03_df)</code></pre></div>
+</div>
+<div id="screen-capture-cleansing-viz" class="section level1">
+<h1><span class="header-section-number">5</span> 시각화</h1>
+<p>데이터프레임으로 저장이 되었으니, 21.5, 27인치 두가 제품군의 총 6개 iMac 제품을 비교할 수 있도록 시각화한다.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 4. 데이터 조합 -------------</span>
+imac_df &lt;-<span class="st"> </span><span class="kw">bind_rows</span>(imac_21_df, imac_27_df)
+
+imac_df &lt;-<span class="st"> </span>imac_df <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">price =</span> <span class="kw">str_extract_all</span>(<span class="kw">str_replace_all</span>(price, <span class="st">&quot;,&quot;</span>, <span class="st">&quot;&quot;</span>), <span class="st">&quot;[0-9]+&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span>unlist <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">as.integer</span>()) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">id =</span> <span class="kw">row_number</span>())
+
+<span class="co"># 5. 시각화 -------------</span>
+<span class="co"># options(encoding=&quot;utf-8&quot;)</span>
+
+imac_df <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">panel =</span> <span class="kw">img_panel</span>(image)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">trelliscope</span>(<span class="st">&quot;imac_image&quot;</span>, <span class="dt">nrow =</span> <span class="dv">2</span>, <span class="dt">ncol =</span> <span class="dv">3</span>,
+              <span class="dt">state =</span> <span class="kw">list</span>(<span class="dt">labels =</span> <span class="kw">c</span>(<span class="st">&quot;product&quot;</span>, <span class="st">&quot;desc&quot;</span>, <span class="st">&quot;price&quot;</span>)),
+              <span class="dt">path=</span><span class="st">&quot;imac_trellis&quot;</span>)</code></pre></div>
+<div id="htmlwidget-3ba469d363d0f32c4e25" style="width:900px;height:550px;" class="trelliscopejs_widget html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3ba469d363d0f32c4e25">{"x":{"id":"dfdf803a","config_info":"'imac_trellis/appfiles/config.jsonp'","self_contained":false,"latest_display":{"name":"imac_image","group":"common"},"spa":false,"in_knitr":true,"in_notebook":false},"evals":[],"jsHooks":[]}</script>
+</div>
+<div class="footnotes">
 <hr />
-<p>layout: page title:</p>
+<ol>
+<li id="fn1"><p><a href="https://callumgwtaylor.github.io/blog/2018/02/01/using-rselenium-and-docker-to-webscrape-in-r-using-the-who-snake-database/">Using RSelenium and Docker To Webscrape In R - Using The WHO Snake Database Thu, Feb 1, 2018</a><a href="#fnref1">↩</a></p></li>
+<li id="fn2"><p><a href="https://ropensci.org/tutorials/rselenium_tutorial/">rOpenSci, rselenium tutorial for v1.0.3</a><a href="#fnref2">↩</a></p></li>
+<li id="fn3"><p><a href="https://stackoverflow.com/questions/44446879/save-screenshot-as-variable-in-r-selenium">stackoverflow, Save screenshot as variable in R Selenium</a><a href="#fnref3">↩</a></p></li>
+</ol>
+</div>
 
 
 

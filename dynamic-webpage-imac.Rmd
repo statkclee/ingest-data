@@ -70,7 +70,7 @@ imac_screenshot_img %>%
 ```
 
 
-# 화면 캡쳐 {#screen-capture}
+# 웹페이지 저장 {#screen-capture}
 
 `21.5`인치 제품을 클릭했을 때 웹화면과, `27`인치 제품을 클릭했을 때 웹화면을 저장한다.
 `rvest()` 팩키지 정확하게는 `xml2` 팩키지 `read_html()` 함수로 웹페이지로 저장시켜 놓는다.
