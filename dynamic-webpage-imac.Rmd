@@ -9,6 +9,7 @@ output:
     highlight: tango
     code_folding: hide
     number_sections: TRUE
+    self_contained: false
 ---
  
 ``` {r, include=FALSE}
@@ -16,6 +17,243 @@ source("tools/chunk-options.R")
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ```
 
-# iMac
+# 애플 iMac 사이트 [^rselenium-snake] [^rselenium-tutorial] [^rselenium-stackoverflow-image] {#install-RSelenium-imac}
+
+[^rselenium-snake]: [Using RSelenium and Docker To Webscrape In R - Using The WHO Snake Database Thu, Feb 1, 2018](https://callumgwtaylor.github.io/blog/2018/02/01/using-rselenium-and-docker-to-webscrape-in-r-using-the-who-snake-database/)
+
+[^rselenium-tutorial]: [rOpenSci, rselenium tutorial for v1.0.3 ](https://ropensci.org/tutorials/rselenium_tutorial/)
+
+[^rselenium-stackoverflow-image]: [stackoverflow, Save screenshot as variable in R Selenium](https://stackoverflow.com/questions/44446879/save-screenshot-as-variable-in-r-selenium)
+
+[iMac 27형](https://www.apple.com/kr-k12/shop/buy-mac/imac/27%ED%98%95), 
+[iMac 21.5형](https://www.apple.com/kr-k12/shop/buy-mac/imac/21.5%ED%98%95) 두가지 크기를 갖는 iMac 웹사이트에서 
+제품명, 사양, 가격정보를 이미지와 함께 가져와서 종합비교를 해보도록 하자.
+
+# 화면 캡쳐 {#screen-capture}
+
+가장 먼저, 크롤링하는 웹페이지가 맞는지 확인하기 위해서 화면을 캡쳐해보자.
+R로고도 함께 넣어 정품인증을 해보자.
+
+``` {r rselenium-open, results='hide'}
+# 0. 환경설정 -----
+library(RSelenium)
+library(tidyverse)
+library(magick)
+library(rvest)
+library(base64enc)
+library(trelliscopejs)
+
+# 1. 데이터 ----
+## 1.1. 애플 사이트 방문 -----
+rem_driver <- rsDriver(browser="chrome")
+remdrv_client <- rem_driver[["client"]]
+
+remdrv_client$navigate("https://www.apple.com/kr-k12/shop/buy-mac/imac/21.5%ED%98%95")
+```
+
+`magick` 팩키지 `image_read()` 함수를 활용해서 화면을 캡쳐한 후 이미지 처리를 위한 디코딩작업을 수행하고 
+적절한 크기로 조정한 후에 R 로고와 겹쳐 이미지를 마무리한다.
+
+``` {r rselenium-image}
+## 1.2. 이미지 저장 -----
+rlogo <- image_read("https://jeroen.github.io/images/Rlogo.png") %>% 
+  image_scale("10%")
+
+imac_screenshot <- remdrv_client$screenshot(display = FALSE)
+imac_screenshot <- base64decode(toString(imac_screenshot), output = NULL)
+imac_screenshot_img <- image_read(imac_screenshot)
+
+imac_screenshot_img %>% 
+  image_scale("500x") %>% 
+  image_background("none") %>% 
+  image_composite(rlogo, offset="+450+500")
+```
+
+
+# 화면 캡쳐 {#screen-capture}
+
+`21.5`인치 제품을 클릭했을 때 웹화면과, `27`인치 제품을 클릭했을 때 웹화면을 저장한다.
+`rvest()` 팩키지 정확하게는 `xml2` 팩키지 `read_html()` 함수로 웹페이지로 저장시켜 놓는다.
+
+``` {r rselenium-save}
+## 1.3. 웹페이지 저장 -----
+### 21.5인치 웹페이지
+imac_21_web_eleml <- remdrv_client$findElement(using = "xpath", '//*[@id="model-selection"]/bundle-selection/div[2]/sticky/div/fieldset/div/span/button[1]')
+imac_21_web_eleml$clickElement()
+imac_21_pg <- remdrv_client$getPageSource()[[1]] %>% 
+  read_html()
+
+### 27인치 웹페이지
+imac_27_web_eleml <- remdrv_client$findElement(using = "xpath", '//*[@id="model-selection"]/bundle-selection/div[2]/sticky/div/fieldset/div/span/button[2]')
+imac_27_web_eleml$clickElement()
+imac_27_pg <- remdrv_client$getPageSource()[[1]] %>% 
+  read_html()
+
+remdrv_client$close()
+```
+
+
+# 데이터 정제 {#screen-capture-cleansing}
+
+동적 웹페이지를 두개의 정적 웹페이지로 객체에 저장을 시켜놨다. 
+이제, 각 웹페이지에서 해당 iMac 제품에 대한 제품명, 제품설명, 가격, 이미지 정보를 추출해서 데이터프레임으로 변환을 시킨다.
+
+``` {r rselenium-cleansing}
+# 2. 데이터 정제 -----
+## 21.5 인치 -------------------------------------
+## 2.1. 21.5인치 첫번째 iMac
+imac_21_01_title <- imac_21_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/h3') %>% 
+  html_text()      
+
+imac_21_01_body <- imac_21_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/ul[1]') %>% 
+  html_text()
+
+imac_21_01_price <- imac_21_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span') %>% 
+  html_text()
+
+imac_21_01_df <- tibble(
+  product = imac_21_01_title,
+  desc = imac_21_01_body,
+  price = imac_21_01_price,
+  image = imac_21_pg %>% html_node(xpath = '//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[1]/div/bundle-selector/div[1]/div/div/img') %>% html_attr('src')
+)
+
+## 2.2. 21.5인치 두번째 iMac
+imac_21_02_title <- imac_21_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/h3') %>% 
+  html_text()
+
+imac_21_02_body <- imac_21_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/ul[1]') %>% 
+  html_text()
+
+imac_21_02_price <- imac_21_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span') %>% 
+  html_text()
+
+imac_21_02_df <- tibble(
+  product = imac_21_02_title,
+  desc = imac_21_02_body,
+  price = imac_21_02_price,
+  image = imac_21_pg %>% html_node(xpath = '//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[2]/div/bundle-selector/div[1]/div/div/img') %>% html_attr('src')
+)
+
+## 2.3. 21.5인치 세번째 iMac
+imac_21_03_title <- imac_21_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/h3') %>% 
+  html_text()
+
+imac_21_03_body <- imac_21_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/ul[1]') %>% 
+  html_text()
+
+imac_21_03_price <- imac_21_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span') %>% 
+  html_text()
+
+imac_21_03_df <- tibble(
+  product = imac_21_03_title,
+  desc = imac_21_03_body,
+  price = imac_21_03_price,
+  image = imac_21_pg %>% html_node(xpath = '//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[3]/div/bundle-selector/div[1]/div/div/img') %>% html_attr('src')
+)
+
+## 2.4. 21.5인치 iMac 조합
+imac_21_df <- bind_rows(imac_21_01_df, imac_21_02_df) %>% 
+  bind_rows(imac_21_03_df)
+
+## 27 인치 -------------------------------------
+## 3.1. 7인치 첫번째 iMac
+imac_27_01_title <- imac_27_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[2]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/h3') %>% 
+  html_text()      
+
+imac_27_01_body <- imac_27_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[2]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/ul[1]') %>% 
+  html_text()
+
+imac_27_01_price <- imac_27_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[2]/div[2]/div/div[1]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span') %>% 
+  html_text()
+
+imac_27_01_df <- tibble(
+  product = imac_27_01_title,
+  desc    = imac_27_01_body,
+  price   = imac_27_01_price,
+  image   = imac_27_pg %>% html_node(xpath = '//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[1]/div/bundle-selector/div[1]/div/div/img') %>% html_attr('src')
+)
+
+## 3.2. 27인치 두번째 iMac
+imac_27_02_title <- imac_27_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[2]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/h3') %>% 
+  html_text()
+
+imac_27_02_body <- imac_27_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[2]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/ul[1]') %>% 
+  html_text()
+
+imac_27_02_price <- imac_27_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[2]/div[2]/div/div[2]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span') %>% 
+  html_text()
+
+imac_27_02_df <- tibble(
+  product = imac_27_02_title,
+  desc    = imac_27_02_body,
+  price   = imac_27_02_price,
+  image   = imac_27_pg %>% html_node(xpath = '//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[2]/div/bundle-selector/div[1]/div/div/img') %>% html_attr('src')
+)
+
+## 3.3. 27인치 세번째 iMac
+imac_27_03_title <- imac_27_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[2]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/h3') %>% 
+  html_text()
+
+imac_27_03_body <- imac_27_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[2]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/ul[1]') %>% 
+  html_text()
+
+imac_27_03_price <- imac_27_pg %>% 
+  html_node(xpath='//*[@id="model-selection"]/bundle-selection/div[3]/div[2]/div[2]/div/div[3]/div/bundle-selector/div[3]/div/div/div[2]/span[1]/span') %>% 
+  html_text()
+
+imac_27_03_df <- tibble(
+  product = imac_27_03_title,
+  desc    = imac_27_03_body,
+  price   = imac_27_03_price,
+  image   = imac_27_pg %>% html_node(xpath = '//*[@id="model-selection"]/bundle-selection/div[3]/div[1]/div[2]/div/div[3]/div/bundle-selector/div[1]/div/div/img') %>% html_attr('src')
+)
+
+## 3.4. 27인치 iMac 조합
+imac_27_df <- bind_rows(imac_27_01_df, imac_27_02_df) %>% 
+  bind_rows(imac_27_03_df)
+```
+
+# 시각화 {#screen-capture-cleansing-viz}
+
+데이터프레임으로 저장이 되었으니, 21.5, 27인치 두가 제품군의 총 6개 iMac 제품을 비교할 수 있도록
+시각화한다.
+
+``` {r rselenium-cleansing-viz}
+# 4. 데이터 조합 -------------
+imac_df <- bind_rows(imac_21_df, imac_27_df)
+
+imac_df <- imac_df %>% 
+  mutate(price = str_extract_all(str_replace_all(price, ",", ""), "[0-9]+") %>% unlist %>% as.integer()) %>% 
+  mutate(id = row_number())
+
+# 5. 시각화 -------------
+# options(encoding="utf-8")
+
+imac_df %>%
+  mutate(panel = img_panel(image)) %>%
+  trelliscope("imac_image", nrow = 2, ncol = 3,
+              state = list(labels = c("product", "desc", "price")),
+              path="imac_trellis")
+```
+
+
 
 
