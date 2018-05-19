@@ -94,7 +94,7 @@ DT::datatable(seoul_df)
 Sys.setlocale("LC_ALL", "C")
 
 resp <- read_html(namu_url)
-html_nodes(resp, "table")
+# html_nodes(resp, "table")
 
 gg_tbl <- resp %>% 
   html_nodes(xpath='/html/body/div[2]/article/div[3]/div/div[14]/div/table') %>% 
@@ -139,7 +139,6 @@ DT::datatable(gg_df)
 Sys.setlocale("LC_ALL", "C")
 
 resp <- read_html(namu_url)
-html_nodes(resp, "table")
 
 incheon_tbl <- resp %>% 
   html_nodes(xpath='/html/body/div[2]/article/div[3]/div/div[19]/div/table') %>% 
