@@ -35,6 +35,7 @@ title: 다양한 데이터 가져오기
     + **웹 크롤링**
         - [정적 웹페이지(표) - 대학순위](static-webpage-table.html)
         - [동적 웹페이지 - `RSelelinum`](dynamic-webpage-selenium.html)
+        - [동적 웹페이지 - iMac](dynamic-webpage-imac.html)
 - 데이터베이스
 - 공공데이터
 - 연관검색어

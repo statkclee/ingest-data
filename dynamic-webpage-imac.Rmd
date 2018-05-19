@@ -1,0 +1,21 @@
+---
+layout: page
+title: 데이터 가져오기
+subtitle: 동적 웹페이지 - `iMac`
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: hide
+    number_sections: TRUE
+---
+ 
+``` {r, include=FALSE}
+source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+# iMac
+
+
