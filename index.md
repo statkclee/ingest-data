@@ -34,7 +34,7 @@ title: 다양한 데이터 가져오기
     + [네이버 인물정보](naver-people-info.html)
     + **웹 크롤링**
         - [정적 웹페이지(표) - 대학순위](static-webpage-table.html)
-        - [동적 웹페이지(표) - 중앙선거관리위원회](dynamic-webpage-selenium.html)
+        - [동적 웹페이지 - `RSelelinum`](dynamic-webpage-selenium.html)
 - 데이터베이스
 - 공공데이터
 - 연관검색어

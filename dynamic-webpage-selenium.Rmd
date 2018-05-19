@@ -1,7 +1,7 @@
 ---
 layout: page
 title: 데이터 가져오기
-subtitle: 동적 웹페이지(표) - 중앙선거관리위원회
+subtitle: 동적 웹페이지 - `RSelelinum`
 output:
   html_document: 
     toc: yes
