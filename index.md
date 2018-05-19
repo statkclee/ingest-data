@@ -34,6 +34,7 @@ title: 다양한 데이터 가져오기
     + [네이버 인물정보](naver-people-info.html)
     + **웹 크롤링**
         - [정적 웹페이지(표) - 대학순위](static-webpage-table.html)
+        - [정적 웹페이지(표) - 지방선거(2018)](static-webpage-table-2018.html)
         - [동적 웹페이지 - `RSelelinum`](dynamic-webpage-selenium.html)
         - [동적 웹페이지 - iMac](dynamic-webpage-imac.html)
 - 데이터베이스
