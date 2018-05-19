@@ -250,7 +250,7 @@ local_df <- bind_rows(seoul_lng_df, gg_lng_df) %>%
 
 local_g <- local_df %>% 
   ggplot(aes(x=조사일, y=지지율, color=정당, group=정당,
-             text = paste('조사일 :', lubridate::year(조사일), "\n",
+             text = paste('조사일 :', 조사일, "\n",
                           '지지율:', str_c(지지율,"%"), "\n",
                           '정당: ', 정당, "\n",
                           '조사기관:', 기관))) +
