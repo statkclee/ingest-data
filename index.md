@@ -37,6 +37,7 @@ title: 다양한 데이터 가져오기
         - [정적 웹페이지(표) - 지방선거(2018)](static-webpage-table-2018.html)
         - [동적 웹페이지 - `RSelelinum`](dynamic-webpage-selenium.html)
         - [동적 웹페이지 - iMac](dynamic-webpage-imac.html)
+        - [크롤링 자동화 - Azure/AWS](crawl-automation.html)
 - 데이터베이스
 - 공공데이터
 - 연관검색어
