@@ -7,7 +7,7 @@ output:
     toc: yes
     toc_float: true
     highlight: tango
-    code_folding: hide
+    code_folding: show
     number_sections: TRUE
 ---
  
