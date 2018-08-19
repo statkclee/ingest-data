@@ -17,13 +17,6 @@ title: 다양한 데이터 가져오기
 - [데이터 가져오기 개요](ingest-data.html)
 - 로컬 컴퓨터
 - 웹(Web)
-    + [파이썬 - 웹에 있는 데이터 작업](http://statkclee.github.io/web-data-python/)
-        * [데이터 입수](http://statkclee.github.io/web-data-python/01-getdata.html)
-        * [CSV 데이터 처리](http://statkclee.github.io/web-data-python/02-csv.html)
-        * [오류(Error) 처리와 일반화](http://statkclee.github.io/web-data-python/03-generalize.html)
-        * [시각화](http://statkclee.github.io/web-data-python/04-visualize.html)
-        * [데이터 게시](http://statkclee.github.io/web-data-python/05-makedata.html)
-        * [데이터를 찾을 수 있게 만들기](http://statkclee.github.io/web-data-python/06-findable.html)
     + **[웹 데이터](https://statkclee.github.io/data-science/ds-webdata.html)**
         - [웹 스크래핑(Web Scraping)](https://statkclee.github.io/data-science/data-scraping.html)
         - [R 팬텀JS (phantomJS) - 방송3사 시청률 경쟁 그리고 JTBC 손석희 앵커](https://statkclee.github.io/data-science/ds-phantomJS.html)
@@ -39,11 +32,20 @@ title: 다양한 데이터 가져오기
         - [동적 웹페이지 - iMac](dynamic-webpage-imac.html)
         - [크롤링 자동화 - Azure/AWS](crawl-automation.html)
 - 데이터베이스
-- 공공데이터
+- **공공데이터**
+    - [선관위 지방선거(2018) - POST, 로컬, 도커](election-post-docker.html)
 - 연관검색어
     + [네이버](http://statkclee.github.io/politics/naver-related-search.html)
     + [다음](daum-related-search.html)
     + [구글 제안(Google Suggest)](google-suggest.html)
+- 소프트웨어 카펜트리
+    + [파이썬 - 웹에 있는 데이터 작업](http://statkclee.github.io/web-data-python/)
+        * [데이터 입수](http://statkclee.github.io/web-data-python/01-getdata.html)
+        * [CSV 데이터 처리](http://statkclee.github.io/web-data-python/02-csv.html)
+        * [오류(Error) 처리와 일반화](http://statkclee.github.io/web-data-python/03-generalize.html)
+        * [시각화](http://statkclee.github.io/web-data-python/04-visualize.html)
+        * [데이터 게시](http://statkclee.github.io/web-data-python/05-makedata.html)
+        * [데이터를 찾을 수 있게 만들기](http://statkclee.github.io/web-data-python/06-findable.html)
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)
 
