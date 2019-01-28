@@ -1,7 +1,7 @@
 ---
 layout: page
 title: 데이터 과학
-subtitle: 이미지 pdf 파일 데이터 추출
+subtitle: "이미지 PDF 파일 데이터 추출"
 author:
     name: xwMOOC
     url: https://www.facebook.com/groups/tidyverse/
@@ -21,21 +21,21 @@ editor_options:
 
 
 ```{r, include=FALSE}
-source("tools/chunk-options.R")
-library(dplyr)
-```
-> ## 학습 목표 {.objectives}
->
-> * 광학문자인식(OCR) 기술을 통한 텍스트 추출 과정을 이해한다.
-> * `.pdf` 파일에서 데이터를 추출한다.
-> * `.pdf` 파일에서 추출된 데이터를 정제하는 기법을 살펴본다.
 
-## 1. `.pdf` 파일에서 텍스트 추출 [^tesseract-ocr] [^extract-data-and-text]
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE,
+                    comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+library(tidyverse)
+```
+
+# `.pdf` 파일에서 텍스트 추출 [^tesseract-ocr] [^extract-data-and-text] {#extract-pdf-from-image}
 
 [^tesseract-ocr]: [The new Tesseract package: High Quality OCR in R](https://www.r-bloggers.com/the-new-tesseract-package-high-quality-ocr-in-r/)
 
 [^extract-data-and-text]: [Tools for Extracting Data and Text from PDFs - A Review](http://okfnlabs.org/blog/2016/04/19/pdf-tools-extract-text-and-data-from-pdfs.html)
 
+광학문자인식(OCR) 기술을 통한 텍스트 추출 과정 이해를 바탕으로 
+`.pdf` 파일에서 데이터를 추출하고, `.pdf` 파일에서 추출된 데이터를 정제하는 기법을 살펴본다.
 `.pdf` 파일에서 데이터를 추출하는 작업은 흔한 데이터 랭글링(wrangling, 정제작업)으로 다음 세가지 범주로 설명가능하다.
 
 - `.pdf` 파일에서 텍스트 추출
@@ -45,7 +45,7 @@ library(dplyr)
 마지막, `.pdf` 파일 혹은 고품질 이미지나 사진에서 텍스트를 추출하는 과정은 
 광학문자인식(Optical character recognition, OCR)과 밀접한 관련이 있다.
 
-### 1.1. `.pdf` 파일을 텍스트로 변환하는 도구 
+## `.pdf` 파일을 텍스트로 변환하는 도구 {#pdf-image-conversion-tool}  
 
 - [PDFMiner](http://www.unixuser.org/~euske/python/pdfminer/)
 - [pdftohtml](http://pdftohtml.sourceforge.net/)
@@ -57,13 +57,13 @@ library(dplyr)
 - [Apache Tika](https://tika.apache.org/)
 - [Apache PDFBox](https://pdfbox.apache.org/)
 
-### 1.2. `.pdf` 파일에서 표를 추출하는 도구
+## `.pdf` 파일에서 표를 추출하는 도구 {#pdf-image-conversion-tool-table}  
 
 - [Tabula](http://tabula.technology/)
 - [pdftables](https://github.com/okfn/pdftables)
 - [pdftohtml](http://pdftohtml.sourceforge.net/)
 
-### 1.3. `OCR` 작업흐름 [^ocr-workflow]
+## `OCR` 작업흐름 [^ocr-workflow] {#pdf-image-conversion-tool-workflow}  
 
 [^ocr-workflow]: [Extracting Data from PDFs](http://schoolofdata.org/handbook/courses/extracting-data-from-pdf/)
 
@@ -75,7 +75,7 @@ OCR을 통해 데이터를 추출하는 경우 자동차 조립라인처럼 다�
 1. 페이지별 레이아웃에 따라, 텍스트 조각을 추출.
 1. 텍스트 조각을 재조합해서 유용한 형태로 변환.
 
-<img src="fig/ds-ocr-processing-order.png" alt="OCR 이미지 처리 과정" width="77%" />
+<img src="fig/ds-ocr-processing-order.png" alt="OCR 이미지 처리 과정" width="100%" />
 
 [unpaper](https://github.com/Flameeyes/unpaper)를 많이 사용하고 있으며, 스캔당시에 검은 얼룩을 제거하거 
 하거나, 배경과 출력 텍스트를 정렬하고 기울어진 텍스트를 곧게 펴는 작업 등이 포함된다. 
@@ -86,7 +86,7 @@ OCR 엔진은 `.ppm` (픽스맵 파일형식, pixmap format)만 지원하기 때
 - [GNU Ocrad](http://www.gnu.org/software/ocrad/)
 
 
-## 2. `.pdf` 파일로부터 표 추출 작업 [^tabulizer] [^pdftools]
+# `.pdf` 파일로부터 표 추출 작업 [^tabulizer] [^pdftools] {#pdf-image-conversion-tool-work}  
 
 [^tabulizer]: [Bindings for Tabula PDF Table Extractor Library - tabulizer](https://github.com/ropenscilabs/tabulizer)
 
@@ -98,7 +98,7 @@ OCR 엔진은 `.ppm` (픽스맵 파일형식, pixmap format)만 지원하기 때
 `tabulizer` 팩키지를 설치하게 되면, `examples/data.pdf` 파일에 유명한 `mtcars`, `iris` 데이터를 PDF 파일에 표로 출력되어 있다.
 이를 `extract_tables()` 함수를 사용해서 원래 데이터를 복원한다.
 
-```{r}
+```{r extract-table-from-pdf}
 #1. 환경설정-------------------------------
 
 #library(devtools)
@@ -114,22 +114,22 @@ library(tabulizer)
 f <- system.file(path="examples", file="data.pdf", package = "tabulizer")
 ```
 
-### 2.1. `iris` 데이터 복원
+## `iris` 데이터 복원 {#pdf-image-conversion-tool-work-iris}  
 
 `examples/data.pdf` 파일 2페이지에 `iris` 데이터가 표형식으로 찍혀있다. 
 이를 `extract_tables(f, pages = 2, method = "data.frame")` 명령어로 추출한다.
 
-```{r}
+```{r iris-work}
 out1 <- extract_tables(f)
 str(out1)
 
-iris_ocr <- extract_tables(f, pages = 2, method = "data.frame")
+iris_ocr <- extract_tables(f, pages = 2)
 
-#3. 데이터프레임 변환--------------------------
+# 3. 데이터프레임 변환--------------------------
+library(tidyverse)
 
-iris_df <- iris_ocr[[1]]
-# library(dplyr)
-glimpse(iris_df)
+iris_ocr[[1]] %>% 
+  as.data.frame()
 ```
 
 
