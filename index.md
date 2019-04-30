@@ -16,6 +16,7 @@ title: 다양한 데이터 가져오기
 
 - [데이터 가져오기 개요](ingest-data.html)
 - 로컬 컴퓨터
+    - **[문자인식(OCR) - `tesseract`](ingest-ocr.html)**
 - 웹(Web)
     + **[웹 데이터](https://statkclee.github.io/data-science/ds-webdata.html)**
         - [웹 스크래핑(Web Scraping)](https://statkclee.github.io/data-science/data-scraping.html)
@@ -32,7 +33,7 @@ title: 다양한 데이터 가져오기
         - [동적 웹페이지 - iMac](dynamic-webpage-imac.html)
         - [크롤링 자동화 - Azure/AWS](crawl-automation.html)
 - 데이터베이스
-* **PDF**
+- **PDF**
     * [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
     * [PDF 감옥에서 데이터를 탈출시키다.](ds-extract-text-from-pdf-survey.html)
 - **공공데이터**
