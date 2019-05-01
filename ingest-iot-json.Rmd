@@ -1,0 +1,149 @@
+---
+layout: page
+title: 데이터 가져오기 - IoT
+subtitle: "IoT 센서 - JSON"
+author:
+    name: xwMOOC
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+library(tidyverse)
+library(reticulate)
+use_condaenv("anaconda3")
+# reticulate::repl_python()
+```
+
+
+# IoT 센서 데이터셋 [^iot-sensor] {#iot-sensor}
+
+[^iot-sensor]: [City Puls, "Dataset Collection"](http://iot.ee.surrey.ac.uk:8080/datasets.html#weather)
+
+[City Puls, "Dataset Collection"](http://iot.ee.surrey.ac.uk:8080/datasets.html#weather) 웹페이지를 통해서 
+사물인터넷 관련 탐색적 데이터 분석에 적합한 센서가 생성한 다양한 데이터를 받아낼 수 있다.
+
+- [Weather Data for the City of Aarhus in Denmark, "February-June 2014"](http://iot.ee.surrey.ac.uk:8080/datasets.html#weather)
+    - [Raw Weather Dataset in JSON format](http://iot.ee.surrey.ac.uk:8080/datasets/weather/feb_jun_2014/raw_weather_data_aarhus.tar.gz)
+
+- Humidity (percentage)
+- Pressure in mBar
+- Temperature in degrees Celsius 
+- Wind direction in degrees 
+- Wind speed in kilometers per hour (kph)
+
+상기 센서데이터는 JSON 파일형태로 된 전형적인 IoT 센서 데이터라고 볼 수 있다.
+
+```{r iot-sensor-dataset, eval=FALSE}
+library(tidyverse)
+
+download.file(url="http://iot.ee.surrey.ac.uk:8080/datasets/weather/feb_jun_2014/raw_weather_data_aarhus.tar.gz", destfile = "data/raw_weather_data_aarhus.tar.gz")
+
+dir.create("data/weather")
+
+untar("data/raw_weather_data_aarhus.tar.gz", exdir = "data/weather")
+```
+
+즉, `http://iot.ee.surrey.ac.uk:8080/datasets/weather/feb_jun_2014/raw_weather_data_aarhus.tar.gz` 파일을 다운로드 받아 `data/raw_weather_data_aarhus.tar.gz` 파일명어로 저장하고 압축파일을 `untar()` 명령어로 압축을 푼다. 그리고 나서 `system()` 명령어로 압축이 풀린 것을 확인한다. 
+
+```{r iot-sensor-dataset-ls}
+system("cmd.exe /c dir data\\weather", intern = TRUE)
+```
+
+# 센서 데이터셋 &rarr; R {#iot-sensor-r}
+
+이제 센서 데이터셋을 R로 불러읽어 들인다.
+JSON 파일형식이라 이것을 데이터프레임으로 변환을 시킨다.
+그리고 나서 시간대별로 `timestamp` 날짜시간형태로 변환을 시키고,
+습도, 온도, 압력, 풍속 등을 문자형에서 숫자형으로 변환을 시킨다.
+
+```{r iot-sensor-import}
+library(rjson)
+
+## 습도 데이터 ----
+hum_list <- rjson::fromJSON(file = "data/weather/hum.txt")
+
+hum_df <- tibble(
+  timestamp = names(hum_list),
+  humidity = map_chr(hum_list, 1)) %>% 
+  mutate(timestamp = lubridate::ymd_hms(timestamp))
+
+## 습도 데이터 ----
+pressure_list <- rjson::fromJSON(file = "data/weather/pressurem.txt")
+
+pressure_df <- tibble(
+  timestamp = names(pressure_list),
+  pressure = map_chr(pressure_list, 1)) %>% 
+  mutate(timestamp = lubridate::ymd_hms(timestamp))
+
+## 온도 데이터 ----
+temp_list <- rjson::fromJSON(file = "data/weather/tempm.txt")
+
+temp_df <- tibble(
+  timestamp = names(temp_list),
+  temp = map_chr(temp_list, 1)) %>% 
+  mutate(timestamp = lubridate::ymd_hms(timestamp)) 
+
+## 풍량 데이터 ----
+wind_list <- rjson::fromJSON(file = "data/weather/wspdm.txt")
+
+wind_df <- tibble(
+  timestamp = names(wind_list),
+  wind = map_chr(wind_list, 1)) %>% 
+  mutate(timestamp = lubridate::ymd_hms(timestamp))
+
+## 센서 데이터 병합 ----
+sensor_df <- hum_df %>% 
+  full_join(temp_df) %>% 
+  full_join(pressure_df) %>% 
+  full_join(wind_df) %>% 
+  mutate_if(is_character, as.numeric)
+
+sensor_df %>% 
+  DT::datatable()
+```
+
+
+# 탐색적 데이터 분석 {#iot-sensor-eda}
+
+## 시계열 그래프 {#iot-sensor-eda-ts}
+
+가장 먼저 시계열 데이터라서 이를 시간대별 변화를 각 센서별로 시각화시킨다.
+
+```{r iot-sensor-eda}
+sensor_df %>%
+  gather(sensor, value, -timestamp) %>% 
+  ggplot(aes(x=timestamp, y=value, color=sensor)) +
+    geom_line(show.legend = FALSE) +
+    facet_wrap(~sensor, scales = "free") +
+    labs(x="", y="") +
+    scale_x_datetime(date_labels = "%H 시")
+```
+
+## `heatmap` {#iot-sensor-eda-ts}
+
+두번째는 각 변수별로 관계를 살펴보는 것이다. 
+
+```{r iot-sensor-eda-heatmap}
+
+```
+
+## 산점도 {#iot-sensor-eda-scatterplot}
+
+마지막으로 각 변수별로 관계를 산점도를 찍어서 시각화해본다.
+
+```{r iot-sensor-eda-scatterplot}
+library(GGally)
+ggpairs(sensor_df)
+```
