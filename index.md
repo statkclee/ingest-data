@@ -17,6 +17,7 @@ title: 다양한 데이터 가져오기
 - [데이터 가져오기 개요](ingest-data.html)
 - 로컬 컴퓨터
     - **[문자인식(OCR) - `tesseract`](ingest-ocr.html)**
+- [사물인터넷(IoT) - `mqtt`](ingest-mqtt.html)
 - 웹(Web)
     + **[웹 데이터](https://statkclee.github.io/data-science/ds-webdata.html)**
         - [웹 스크래핑(Web Scraping)](https://statkclee.github.io/data-science/data-scraping.html)
