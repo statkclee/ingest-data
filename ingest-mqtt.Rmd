@@ -94,10 +94,37 @@ client1.connect(host,port,keepalive)
 ret= client1.publish("Robot","Robot 1 move_left")
 ```
 
+[MQTT over WebSockets](http://test.mosquitto.org/ws.html) 웹사이트가 브로커 역할을 수행한다. 따라서 이곳에 `Publish`를 하고, `Subscribe/Unsubscribe`통해서 구독한 것을 받아오는 과정을 시각적으로 확인할 수 있다.
 
-```{python iot-mqtt, eval=FALSE}
+<img src="fig/mqtt_pubsub.png" alt="MQTT 테스트" width="100%" />
 
+```{python iot-mqtt-publish}
+import paho.mqtt.publish as publish
 
+tidyverse_msgs = [
+    {
+        'topic':"/tidyverse/korea",
+        'payload':"dplyr"
+    },
+
+    (
+        "/tidyverse/korea",
+        "tidyr", 
+    )]
+
+publish.multiple(tidyverse_msgs, hostname="test.mosquitto.org")
+```
+
+`/tidyverse/korea` 토픽으로 `dplyr`과 `tidyr`을 `http://test.mosquitto.org`으로 publish하여 전달한다.
+다음으로 `paho.mqtt.publish` 모듈을 사용해서 앞서 publish한 사항을 `/tidyverse/korea` 토픽에 `subscribe`하여 가져온다.
+
+```{python iot-mqtt-subscription}
+import paho.mqtt.subscribe as subscribe
+
+msg = subscribe.simple("/tidyverse/korea", hostname="test.mosquitto.org")
+
+# topic과 payload 출력
+print(f"{msg.topic}, {msg.payload}")
 ```
 
 
