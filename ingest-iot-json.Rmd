@@ -136,7 +136,12 @@ sensor_df %>%
 두번째는 각 변수별로 관계를 살펴보는 것이다. 
 
 ```{r iot-sensor-eda-heatmap}
+library(ggcorrplot)
 
+sensor_corr <- round(cor(sensor_df[, -1]), 2)
+ggcorrplot(sensor_corr, hc.order = TRUE, 
+           type = "lower", outline.col = "white", 
+           lab = TRUE)
 ```
 
 ## 산점도 {#iot-sensor-eda-scatterplot}
@@ -147,3 +152,9 @@ sensor_df %>%
 library(GGally)
 ggpairs(sensor_df)
 ```
+
+# 센서 데이터 - 이상점 탐지 {#iot-sensor-outlier}
+
+# 센서 시계열 데이터 {#iot-sensor-timeseries}
+
+# 기계학습 {#iot-sensor-machine-learning}
