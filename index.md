@@ -35,6 +35,7 @@ title: 다양한 데이터 가져오기
         - [동적 웹페이지 - iMac](dynamic-webpage-imac.html)
         - [크롤링 자동화 - Azure/AWS](crawl-automation.html)
     + [GitHub 저장소 - 데이터 사이언스](ingest-github-repo.html)
+    + [텍스트 RSS 피드](ingest-rss.html)
 - 데이터베이스
 - **PDF**
     * [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
