@@ -37,7 +37,7 @@ title: 다양한 데이터 가져오기
     + [GitHub 저장소 - 데이터 사이언스](ingest-github-repo.html)
     + [텍스트 RSS 피드](ingest-rss.html)
 - 데이터베이스
-- **PDF**
+- **[PDF 문서](ds-extract-pdf.html)**
     * [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
     * [PDF 감옥에서 데이터를 탈출시키다.](ds-extract-text-from-pdf-survey.html)
 - **공공데이터**

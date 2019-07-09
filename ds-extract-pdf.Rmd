@@ -1,0 +1,45 @@
+---
+layout: page
+title: 데이터 과학
+subtitle: "PDF 문서"
+author:
+    name: xwMOOC
+    url: https://www.facebook.com/groups/tidyverse/
+    affiliation: Tidyverse Korea
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE,
+                    comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+library(tidyverse)
+```
+
+# PDF 문서 {#pdf-document}
+
+PDF 문서에서 원하는 데이터를 추출하는 방법은 다양한다. 먼저 PDF 파일에서 추출할 수 있는 데이터에 대해서 알아보자. PDF 파일에서 추출할 수 있는 데이터는 크게 4가지 방식으로 나눌 수 있다.
+
+1. PDF 파일에서 텍스트
+1. PDF 이미지에서 텍스트 추출
+1. 테이블 표 추출
+1. 이미지 추출 [^python-pdf]
+
+[^python-pdf]: [stackoverflow, "Extract images from PDF without resampling, in python?"](https://stackoverflow.com/questions/2693820/extract-images-from-pdf-without-resampling-in-python)
+
+<img src="fig/pdf_all_about.png" alt="PDF 데이터 추출" width="100%" />
+
+R 팩키지 [`pdftools`](https://cran.r-project.org/web/packages/pdftools/index.html)를 활용하여 상당부분 작업을 할 수 있지만, 표를 추출할 경우 자바 기반의 `tabulizer` 팩키지, 이미지를 추출할 경우 리눅스 poppler 구성원인 `pdfimages` 도구를 쉘에서 실행시켜 구현한다.
+
+
