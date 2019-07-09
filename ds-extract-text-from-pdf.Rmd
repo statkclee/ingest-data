@@ -28,42 +28,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE,
 library(tidyverse)
 ```
 
-# `.pdf` 파일에서 텍스트 추출 [^tesseract-ocr] [^extract-data-and-text] {#extract-pdf-from-image}
-
-[^tesseract-ocr]: [The new Tesseract package: High Quality OCR in R](https://www.r-bloggers.com/the-new-tesseract-package-high-quality-ocr-in-r/)
-
-[^extract-data-and-text]: [Tools for Extracting Data and Text from PDFs - A Review](http://okfnlabs.org/blog/2016/04/19/pdf-tools-extract-text-and-data-from-pdfs.html)
-
-광학문자인식(OCR) 기술을 통한 텍스트 추출 과정 이해를 바탕으로 
-`.pdf` 파일에서 데이터를 추출하고, `.pdf` 파일에서 추출된 데이터를 정제하는 기법을 살펴본다.
-`.pdf` 파일에서 데이터를 추출하는 작업은 흔한 데이터 랭글링(wrangling, 정제작업)으로 다음 세가지 범주로 설명가능하다.
-
-- `.pdf` 파일에서 텍스트 추출
-- `.pdf` 파일에서 표(Table) 추출
-- `.pdf` 파일에서 텍스트가 아닌 스캔, 이미지 추출
-
-마지막, `.pdf` 파일 혹은 고품질 이미지나 사진에서 텍스트를 추출하는 과정은 
-광학문자인식(Optical character recognition, OCR)과 밀접한 관련이 있다.
-
-## `.pdf` 파일을 텍스트로 변환하는 도구 {#pdf-image-conversion-tool}  
-
-- [PDFMiner](http://www.unixuser.org/~euske/python/pdfminer/)
-- [pdftohtml](http://pdftohtml.sourceforge.net/)
-- [pdftoxml](http://pdftoxml.sourceforge.net/)
-- [docsplit](http://documentcloud.github.io/docsplit/)
-- [pypdf2xml](https://github.com/zejn/pypdf2xml)
-- [pdf2htmlEX](http://coolwanglu.github.io/pdf2htmlEX/)
-- [pdf.js](http://mozilla.github.io/pdf.js/)
-- [Apache Tika](https://tika.apache.org/)
-- [Apache PDFBox](https://pdfbox.apache.org/)
-
-## `.pdf` 파일에서 표를 추출하는 도구 {#pdf-image-conversion-tool-table}  
-
-- [Tabula](http://tabula.technology/)
-- [pdftables](https://github.com/okfn/pdftables)
-- [pdftohtml](http://pdftohtml.sourceforge.net/)
-
-## `OCR` 작업흐름 [^ocr-workflow] {#pdf-image-conversion-tool-workflow}  
+# `OCR` 작업흐름 [^ocr-workflow] {#pdf-image-conversion-tool-workflow}  
 
 [^ocr-workflow]: [Extracting Data from PDFs](http://schoolofdata.org/handbook/courses/extracting-data-from-pdf/)
 
@@ -86,6 +51,44 @@ OCR 엔진은 `.ppm` (픽스맵 파일형식, pixmap format)만 지원하기 때
 - [GNU Ocrad](http://www.gnu.org/software/ocrad/)
 
 
+# `.pdf` 파일에서 텍스트 추출 [^tesseract-ocr] [^extract-data-and-text] {#extract-pdf-from-image}
+
+[^tesseract-ocr]: [The new Tesseract package: High Quality OCR in R](https://www.r-bloggers.com/the-new-tesseract-package-high-quality-ocr-in-r/)
+
+[^extract-data-and-text]: [Tools for Extracting Data and Text from PDFs - A Review](http://okfnlabs.org/blog/2016/04/19/pdf-tools-extract-text-and-data-from-pdfs.html)
+
+광학문자인식(OCR) 기술을 통한 텍스트 추출 과정 이해를 바탕으로 
+`.pdf` 파일에서 데이터를 추출하고, `.pdf` 파일에서 추출된 데이터를 정제하는 기법을 살펴본다.
+`.pdf` 파일에서 데이터를 추출하는 작업은 흔한 데이터 랭글링(wrangling, 정제작업)으로 다음 세가지 범주로 설명가능하다.
+
+- `.pdf` 파일에서 텍스트 추출
+- `.pdf` 파일에서 표(Table) 추출
+- `.pdf` 파일에서 텍스트가 아닌 스캔, 이미지 추출
+
+마지막, `.pdf` 파일 혹은 고품질 이미지나 사진에서 텍스트를 추출하는 과정은 
+광학문자인식(Optical character recognition, OCR)과 밀접한 관련이 있다.
+
+## `.pdf` 파일을 텍스트로 변환하는 도구 {#pdf-image-conversion-tool}  
+
+- [**pdftools**](https://cran.r-project.org/web/packages/pdftools/index.html) - `libpoppler` 기반
+- [PDFMiner](http://www.unixuser.org/~euske/python/pdfminer/)
+- [pdftohtml](http://pdftohtml.sourceforge.net/)
+- [pdftoxml](http://pdftoxml.sourceforge.net/)
+- [docsplit](http://documentcloud.github.io/docsplit/)
+- [pypdf2xml](https://github.com/zejn/pypdf2xml)
+- [pdf2htmlEX](http://coolwanglu.github.io/pdf2htmlEX/)
+- [pdf.js](http://mozilla.github.io/pdf.js/)
+- [Apache Tika](https://tika.apache.org/)
+- [Apache PDFBox](https://pdfbox.apache.org/)
+
+## `.pdf` 파일에서 표를 추출하는 도구 {#pdf-image-conversion-tool-table}  
+
+- [**tabulizer**](https://github.com/ropenscilabs/tabulizer)
+- [Tabula](http://tabula.technology/)
+- [pdftables](https://github.com/okfn/pdftables)
+- [pdftohtml](http://pdftohtml.sourceforge.net/)
+
+
 # `.pdf` 파일로부터 표 추출 작업 [^tabulizer] [^pdftools] {#pdf-image-conversion-tool-work}  
 
 [^tabulizer]: [Bindings for Tabula PDF Table Extractor Library - tabulizer](https://github.com/ropenscilabs/tabulizer)
@@ -94,6 +97,68 @@ OCR 엔진은 `.ppm` (픽스맵 파일형식, pixmap format)만 지원하기 때
 
 `.pdf` 파일로부터 표를 추출하는 경우 [tabulizer](https://github.com/ropenscilabs/tabulizer) 팩키지를 활용하는 것도 가능하다.
 `tabulizer` 팩키지는 [tabula-java](https://github.com/tabulapdf/tabula-java/)를 기반으로 하고 있어, `tabulizerjars` 파일도 함께 설치한다.
+
+## 자바 설치 [^remove-oracle-jdk] {#pdf-java-install}
+
+[^remove-oracle-jdk]: [MacOS에서 오라클 JDK를 삭제하고 OpenJDK 11 설치](https://velog.io/@jsoh/%EC%98%A4%EB%9D%BC%ED%81%B4-JDK%EB%A5%BC-%EC%82%AD%EC%A0%9C%ED%95%98%EA%B3%A0-OpenJDK-11-%EC%84%A4%EC%B9%98)
+
+`tabulizer` 팩키지는 [tabula-java](https://github.com/tabulapdf/tabula-java/)를 기반으로 하고 있어 자바가 꼭 필요하다. 이를 위해서 다양한 JAVA 버젼이 있는데 오라클 자바 대신 `openjdk`를 설치하는 것이 윈도우도 그렇고 맥도 그렇고 정신건강에 좋은 듯 싶다.
+
+먼저, 맥에 오라클 자바가 설치되어 있는 경우 오라클 자바를 제거한다. 자세한 내용은 [How do I uninstall Java on my Mac?](https://www.java.com/en/download/help/mac_uninstall_java.xml)을 참조하면 된다.
+
+```{r remove-oracle-java, eval=FALSE}
+sudo rm -fr /Library/Internet\ Plug-Ins/JavaAppletPlugin.plugin 
+sudo rm -fr /Library/PreferencePanes/JavaControlPanel.prefPane 
+sudo rm -fr ~/Library/Application\ Support/Oracle/Java
+```
+
+다음으로 현재 기준(2019년 7월) `tabulizer`는 자바 11버전이 필요하다. [Java SE 11.0.3 (LTS)](http://jdk.java.net/11/) 버전을 다운로드 받아 설치한다.
+
+맥운영체제를 사용하는 경우 `/usr/libexec/java_home -V` 명령어를 사용해서 설치된 자바 버젼을 확인한다.
+
+```{bash java-home-setting}
+/usr/libexec/java_home -V
+```
+
+더 나아가 사용자 홈디렉토리에서 `.bash_profile`에 `JAVA_HOME`도 설정한다.
+
+> `export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-11.0.3.jdk/Contents/Home"`
+
+## 윈도우즈 `openjdk` 설치 [^openjdk-windows] {#install-openjdk-windows}
+
+[^openjdk-windows]: [stackoverflow, "How to install OpenJDK 11 on Windows?
+"](https://stackoverflow.com/questions/52511778/how-to-install-openjdk-11-on-windows)
+
+윈도우즈에 `openjdk`를 설치하는 방법은 다음과 같다.
+
+1. 윈도우용 `openjdk` 버전 11을 다운로드 받아 압축을 푼다. 압축을 풀어 생성된 `jdk-11.0.3` 버전을 가정하면 동일한 이름의 디렉토리가 생성된다.
+1. `C:\Program Files` 아래 `jdk-11.0.3\` 압축 푼 전체 디렉토리를 복사하여 붙여넣는다.
+    - 탐색기에서 보면 `C:\Program Files\jdk-11.0.3\` 디렉토리가 된다.
+1. 제어판에서 "고급 시스템 설정보기"에서 `환경변수`를 편집한다.    
+    - `Control Pannel` &rarr; `System` &rarr; `Advanced` &rarr; `Environment Variables`
+1. 경로 `Path`에 Java 경로를 넣어준다. 
+    - `C:\Program Files\jdk-11.0.3\bin` 추가
+1. 변수 `JAVA_HOME`을 추가 `C:\Program Files\jdk-11.0.3\`    
+
+## R에서 JAVA_HOME 설정확인 [^rJava-issue] {#pdf-java-install-java-home}
+
+[^rJava-issue]: [rJava fails to load #2254](https://github.com/rstudio/rstudio/issues/2254)
+
+자바가 설치되었다면 자바와 R을 연결시켜 주는 `rJava` 팩키지를 설치한다. 이런 와중에 
+[rJava fails to load #2254](https://github.com/rstudio/rstudio/issues/2254) 오류가 발생하는 경우 다음 명령어르 쉘에서 실행해 준다. 혹은 `rJava` 팩키지 `dyn.load("/Library/Java/JavaVirtualMachines/jdk-11.0.3.jdk/Contents/Home/lib/server/libjsig.dylib")` 명령어가 도움도 될 수 있다.
+
+```{bash java-reconfigure, eval=FALSE}
+sudo R CMD javareconf -n
+```
+
+
+R에서 `JAVA_HOME`이 설정된 것이 확인되어야 `tabulizer` 사용이 가능하다. 이를 위해서 다음 명령어로 설정된 `JAVA_HOME`을 확인한다. 만약 설정이 되지 않았다면 `Sys.setenv()` 함수도 사용한다.
+
+```{r check-java-home} 
+Sys.getenv("JAVA_HOME")
+# Sys.setenv(JAVA_HOME = "/Library/Java/JavaVirtualMachines/jdk-11.0.3.jdk/Contents/Home")
+```
+
 
 `tabulizer` 팩키지를 설치하게 되면, `examples/data.pdf` 파일에 유명한 `mtcars`, `iris` 데이터를 PDF 파일에 표로 출력되어 있다.
 이를 `extract_tables()` 함수를 사용해서 원래 데이터를 복원한다.

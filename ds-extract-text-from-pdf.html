@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2019-01-28" />
+<meta name="date" content="2019-07-09" />
 
 <title>데이터 과학</title>
 
@@ -1279,7 +1279,7 @@ window.initializeCodeFolding = function(show) {
   var currentIndex = 1;
 
   // select all R code blocks
-  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan');
+  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.julia');
   rCodeBlocks.each(function() {
 
     // create a collapsable div to wrap the code in
@@ -1451,9 +1451,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type="text/css">
 .main-container {
@@ -1484,8 +1482,6 @@ summary {
 </style>
 
 
-
-<div class="container-fluid main-container">
 
 <!-- tabsets -->
 
@@ -1652,6 +1648,16 @@ div.tocify {
 
 </style>
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
 <!-- setup 3col/9col grid for toc_float and main content  -->
 <div class="row-fluid">
 <div class="col-xs-12 col-sm-4 col-md-3">
@@ -1677,47 +1683,16 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">데이터 과학</h1>
-<h3 class="subtitle"><em>이미지 PDF 파일 데이터 추출</em></h3>
-<h4 class="author"><em>xwMOOC</em></h4>
+<h3 class="subtitle">이미지 PDF 파일 데이터 추출</h3>
+<h4 class="author">xwMOOC</h4>
 <address class="author_afil">
-Tidyverse Korea<br><h4 class="date"><em>2019-01-28</em></h4>
+Tidyverse Korea<br><h4 class="date">2019-07-09</h4>
 
 </div>
 
 
-<div id="extract-pdf-from-image" class="section level1">
-<h1><span class="header-section-number">1</span> <code>.pdf</code> 파일에서 텍스트 추출 <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> <a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a></h1>
-<p>광학문자인식(OCR) 기술을 통한 텍스트 추출 과정 이해를 바탕으로 <code>.pdf</code> 파일에서 데이터를 추출하고, <code>.pdf</code> 파일에서 추출된 데이터를 정제하는 기법을 살펴본다. <code>.pdf</code> 파일에서 데이터를 추출하는 작업은 흔한 데이터 랭글링(wrangling, 정제작업)으로 다음 세가지 범주로 설명가능하다.</p>
-<ul>
-<li><code>.pdf</code> 파일에서 텍스트 추출</li>
-<li><code>.pdf</code> 파일에서 표(Table) 추출</li>
-<li><code>.pdf</code> 파일에서 텍스트가 아닌 스캔, 이미지 추출</li>
-</ul>
-<p>마지막, <code>.pdf</code> 파일 혹은 고품질 이미지나 사진에서 텍스트를 추출하는 과정은 광학문자인식(Optical character recognition, OCR)과 밀접한 관련이 있다.</p>
-<div id="pdf-image-conversion-tool" class="section level2">
-<h2><span class="header-section-number">1.1</span> <code>.pdf</code> 파일을 텍스트로 변환하는 도구</h2>
-<ul>
-<li><a href="http://www.unixuser.org/~euske/python/pdfminer/">PDFMiner</a></li>
-<li><a href="http://pdftohtml.sourceforge.net/">pdftohtml</a></li>
-<li><a href="http://pdftoxml.sourceforge.net/">pdftoxml</a></li>
-<li><a href="http://documentcloud.github.io/docsplit/">docsplit</a></li>
-<li><a href="https://github.com/zejn/pypdf2xml">pypdf2xml</a></li>
-<li><a href="http://coolwanglu.github.io/pdf2htmlEX/">pdf2htmlEX</a></li>
-<li><a href="http://mozilla.github.io/pdf.js/">pdf.js</a></li>
-<li><a href="https://tika.apache.org/">Apache Tika</a></li>
-<li><a href="https://pdfbox.apache.org/">Apache PDFBox</a></li>
-</ul>
-</div>
-<div id="pdf-image-conversion-tool-table" class="section level2">
-<h2><span class="header-section-number">1.2</span> <code>.pdf</code> 파일에서 표를 추출하는 도구</h2>
-<ul>
-<li><a href="http://tabula.technology/">Tabula</a></li>
-<li><a href="https://github.com/okfn/pdftables">pdftables</a></li>
-<li><a href="http://pdftohtml.sourceforge.net/">pdftohtml</a></li>
-</ul>
-</div>
-<div id="pdf-image-conversion-tool-workflow" class="section level2">
-<h2><span class="header-section-number">1.3</span> <code>OCR</code> 작업흐름 <a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></h2>
+<div id="pdf-image-conversion-tool-workflow" class="section level1">
+<h1><span class="header-section-number">1</span> <code>OCR</code> 작업흐름 <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></h1>
 <p><a href="http://www.datasciencetoolkit.org/">Data Science Toolkit</a>을 통해 원하는 대부분의 경우 데이터를 획득할 수 있다. OCR을 통해 데이터를 추출하는 경우 자동차 조립라인처럼 다양한 프로그래밍 도구를 컨베이어에 태워 흘리는 과정을 거치게 된다.</p>
 <ol style="list-style-type: decimal">
 <li>내용물 정제작업</li>
@@ -1733,41 +1708,122 @@ Tidyverse Korea<br><h4 class="date"><em>2019-01-28</em></h4>
 <li><a href="http://www.gnu.org/software/ocrad/">GNU Ocrad</a></li>
 </ul>
 </div>
+<div id="extract-pdf-from-image" class="section level1">
+<h1><span class="header-section-number">2</span> <code>.pdf</code> 파일에서 텍스트 추출 <a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> <a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a></h1>
+<p>광학문자인식(OCR) 기술을 통한 텍스트 추출 과정 이해를 바탕으로 <code>.pdf</code> 파일에서 데이터를 추출하고, <code>.pdf</code> 파일에서 추출된 데이터를 정제하는 기법을 살펴본다. <code>.pdf</code> 파일에서 데이터를 추출하는 작업은 흔한 데이터 랭글링(wrangling, 정제작업)으로 다음 세가지 범주로 설명가능하다.</p>
+<ul>
+<li><code>.pdf</code> 파일에서 텍스트 추출</li>
+<li><code>.pdf</code> 파일에서 표(Table) 추출</li>
+<li><code>.pdf</code> 파일에서 텍스트가 아닌 스캔, 이미지 추출</li>
+</ul>
+<p>마지막, <code>.pdf</code> 파일 혹은 고품질 이미지나 사진에서 텍스트를 추출하는 과정은 광학문자인식(Optical character recognition, OCR)과 밀접한 관련이 있다.</p>
+<div id="pdf-image-conversion-tool" class="section level2">
+<h2><span class="header-section-number">2.1</span> <code>.pdf</code> 파일을 텍스트로 변환하는 도구</h2>
+<ul>
+<li><a href="https://cran.r-project.org/web/packages/pdftools/index.html"><strong>pdftools</strong></a> - <code>libpoppler</code> 기반</li>
+<li><a href="http://www.unixuser.org/~euske/python/pdfminer/">PDFMiner</a></li>
+<li><a href="http://pdftohtml.sourceforge.net/">pdftohtml</a></li>
+<li><a href="http://pdftoxml.sourceforge.net/">pdftoxml</a></li>
+<li><a href="http://documentcloud.github.io/docsplit/">docsplit</a></li>
+<li><a href="https://github.com/zejn/pypdf2xml">pypdf2xml</a></li>
+<li><a href="http://coolwanglu.github.io/pdf2htmlEX/">pdf2htmlEX</a></li>
+<li><a href="http://mozilla.github.io/pdf.js/">pdf.js</a></li>
+<li><a href="https://tika.apache.org/">Apache Tika</a></li>
+<li><a href="https://pdfbox.apache.org/">Apache PDFBox</a></li>
+</ul>
+</div>
+<div id="pdf-image-conversion-tool-table" class="section level2">
+<h2><span class="header-section-number">2.2</span> <code>.pdf</code> 파일에서 표를 추출하는 도구</h2>
+<ul>
+<li><a href="https://github.com/ropenscilabs/tabulizer"><strong>tabulizer</strong></a></li>
+<li><a href="http://tabula.technology/">Tabula</a></li>
+<li><a href="https://github.com/okfn/pdftables">pdftables</a></li>
+<li><a href="http://pdftohtml.sourceforge.net/">pdftohtml</a></li>
+</ul>
+</div>
 </div>
 <div id="pdf-image-conversion-tool-work" class="section level1">
-<h1><span class="header-section-number">2</span> <code>.pdf</code> 파일로부터 표 추출 작업 <a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> <a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></h1>
+<h1><span class="header-section-number">3</span> <code>.pdf</code> 파일로부터 표 추출 작업 <a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> <a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a></h1>
 <p><code>.pdf</code> 파일로부터 표를 추출하는 경우 <a href="https://github.com/ropenscilabs/tabulizer">tabulizer</a> 팩키지를 활용하는 것도 가능하다. <code>tabulizer</code> 팩키지는 <a href="https://github.com/tabulapdf/tabula-java/">tabula-java</a>를 기반으로 하고 있어, <code>tabulizerjars</code> 파일도 함께 설치한다.</p>
+<div id="pdf-java-install" class="section level2">
+<h2><span class="header-section-number">3.1</span> 자바 설치 <a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a></h2>
+<p><code>tabulizer</code> 팩키지는 <a href="https://github.com/tabulapdf/tabula-java/">tabula-java</a>를 기반으로 하고 있어 자바가 꼭 필요하다. 이를 위해서 다양한 JAVA 버젼이 있는데 오라클 자바 대신 <code>openjdk</code>를 설치하는 것이 윈도우도 그렇고 맥도 그렇고 정신건강에 좋은 듯 싶다.</p>
+<p>먼저, 맥에 오라클 자바가 설치되어 있는 경우 오라클 자바를 제거한다. 자세한 내용은 <a href="https://www.java.com/en/download/help/mac_uninstall_java.xml">How do I uninstall Java on my Mac?</a>을 참조하면 된다.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">sudo rm <span class="op">-</span>fr <span class="op">/</span>Library<span class="op">/</span>Internet\ Plug<span class="op">-</span>Ins<span class="op">/</span>JavaAppletPlugin.plugin </a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">sudo rm <span class="op">-</span>fr <span class="op">/</span>Library<span class="op">/</span>PreferencePanes<span class="op">/</span>JavaControlPanel.prefPane </a>
+<a class="sourceLine" id="cb1-3" data-line-number="3">sudo rm <span class="op">-</span>fr <span class="op">~</span><span class="er">/</span>Library<span class="op">/</span>Application\ Support<span class="op">/</span>Oracle<span class="op">/</span>Java</a></code></pre></div>
+<p>다음으로 현재 기준(2019년 7월) <code>tabulizer</code>는 자바 11버전이 필요하다. <a href="http://jdk.java.net/11/">Java SE 11.0.3 (LTS)</a> 버전을 다운로드 받아 설치한다.</p>
+<p>맥운영체제를 사용하는 경우 <code>/usr/libexec/java_home -V</code> 명령어를 사용해서 설치된 자바 버젼을 확인한다.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="ex">/usr/libexec/java_home</span> -V</a></code></pre></div>
+<pre><code>Matching Java Virtual Machines (1):
+    11.0.3, x86_64: &quot;Java SE 11.0.3&quot;    /Library/Java/JavaVirtualMachines/jdk-11.0.3.jdk/Contents/Home
+
+/Library/Java/JavaVirtualMachines/jdk-11.0.3.jdk/Contents/Home</code></pre>
+<p>더 나아가 사용자 홈디렉토리에서 <code>.bash_profile</code>에 <code>JAVA_HOME</code>도 설정한다.</p>
+<blockquote>
+<p><code>export JAVA_HOME=&quot;/Library/Java/JavaVirtualMachines/jdk-11.0.3.jdk/Contents/Home&quot;</code></p>
+</blockquote>
+</div>
+<div id="install-openjdk-windows" class="section level2">
+<h2><span class="header-section-number">3.2</span> 윈도우즈 <code>openjdk</code> 설치 <a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a></h2>
+<p>윈도우즈에 <code>openjdk</code>를 설치하는 방법은 다음과 같다.</p>
+<ol style="list-style-type: decimal">
+<li>윈도우용 <code>openjdk</code> 버전 11을 다운로드 받아 압축을 푼다. 압축을 풀어 생성된 <code>jdk-11.0.3</code> 버전을 가정하면 동일한 이름의 디렉토리가 생성된다.</li>
+<li><code>C:\Program Files</code> 아래 <code>jdk-11.0.3\</code> 압축 푼 전체 디렉토리를 복사하여 붙여넣는다.
+<ul>
+<li>탐색기에서 보면 <code>C:\Program Files\jdk-11.0.3\</code> 디렉토리가 된다.</li>
+</ul></li>
+<li>제어판에서 “고급 시스템 설정보기”에서 <code>환경변수</code>를 편집한다.
+<ul>
+<li><code>Control Pannel</code> → <code>System</code> → <code>Advanced</code> → <code>Environment Variables</code></li>
+</ul></li>
+<li>경로 <code>Path</code>에 Java 경로를 넣어준다.
+<ul>
+<li><code>C:\Program Files\jdk-11.0.3\bin</code> 추가</li>
+</ul></li>
+<li>변수 <code>JAVA_HOME</code>을 추가 <code>C:\Program Files\jdk-11.0.3\</code></li>
+</ol>
+</div>
+<div id="pdf-java-install-java-home" class="section level2">
+<h2><span class="header-section-number">3.3</span> R에서 JAVA_HOME 설정확인 <a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a></h2>
+<p>자바가 설치되었다면 자바와 R을 연결시켜 주는 <code>rJava</code> 팩키지를 설치한다. 이런 와중에 <a href="https://github.com/rstudio/rstudio/issues/2254">rJava fails to load #2254</a> 오류가 발생하는 경우 다음 명령어르 쉘에서 실행해 준다. 혹은 <code>rJava</code> 팩키지 <code>dyn.load(&quot;/Library/Java/JavaVirtualMachines/jdk-11.0.3.jdk/Contents/Home/lib/server/libjsig.dylib&quot;)</code> 명령어가 도움도 될 수 있다.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="fu">sudo</span> R CMD javareconf -n</a></code></pre></div>
+<p>R에서 <code>JAVA_HOME</code>이 설정된 것이 확인되어야 <code>tabulizer</code> 사용이 가능하다. 이를 위해서 다음 명령어로 설정된 <code>JAVA_HOME</code>을 확인한다. 만약 설정이 되지 않았다면 <code>Sys.setenv()</code> 함수도 사용한다.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">Sys.getenv</span>(<span class="st">&quot;JAVA_HOME&quot;</span>)</a></code></pre></div>
+<pre><code>[1] &quot;&quot;</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="co"># Sys.setenv(JAVA_HOME = &quot;/Library/Java/JavaVirtualMachines/jdk-11.0.3.jdk/Contents/Home&quot;)</span></a></code></pre></div>
 <p><code>tabulizer</code> 팩키지를 설치하게 되면, <code>examples/data.pdf</code> 파일에 유명한 <code>mtcars</code>, <code>iris</code> 데이터를 PDF 파일에 표로 출력되어 있다. 이를 <code>extract_tables()</code> 함수를 사용해서 원래 데이터를 복원한다.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co">#1. 환경설정-------------------------------</span></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb1-3" data-line-number="3"><span class="co">#library(devtools)</span></a>
-<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="co">#install_github(c(&quot;ropenscilabs/tabulizerjars&quot;, &quot;ropenscilabs/tabulizer&quot;), args = &quot;--no-multiarch&quot;)</span></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb1-6" data-line-number="6"><span class="co">#2. 표추출-------------------------------</span></a>
-<a class="sourceLine" id="cb1-7" data-line-number="7"><span class="kw">library</span>(tabulizer)</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8"></a>
-<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co"># 경로 확인</span></a>
-<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="kw">.libPaths</span>()</a></code></pre></div>
-<pre><code>[1] &quot;C:/Program Files/R/R-3.5.1/library&quot;</code></pre>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="co"># &quot;C:/Users/KwangChun/Documents/R/win-library/3.3&quot; 사용자 라이브러리 경로 위치</span></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">f &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">path=</span><span class="st">&quot;examples&quot;</span>, <span class="dt">file=</span><span class="st">&quot;data.pdf&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tabulizer&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"><span class="co">#1. 환경설정-------------------------------</span></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb8-3" data-line-number="3"><span class="co">#library(devtools)</span></a>
+<a class="sourceLine" id="cb8-4" data-line-number="4"><span class="co">#install_github(c(&quot;ropenscilabs/tabulizerjars&quot;, &quot;ropenscilabs/tabulizer&quot;), args = &quot;--no-multiarch&quot;)</span></a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6"><span class="co">#2. 표추출-------------------------------</span></a>
+<a class="sourceLine" id="cb8-7" data-line-number="7"><span class="kw">library</span>(tabulizer)</a>
+<a class="sourceLine" id="cb8-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb8-9" data-line-number="9"><span class="co"># 경로 확인</span></a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"><span class="kw">.libPaths</span>()</a></code></pre></div>
+<pre><code>[1] &quot;/Library/Frameworks/R.framework/Versions/3.5/Resources/library&quot;</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1"><span class="co"># &quot;C:/Users/KwangChun/Documents/R/win-library/3.3&quot; 사용자 라이브러리 경로 위치</span></a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">f &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="dt">path=</span><span class="st">&quot;examples&quot;</span>, <span class="dt">file=</span><span class="st">&quot;data.pdf&quot;</span>, <span class="dt">package =</span> <span class="st">&quot;tabulizer&quot;</span>)</a></code></pre></div>
+</div>
 <div id="pdf-image-conversion-tool-work-iris" class="section level2">
-<h2><span class="header-section-number">2.1</span> <code>iris</code> 데이터 복원</h2>
+<h2><span class="header-section-number">3.4</span> <code>iris</code> 데이터 복원</h2>
 <p><code>examples/data.pdf</code> 파일 2페이지에 <code>iris</code> 데이터가 표형식으로 찍혀있다. 이를 <code>extract_tables(f, pages = 2, method = &quot;data.frame&quot;)</code> 명령어로 추출한다.</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">out1 &lt;-<span class="st"> </span><span class="kw">extract_tables</span>(f)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw">str</span>(out1)</a></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">out1 &lt;-<span class="st"> </span><span class="kw">extract_tables</span>(f)</a>
+<a class="sourceLine" id="cb11-2" data-line-number="2"><span class="kw">str</span>(out1)</a></code></pre></div>
 <pre><code>List of 4
  $ : chr [1:32, 1:10] &quot;mpg&quot; &quot;21.0&quot; &quot;21.0&quot; &quot;22.8&quot; ...
  $ : chr [1:7, 1:5] &quot;Sepal.Length&quot; &quot;5.1&quot; &quot;4.9&quot; &quot;4.7&quot; ...
  $ : chr [1:7, 1:6] &quot;&quot; &quot;145&quot; &quot;146&quot; &quot;147&quot; ...
  $ : chr [1:15, 1] &quot;supp&quot; &quot;VC&quot; &quot;VC&quot; &quot;VC&quot; ...</code></pre>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">iris_ocr &lt;-<span class="st"> </span><span class="kw">extract_tables</span>(f, <span class="dt">pages =</span> <span class="dv">2</span>)</a>
-<a class="sourceLine" id="cb6-2" data-line-number="2"></a>
-<a class="sourceLine" id="cb6-3" data-line-number="3"><span class="co"># 3. 데이터프레임 변환--------------------------</span></a>
-<a class="sourceLine" id="cb6-4" data-line-number="4"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb6-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb6-6" data-line-number="6">iris_ocr[[<span class="dv">1</span>]] <span class="op">%&gt;%</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb6-7" data-line-number="7"><span class="st">  </span><span class="kw">as.data.frame</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">iris_ocr &lt;-<span class="st"> </span><span class="kw">extract_tables</span>(f, <span class="dt">pages =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb13-3" data-line-number="3"><span class="co"># 3. 데이터프레임 변환--------------------------</span></a>
+<a class="sourceLine" id="cb13-4" data-line-number="4"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb13-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb13-6" data-line-number="6">iris_ocr[[<span class="dv">1</span>]] <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb13-7" data-line-number="7"><span class="st">  </span><span class="kw">as.data.frame</span>()</a></code></pre></div>
 <pre><code>            V1          V2           V3          V4      V5
 1 Sepal.Length Sepal.Width Petal.Length Petal.Width Species
 2          5.1         3.5          1.4         0.2  setosa
@@ -1781,11 +1837,14 @@ Tidyverse Korea<br><h4 class="date"><em>2019-01-28</em></h4>
 <div class="footnotes">
 <hr />
 <ol>
-<li id="fn1"><p><a href="https://www.r-bloggers.com/the-new-tesseract-package-high-quality-ocr-in-r/">The new Tesseract package: High Quality OCR in R</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
-<li id="fn2"><p><a href="http://okfnlabs.org/blog/2016/04/19/pdf-tools-extract-text-and-data-from-pdfs.html">Tools for Extracting Data and Text from PDFs - A Review</a><a href="#fnref2" class="footnote-back">↩</a></p></li>
-<li id="fn3"><p><a href="http://schoolofdata.org/handbook/courses/extracting-data-from-pdf/">Extracting Data from PDFs</a><a href="#fnref3" class="footnote-back">↩</a></p></li>
+<li id="fn1"><p><a href="http://schoolofdata.org/handbook/courses/extracting-data-from-pdf/">Extracting Data from PDFs</a><a href="#fnref1" class="footnote-back">↩</a></p></li>
+<li id="fn2"><p><a href="https://www.r-bloggers.com/the-new-tesseract-package-high-quality-ocr-in-r/">The new Tesseract package: High Quality OCR in R</a><a href="#fnref2" class="footnote-back">↩</a></p></li>
+<li id="fn3"><p><a href="http://okfnlabs.org/blog/2016/04/19/pdf-tools-extract-text-and-data-from-pdfs.html">Tools for Extracting Data and Text from PDFs - A Review</a><a href="#fnref3" class="footnote-back">↩</a></p></li>
 <li id="fn4"><p><a href="https://github.com/ropenscilabs/tabulizer">Bindings for Tabula PDF Table Extractor Library - tabulizer</a><a href="#fnref4" class="footnote-back">↩</a></p></li>
 <li id="fn5"><p><a href="https://github.com/ropensci/pdftools">Extract Text and Data from PDF Documents - pdftools</a><a href="#fnref5" class="footnote-back">↩</a></p></li>
+<li id="fn6"><p><a href="https://velog.io/@jsoh/%EC%98%A4%EB%9D%BC%ED%81%B4-JDK%EB%A5%BC-%EC%82%AD%EC%A0%9C%ED%95%98%EA%B3%A0-OpenJDK-11-%EC%84%A4%EC%B9%98">MacOS에서 오라클 JDK를 삭제하고 OpenJDK 11 설치</a><a href="#fnref6" class="footnote-back">↩</a></p></li>
+<li id="fn7"><p><a href="https://stackoverflow.com/questions/52511778/how-to-install-openjdk-11-on-windows">stackoverflow, “How to install OpenJDK 11 on Windows?”</a><a href="#fnref7" class="footnote-back">↩</a></p></li>
+<li id="fn8"><p><a href="https://github.com/rstudio/rstudio/issues/2254">rJava fails to load #2254</a><a href="#fnref8" class="footnote-back">↩</a></p></li>
 </ol>
 </div>
 
