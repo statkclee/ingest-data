@@ -36,16 +36,17 @@ title: 다양한 데이터 가져오기
         - [크롤링 자동화 - Azure/AWS](crawl-automation.html)
     + [GitHub 저장소 - 데이터 사이언스](ingest-github-repo.html)
     + [텍스트 RSS 피드](ingest-rss.html)
-- 데이터베이스
+    + 연관검색어
+        + [네이버](http://statkclee.github.io/politics/naver-related-search.html)
+        + [다음](daum-related-search.html)
+        + [구글 제안(Google Suggest)](google-suggest.html)
+    - **공공데이터**
+        - [선관위 지방선거(2018) - POST, 로컬, 도커](election-post-docker.html)
+- 데이터베이스 (SQL)
 - **[PDF 문서](ds-extract-pdf.html)**
-    * [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
-    * [PDF 감옥에서 데이터를 탈출시키다.](ds-extract-text-from-pdf-survey.html)
-- **공공데이터**
-    - [선관위 지방선거(2018) - POST, 로컬, 도커](election-post-docker.html)
-- 연관검색어
-    + [네이버](http://statkclee.github.io/politics/naver-related-search.html)
-    + [다음](daum-related-search.html)
-    + [구글 제안(Google Suggest)](google-suggest.html)
+    - [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
+    - [PDF 감옥에서 데이터를 탈출시키다.](ds-extract-text-from-pdf-survey.html)
+- [문서(`tika`)](ingest-tika.html)
 - 소프트웨어 카펜트리
     + [파이썬 - 웹에 있는 데이터 작업](http://statkclee.github.io/web-data-python/)
         * [데이터 입수](http://statkclee.github.io/web-data-python/01-getdata.html)
