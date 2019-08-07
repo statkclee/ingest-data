@@ -15,10 +15,6 @@ title: 다양한 데이터 가져오기
 ## 학습목차 
 
 - [데이터 가져오기 개요](ingest-data.html)
-- 로컬 컴퓨터
-    - **[문자인식(OCR) - `tesseract`](ingest-ocr.html)**
-- [사물인터넷(IoT) - `mqtt`](ingest-mqtt.html)
-    - [IoT 센서 - JSON](ingest-iot-json.html)
 - 웹(Web)
     + **[웹 데이터](https://statkclee.github.io/data-science/ds-webdata.html)**
         - [웹 스크래핑(Web Scraping)](https://statkclee.github.io/data-science/data-scraping.html)
@@ -46,7 +42,11 @@ title: 다양한 데이터 가져오기
 - **[PDF 문서](ds-extract-pdf.html)**
     - [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
     - [PDF 감옥에서 데이터를 탈출시키다.](ds-extract-text-from-pdf-survey.html)
+    - **[문자인식(OCR) - `tesseract`](ingest-ocr.html)**
 - [문서(`tika`)](ingest-tika.html)
+    - [CV 제작](create-cv.html)
+- [사물인터넷(IoT) - `mqtt`](ingest-mqtt.html)
+    - [IoT 센서 - JSON](ingest-iot-json.html)
 - 소프트웨어 카펜트리
     + [파이썬 - 웹에 있는 데이터 작업](http://statkclee.github.io/web-data-python/)
         * [데이터 입수](http://statkclee.github.io/web-data-python/01-getdata.html)
