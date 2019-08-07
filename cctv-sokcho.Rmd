@@ -1,0 +1,67 @@
+---
+layout: page
+title: 데이터 가져오기 - 공공데이터
+subtitle: "속초시 CCTV"
+author:
+    name: xwMOOC
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+library(tidyverse)
+library(reticulate)
+use_condaenv("anaconda3")
+# reticulate::repl_python()
+```
+
+
+# 공공데이터 포털 - 속초시 CCTV {#cctv-sokcho}
+
+공공데이터 포털 웹사이트에서 "강원도 속초시_CCTV" &rarr; "관내 설치 운영중인 CCTV 설치 정보 제공"을 참조하여 CCTV 설치 위치에 관한 데이터를 가져온다.
+
+```{r cctv-data}
+library(tidyverse)
+library(here)
+
+download.file(url="https://www.data.go.kr/dataset/fileDownload.do?atchFileId=FILE_000000001473179&fileDetailSn=1&publicDataDetailPk=uddi:51ad73cc-16a8-4539-bad1-e49044ac2ed3_201809131535", destfile = "data/sokcho-cctv.csv")
+
+cctv_df <- read.csv(here("data", "sokcho-cctv.csv"), encoding="cp949") %>% 
+  tbl_df
+
+cctv_df %>% 
+  DT::datatable()
+```
+
+
+# 속초시 CCTV 위치 시각화 {#cctv-sokcho-viz}
+
+`leaflet` 팩키지를 사용해서 CCTV 설치위치를 시각화한다.
+
+```{r cctv-leaflet}
+## 마커 시각화
+library(leaflet)
+
+cctv_df %>% 
+  leaflet() %>%
+    addTiles() %>% 
+    addProviderTiles(providers$OpenStreetMap) %>% 
+    addMarkers(lng=~경도, lat=~위도, clusterOptions = markerClusterOptions(),
+               popup = ~ as.character(paste0("<strong>", paste0("CCTV 설치 목적: ", `설치목적구분`), "</strong><br>",
+                                             "-----------------------------------------------------------<br>",
+                                             "&middot; 카메라 대수: ", `카메라대수`, "<br>",
+                                             "&middot; 카메라화소수: ", `카메라화소수`, "<br>",
+                                             "&middot; 촬영방면정보: ", `촬영방면정보`, "<br>",
+                                             "&middot; 보관일수: ", `보관일수`, "<br>")))
+```
