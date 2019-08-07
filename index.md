@@ -38,6 +38,7 @@ title: 다양한 데이터 가져오기
         + [구글 제안(Google Suggest)](google-suggest.html)
     - **공공데이터**
         - [선관위 지방선거(2018) - POST, 로컬, 도커](election-post-docker.html)
+        - [속초시 CCTV](cctv-sokcho.html)
 - 데이터베이스 (SQL)
 - **[PDF 문서](ds-extract-pdf.html)**
     - [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
