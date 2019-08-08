@@ -1,0 +1,311 @@
+---
+layout: page
+title: 데이터 가져오기 - 소셜(SNS)
+subtitle: "트위터(twitter)"
+author:
+    name: xwMOOC
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+library(tidyverse)
+library(reticulate)
+use_condaenv("anaconda3")
+# reticulate::repl_python()
+
+theme_set(theme_minimal(base_family = "AppleGothic"))
+```
+
+
+# 트위터 서비스 {#twitter-intro}
+
+"트윗(tweet)"이란 말은 작은 새가 지저귀는 소리를 나타내는 영어 낱말로, 
+[트위터(영어: Twitter)](https://www.twitter.com/)는 **소셜 네트워크 서비스(SNS)**이자 **마이크로블로그** 서비스로 볼 수 있다.
+
+단문 메시지 서비스(SMS), 인스턴트 메신저, 전자 우편(e-mail) 등을 통해 "트윗(tweet)"를 전송할 수 있고, 글 한 편에 해당하는 단위는 트윗으로 140자가 한도가 된다. 
+한글이든 영문이든, 공백과 기호를 포함해 한 번에 140 까지 글자를 올릴 수 있다.
+최근 [Donald J. Trump](https://twitter.com/realdonaldtrump) 대통령이 트워터를 적극적으로 정치에 활용하면서 다시 관심을 받고 있는 서비스이기도 하다.
+
+## 트위터 계정 설정 [^medium-setup] {#twitter-handphone}
+
+[^medium-setup]: [Accessing Data from Twitter API using R (part1)](https://medium.com/@GalarnykMichael/accessing-data-from-twitter-api-using-r-part1-b387a1c7d3e)
+
+텍스트 문자 데이터를 R로 받아오기 위해서는 먼저 트위터 계정을 생성하고 핸드폰 번호를 등록하고 인증과정을 거쳐야 된다.
+
+`Settings` &rarr; `Mobile` 로 들어가서 핸드폰 번호 인증을 받는다.
+
+인증된 핸드폰 번호가 있어야 [트위터 개발자 페이지](https://dev.twitter.com/)에서 앱개발에 대한 키값을 받을 수 있다. 
+
+## 트위터 개발자 페이지 {#twitter-developer-page}
+
+[https://apps.twitter.com/](https://apps.twitter.com/) 웹페이지에 트위터 앱을 등록하면 트위터 API를 통해 다양한 데이터를 받을 수 있다.
+
+<iframe width="300" height="180" src="https://www.youtube.com/embed/M_PnapGrpNI" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+트위터 계정을 생성하고, 핸드폰 인증을 마친 뒤에 [트위터 개발자 페이지](https://dev.twitter.com/)에서 **TOOLS** 메뉴를 찾아 
+[Manage Your Apps](https://apps.twitter.com/)로 들어간다. 이유는 트위터 데이터를 통해 부가적인 가치를 창출하는 응용프로그램을 개발해야 되기 때문이다.
+
+1. **Create New App** 을 클릭하여 신규 응용프로그램을 개발한다.
+    * 굳이 응용프로그램 개발하는 경우가 아니고, 향후 응용프로그램을 개발하는 것을 대비해서 기본적인 정보를 적어 놓는다. 
+    * 모든 정보를 다 넣을 필요는 없다. `Name`, `Description`, `Website`는 필수 값으로 기재를 하고, `Website`는 정확한 주소 정보가 아니더라도 상관없다.
+1. **Create your Twitter application** 을 클릭하면 트위터 응용프로그램이 생성된다.
+    * 핸드폰 번호를 등록하지 않는 경우 다음으로 넘어가지 않아서 상기 "트위터 계정과 핸드폰 번호 등록"을 통해 필히 핸드폰을 등록한다.
+
+## 키값과 접속 토큰 {#twitter-token}
+
+응용프로그램이 생성되었으면 다음으로 남은 단계는 **고객 키(Consumer Key)** 와 **비밀번호(Consumer Secret)** 와 더불어 **접속 토큰(Access Token)** 과
+**접속 토큰 비밀번호(Access Secret)** 를 확인한다. 만약 의심스러운 경우 지체없이 `Regenerate` 버튼을 눌러 재생성한다.
+
+* consumer_key   
+* consumer_secret
+* access_token   
+* access_secret  
+
+# `twitteR`, `rtweet` 팩키지 {#twitter-package}
+
+## `twitteR` {#twitter-package-twitteR}
+
+오랜기간동안 트위터가 서비스 되었고, R을 활용한 데이터 분석이 인기를 끌어 쉽게 텍스트 문자정보를 긁어와서 분석을 수월하게 진행할 수 있다.
+`twitteR`과 `ROAuth` 팩키지를 설치하고 트위터 개발자 페이지, 앱 개발 페이지에서 수집한 고객키값과 접속토큰값을 `twitterOAuth.R` 파일에
+저장한다. 
+
+그리고, `source` 명령어로 파일을 불러와서 메모리에 올리고 `setup_twitter_oauth` 명령어를 통해 트위터 인증을 한다.
+
+`searchTwitter` 명령어로 검색어를 넣고 **@HQ_sohn** 넣고, 한글로 언어를 설정하고, `lang='ko'`, 긁어올 트윗 갯수를 `n=100`으로 지정한다.
+긁어온 데이터는 리스트 정보라 이를 `twListToDF` 명령어를 통해 데이터프레임으로 변환한다.
+
+`head(hq_tweets_df$text)` 명령어를 통해 트위터를 잘 긁어왔는지 확인한다.
+
+
+``` {r ml-text-twitter-import, eval= FALSE}
+library(twitteR)
+library(ROAuth)
+
+# twitterOAuth.R 파일에 담겨있는 정보: source("twitterOAuth.R")
+# 혹은, usethis::edit_r_profile()
+# '/Users/사용자계정/.Rprofile'
+# 
+# consumer_key    <- "..............."
+# consumer_secret <- "..............."
+# access_token    <- "..............."
+# access_secret   <- "..............."
+
+setup_twitter_oauth(consumer_key, consumer_secret, access_token, access_secret)
+
+hq_tweets <- searchTwitter("@HQ_sohn", lang='ko', n=100)
+hq_tweets_df <- twListToDF(hq_tweets)
+head(hq_tweets_df$text)
+```
+
+## `rtweet` 팩키지 {#twitter-package-rtweet}
+
+`rtweet` 팩키지를 설치하고 나서, 토큰을 설정하여 트위터 API를 사용하는데 인증을 받아야 한다.
+이를 위해서 [Obtaining and using access tokens, rtweet: Collecting Twitter Data](https://cran.r-project.org/web/packages/rtweet/vignettes/auth.html)을 참조하여 설정한다.
+
+`create_token()` 함수의 `app`, `consumer_key`, `consumer_secret` 인자를 설정한다.
+그리고 토큰을 로컬 파일로 저장하여 다음번에 노출없이 사용한다.
+
+```{r rtweet-install, eval=TRUE}
+# 0. 환경설정 -----
+# library(botrnot) # devtools::install_github("mkearney/botrnot")
+library(rtweet)  # devtools::install_github("mkearney/rtweet")
+library(tidyverse)
+library(extrafont)
+loadfonts()
+library(lubridate)
+
+# 0.1. 토큰 설정 -----
+twitter_token <- create_token(
+  app = app_name,
+  consumer_key = consumer_key,
+  consumer_secret = consumer_secret,
+  access_token = access_token,
+  access_secret = access_secret
+)
+
+# 0.2. 토큰 저장 -----
+twitter_token %>% write_rds("twitter_token.rds")
+```
+
+# 서울시장 후보 트위터 {#twitter-seoul}
+
+트위터가 페이스북에 밀려 최근에는 대중적이지 않지만, 그래도 트럼프의 힘으로 뉴스에 노출빈도가 높아지고 있으며 꾸준히 SNS의 주된 용도로 사용하는 정치인도 많다.
+현재까지 서울시장 경선에 선언을 했거나 출마가 예정된 정치인에 대한 트위터 분석을 수행해보자.
+
+- 서울시장 출마후보 트위터 계정
+    - "안철수": <https://twitter.com/cheolsoo0919>
+    - "박원순": <https://twitter.com/wonsoonpark>
+    - "우상호": <https://twitter.com/woosangho2>
+    - "박영선": <https://twitter.com/Park_Youngsun>
+    - "김문수": <https://twitter.com/kimmoonsoo1>
+
+## 트위터 중요지표 {#twitter-seoul-index}
+
+트위터에서 중요하게 생각하는 지표는 다음과 같다. 
+트위터 상단에 Tweets, Following, Followers, Likes... 순으로 배치되어 있다.
+
+- 트위터 중요 지표
+    - **Followers**: 팔로워수
+    - **Following**: 친구수
+    - **Tweets**: 트윗수
+    - **Likes**: 좋아요수
+
+```{r seoul-twitter}
+# 1. 데이터 가져오기 -----
+candid_name_df <- tribble(
+  ~이름, ~screen_name,
+  "안철수", "cheolsoo0919",
+  "박원순", "wonsoonpark",
+  "우상호", "woosangho2",
+  "박영선", "Park_Youngsun",
+  "김문수", "kimmoonsoo1"
+)
+
+candid_v <- c("wonsoonpark", "cheolsoo0919", "woosangho2", "Park_Youngsun", "kimmoonsoo1")
+
+candid_tl_df <- get_timelines(candid_v, n = 100)
+
+# 2. 탐색적 데이터 분석 -----
+## 2.1. 서울시장 후보자 현황 -----
+candid_user_df <- lookup_users(candid_v)
+
+candid_info_df <- candid_user_df %>%  
+  select(name, followers_count, friends_count, statuses_count, favourites_count, screen_name) %>% 
+  gather(type, value, -name, -screen_name)
+
+### 시각화
+ggplot(data = candid_info_df, 
+       aes(x = reorder(name, value), y = value,fill = type, colour = type)) +
+  geom_col() +
+  facet_wrap(~type, scales = "free") + 
+  theme_minimal(base_family = "AppleGothic") + 
+  theme(
+    legend.position = "none",
+    strip.background = element_blank(),
+    strip.text = element_text(size = 15, face="bold", colour = "black"),
+    title = element_blank(),
+    axis.text.x = element_blank()
+  ) + 
+  coord_flip() +
+  geom_text(aes(y = value, label = scales::comma(value)), colour = "black", hjust = "inward")
+```
+
+## 트윗을 보내는 방법/기계 {#twitter-seoul-device}
+
+트윗을 보내는 방법을 분석하면 각 후보마다 트위터를 활용하는 방법/기계에 대한 내용도 파악이 가능하다.
+
+- 서울시장 출마후보 트윗방법
+    - "안철수": 트위터 웹클라이언트(PC 웹)
+    - "박원순": 아이폰 + 기타
+    - "우상호": 트위터 웹클라이언트(PC 웹) + TweetDeck
+    - "박영선": 트위터 웹클라이언트(PC 웹) + 아이폰 + 안드로이드폰
+    - "김문수": 페이스북 + 안드로이드
+
+```{r twitter-seoul-device}
+candid_dev_df <- get_timelines(candid_v, n = 1000)
+
+candid_dev_df <- left_join(candid_dev_df, candid_name_df)
+
+candid_dev_df %>% 
+  count(이름, source) %>% 
+  ggplot(aes(x = reorder(source, n), y = n)) + 
+  geom_col(fill = "#00B6B4") +
+  theme_minimal(base_family = "AppleGothic") + 
+  theme(
+    plot.title = element_text(size=20, face="bold"),
+    strip.background = element_blank(),
+    strip.text = element_text(size = 15, face="bold", colour = "black"),
+    axis.text.x = element_blank()
+  ) + 
+  labs(
+    x = NULL,
+    y = NULL,
+    title = "트윗을 날리는 방법/장치"
+  ) + 
+  coord_flip() + 
+  geom_text(aes(y = n, label = n), hjust = "inward") +
+  facet_wrap(~이름)
+```
+
+## 트위터 인기도 {#twitter-seoul-retweet-favourite}
+
+트위터의 인기도를 측정하는 방법중의 하나가 리트윗횟수(retweet)와 좋아요(favourite) 갯수로 추정하는 것이다. 
+
+```{r twitter-seoul-retweet-favourite}
+candid_like_df <- left_join(candid_dev_df, candid_name_df)
+
+candid_like_df %>% 
+  group_by(이름) %>% 
+  summarise(리트윗_합계 = sum(retweet_count), 좋아요_합계 = sum(favorite_count),
+            리트윗_평균 = mean(retweet_count), 좋아요_평균 = mean(favorite_count)) %>% 
+  gather(type, value, -이름) %>% 
+  ggplot(aes(x = reorder(이름, value), y = value, fill = type)) +
+  geom_col() + 
+  labs(
+    x = NULL,
+    y = NULL,
+    title= "리트윗/좋아요 합계와 평균",
+    subtitle="리트윗(Retweet), 좋아요(Favourite)"
+  ) + 
+  coord_flip() + 
+  facet_wrap(~type, scales = "free") + 
+  theme_minimal(base_family = "AppleGothic") +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(size=20, face="bold"),
+    strip.background = element_blank(),
+    strip.text = element_text(size = 15, face="bold", colour = "black")
+  ) +
+  scale_y_continuous(labels = scales::comma)
+
+```
+
+## 트윗 좋아요 추세 {#twitter-seoul-trend}
+
+주요 서울시장 후보 트윗 좋아요 추세를 보면, 박원순 서울시장 "2017-12-13" 방탄소년단 트윗에 대한 효과가 눈에 띄네요.
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="ko" dir="ltr">방탄소년단이 부른 서울 홍보송은 역시 대단했습니다. 그 유명한 빌보드에도 소개됐다고 하네요. 그래서 오늘은 여러분들께 뮤직비디오를 최초 공개합니다. <br><br>영상이 궁금하신 분들은 서울시 관광청 유튜브 계정(<a href="https://t.co/QQaMqNrDHG">https://t.co/QQaMqNrDHG</a>)에서 보실 수 있답니다. <a href="https://twitter.com/hashtag/BTS?src=hash&amp;ref_src=twsrc%5Etfw">#BTS</a> <a href="https://twitter.com/hashtag/%EB%B0%A9%ED%83%84%EC%86%8C%EB%85%84%EB%8B%A8?src=hash&amp;ref_src=twsrc%5Etfw">#방탄소년단</a> <a href="https://twitter.com/hashtag/WithSeoul?src=hash&amp;ref_src=twsrc%5Etfw">#WithSeoul</a> <a href="https://t.co/Imt75h5L4a">pic.twitter.com/Imt75h5L4a</a></p>&mdash; 박원순 (@wonsoonpark) <a href="https://twitter.com/wonsoonpark/status/940841945227845632?ref_src=twsrc%5Etfw">December 13, 2017</a></blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+```{r twitter-seoul-trend}
+candid_trend_df <- candid_dev_df %>% 
+  mutate(year_month = rollback(created_at, roll_to_first = TRUE, preserve_hms = FALSE)) %>%
+  group_by(name, year_month) %>% 
+  summarise(fav_mean = mean(favorite_count), rt_mean  = mean(retweet_count))
+
+candid_trend_df %>% 
+  select(name, year_month, fav_mean, rt_mean) %>% 
+  gather(type, value, -name, -year_month) %>% 
+  ggplot(aes(x = year_month, y = value, colour = name))  + 
+  geom_line() +
+  facet_wrap(~type, scales = "free", nrow = 2) + 
+  labs(
+    x = NULL,
+    y = NULL,
+    title = "주요 서울시장 후보 트윗 좋아요 추세"
+  ) +
+  theme_minimal(base_family = "AppleGothic") +
+  facet_wrap(~name, scales="free") +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(size=20, face="bold"),
+    strip.background = element_blank(),
+    strip.text = element_text(size = 15, face="bold", colour = "black")
+  ) +
+  scale_x_datetime(date_labels = "%y-%m") +
+  scale_y_continuous(labels = scales::comma)
+```
+

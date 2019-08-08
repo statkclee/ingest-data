@@ -56,6 +56,13 @@ title: 다양한 데이터 가져오기
         * [시각화](http://statkclee.github.io/web-data-python/04-visualize.html)
         * [데이터 게시](http://statkclee.github.io/web-data-python/05-makedata.html)
         * [데이터를 찾을 수 있게 만들기](http://statkclee.github.io/web-data-python/06-findable.html)
+- **소셜(SNS)**
+    + [페이스북(Facebook)](ingest-facebook.html)
+    + [트위터(Twitter)](ingest-twitter.html)
+    + [인스타그램(Instagram)](ingest-instagram.html)
+    + [유튜브(Youtube)](ingest-youtube.html)
+    + [네이버, 다음 뉴스](ingest-news.html)
+
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)
 
