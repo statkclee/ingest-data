@@ -44,6 +44,7 @@ title: 다양한 데이터 가져오기
     - [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
     - [PDF 감옥에서 데이터를 탈출시키다.](ds-extract-text-from-pdf-survey.html)
     - **[문자인식(OCR) - `tesseract`](ingest-ocr.html)**
+    - [PPT 장표 - OCR `tesseract`](ingest-ocr-ppt.html)
 - [문서(`tika`)](ingest-tika.html)
     - [CV 제작](create-cv.html)
 - [사물인터넷(IoT) - `mqtt`](ingest-mqtt.html)
