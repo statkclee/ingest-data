@@ -91,6 +91,8 @@ jangpyo_img
 
 ## 추출한 데이터 {#raw-data-extract-text-dt}
 
+`image_draw()` 함수를 사용해서 실제 특정 지역을 특정하고 OCR로 이미지를 추출한 영역을 시각화하여 확인한다.
+
 ```{r raw-data-extract-text-DT-viz}
 
 ppt_box <- image_draw(jangpyo_img) 
@@ -104,6 +106,8 @@ ppt_box
 ```
 
 ## 추출한 데이터 {#raw-data-extract-text-dt-DT}
+
+추출한 데이터를 데이터프레임으로 정리하여 후속 작업을 준비한다.
 
 ```{r raw-data-extract-text-DT}
 ppt_df <- tibble(
