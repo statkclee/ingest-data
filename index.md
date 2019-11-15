@@ -15,7 +15,16 @@ title: 다양한 데이터 가져오기
 ## 학습목차 
 
 - [데이터 가져오기 개요](ingest-data.html)
-- 웹(Web)
+- **로컬 파일**
+    - [`fs` 로컬파일](ingest-data-fs.html)
+    - **[PDF 문서](ds-extract-pdf.html)**
+        - [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
+        - [PDF 감옥에서 데이터를 탈출시키다.](ds-extract-text-from-pdf-survey.html)
+        - **[문자인식(OCR) - `tesseract`](ingest-ocr.html)**
+        - [PPT 장표 - OCR `tesseract`](ingest-ocr-ppt.html)
+    - [문서(`tika`)](ingest-tika.html)
+        - [CV 제작](create-cv.html)
+- **웹(Web)**
     + **[웹 데이터](https://statkclee.github.io/data-science/ds-webdata.html)**
         - [웹 스크래핑(Web Scraping)](https://statkclee.github.io/data-science/data-scraping.html)
         - [R 팬텀JS (phantomJS) - 방송3사 시청률 경쟁 그리고 JTBC 손석희 앵커](https://statkclee.github.io/data-science/ds-phantomJS.html)
@@ -39,14 +48,7 @@ title: 다양한 데이터 가져오기
     - **공공데이터**
         - [선관위 지방선거(2018) - POST, 로컬, 도커](election-post-docker.html)
         - [속초시 CCTV](cctv-sokcho.html)
-- 데이터베이스 (SQL)
-- **[PDF 문서](ds-extract-pdf.html)**
-    - [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
-    - [PDF 감옥에서 데이터를 탈출시키다.](ds-extract-text-from-pdf-survey.html)
-    - **[문자인식(OCR) - `tesseract`](ingest-ocr.html)**
-    - [PPT 장표 - OCR `tesseract`](ingest-ocr-ppt.html)
-- [문서(`tika`)](ingest-tika.html)
-    - [CV 제작](create-cv.html)
+- [데이터베이스 (SQL)](https://statkclee.github.io/data-science/) &larr; **관계형 데이터베이스(RDBMS)**
 - [사물인터넷(IoT) - `mqtt`](ingest-mqtt.html)
     - [IoT 센서 - JSON](ingest-iot-json.html)
 - 소프트웨어 카펜트리
