@@ -26,9 +26,127 @@ use_condaenv("anaconda3")
 # reticulate::repl_python()
 ```
 
+![`fs` 파일시스템](fig/file_system_fs.png){#id .class width="100%"}
 
-# `fs` 팩키지 [^fs-ingestion] {#data-ingestion-novia}
+# `fs` 팩키지 [^fs-ingestion] [^fs-libuv] {#data-ingestion-novia}
 
 [^fs-ingestion]: [DATA NOVIA (2019-01-25), "HOW TO EASILY MANIPULATE FILES AND DIRECTORIES IN R"](https://www.datanovia.com/en/blog/how-to-easily-manipulate-files-and-directories-in-r/)
 
+[^fs-libuv]: [`fs`: Provide cross platform file operations based on `libuv`](https://github.com/r-lib/fs)
 
+데이터 과학을 통해 데이터를 다루는 가장 많은 경우가 파일시스템에서 데이터를 끌어올려 작업하는 것을 들 수 있다. 이를 위해서 `fs` 팩키지가 개발되어 많은 기쁨을 개발자에게 주고 있다.
+
+## `fs` 팩키지 설치 {#data-fs-install}
+
+설치과정은 단순하다.
+
+```{r fs-install, eval = FALSE}
+# CRAN 설치
+install.packages("fs")
+
+# Github 설치
+# install.packages("devtools")
+devtools::install_github("r-lib/fs")
+```
+
+# 기본 문법 {#fs-basic-usage}
+
+파일 시스템을 다루게 될 때 가장 기본이 되는 `path_`, `file_`, `dir_`, `link_`에 대해서 살펴보자.
+
+- `path_`: 경로(path)를 생성하고 다룸.
+- `file_`: 파일에 대한 작업에 사용
+- `dir_`: 디렉토리 작업에 사용
+- `link_`: 링크 작업에 사용.
+
+## 파일 처리할 때: `file_` {#fs-basic-file}
+
+파일 시스템의 기본이 되는 파일, 디렉토리, 링크 등을 CRUD할 때 다음 동사를 사용한다.
+
+- `file_copy()`, `dir_copy()`, `link_copy()`: 파일, 디렉토리, 링크 **복사(copy)**할 때 사용
+- `file_create()`, `dir_create()`, `link_create()`: 파일, 디렉토리, 링크 **생성(create)**할 때 사용
+- `file_delete()`, `dir_delete()`, `link_delete()`: 파일, 디렉토리, 링크 **삭제(delete)**할 때 사용
+- `file_access()`, `file_exists()`, `dir_exists()`, `link_exists()`: 접근 권한이 파일에 있는지와 파일, 디렉토리, 링크 **존재(exist)**하는지 확인할 때 사용
+- `file_chmod()`: 파일 권한 변경
+- `file_chown()`: 파일 소유권 혹은 그룹 소유 변경시 사용
+- `file_info()`: 파일에 붙은 메타정보(metadata) 추출시 사용
+- `file_move()`: 파일명 변경 혹은 이동에 사용.
+
+## 경로 처리할 때: `path_` {#fs-basic-path}
+
+파일 시스템을 구성하는 또다른 중요한 요소인 경로(path)를 다양한 방법으로 활용할 때 사용되는 동사는 다음과 같다.
+
+- `path()`, `path_wd()`: 파일 혹은 디렉토리에 경로 생성시킬 때 사용
+- `file_temp()`, `path_temp()`: 임시 파일에 대한 명칭을 생성시킬 때 사용
+- `path_expand()`, `path_expand_r()`, `path_home()`, `path_home_r()`: 사용자 홈(Home) 디렉토리 검색 시 사용.
+- `path_file()`, `path_dir()`, `path_ext()`, `path_ext_remove()`, `path_ext_set()`: 파일경로 처리할 때 사용
+- `path_filter()`: 경로명 필터링할 때 사용
+- `path_real()`, `path_split()`, `path_join()`, `path_abs()`, `path_norm()`, `path_rel()`, `path_common()`, `path_has_parent()`: 경로명에 대한 연산작업할 때 사용.
+
+## 기타: `is_` {#fs-basic-etc}
+
+`is_`를 통해서 파일, 디렉토리, 링크인지를 확인할 수 있다.
+
+- `is_file()`: 파일인지 확인
+- `is_dir()`: 디렉토리인지 확인
+- `is_link()`: 링크인지 확인
+
+# 기본 사용법 {#fs-basic-usage}
+
+`dir_info()` 함수를 통해서 특정 파일크기(1MB) 이상인 파일을 내림차순으로 뽑아내고 필요한 정보만 추출한다.
+
+```{r fs-filtering}
+library(tidyverse)
+library(fs)
+
+dir_info(path = '.', recurse = TRUE) %>% 
+  filter(type =="file", size > "1MB") %>% 
+  arrange(desc(size)) %>%
+  select(path, permissions, size, modification_time)
+```
+
+현재 작업 프로젝트에 대해서 디렉토리별로 얼마마큼 파일이 있는지 파악하고자 할 때 다음과 같이 `group_by`를 사용해서 `path_dir()`로 추출된 디렉토리별로 합계를 구한다.
+
+```{r fs-tally}
+dir_info(path = ".", recursive = TRUE) %>%
+  group_by(directory = path_dir(path)) %>%
+  summarise(size = sum(size)) %>% 
+  arrange(desc(size))
+```
+
+# 파일 다수를 읽어들이기 {#fs-read-files}
+
+## 파일 쪼개기 {#fs-iris}
+
+먼저 `iris` 파일을 각 꽃종류별로 쪼갠다.
+확인한 결과를 `dir_ls()` 함수에 경로명 `data/`과 `glob = "*.csv"` 인자를 함께 넘겨 확인한다.
+
+```{r fs-read-files-save}
+# Create separate files for each species
+iris %>%
+  split(.$Species) %>%
+  map(select, -Species) %>%
+  iwalk(~ write_csv(.x, paste0("data/", .y, ".csv")))
+
+dir_ls("data/", glob = "*.csv") 
+```
+
+
+## 파일 합치기 {#fs-iris-combine}
+
+붓꽃(iris) 3종 csv 파일을 불러 읽어오자.
+
+- `data/setosa.csv`
+- `data/versicolor.csv`
+- `data/virginica.csv`
+
+먼저 `data/` 디렉토리에 `.csv` 확장자를 갖는 파일이 많아서 붓꽃 3종 `.csv` 파일만 선택하고,
+이를 `map_df` 함수를 사용하여 각 파일별로 앞에 3개만 가져와서 데이터프레임으로 만들어 낸다.
+
+```{r fs-read-files}
+iris_species <- dir_ls("data/", glob="*.csv") 
+iris_species <- iris_species[str_detect(iris_species, "setosa|versicolor|virginica")] 
+
+iris_species %>%
+  map_df(read_csv, .id = "file", n_max = 3) %>% 
+  DT::datatable()
+```
