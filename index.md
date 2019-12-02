@@ -14,7 +14,7 @@ title: 다양한 데이터 가져오기
 
 ## 학습목차 
 
-- [데이터 가져오기 개요](ingest-data.html)
+- [데이터 가져오기: `pins`](ingest-data.html)
 - **로컬 파일**
     - [`fs` 로컬파일](ingest-data-fs.html)
     - **[PDF 문서](ds-extract-pdf.html)**

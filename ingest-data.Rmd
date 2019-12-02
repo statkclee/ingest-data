@@ -1,19 +1,115 @@
 ---
 layout: page
 title: 데이터 가져오기
-subtitle: 데이터 가져오기 개요
+subtitle: "데이터 가져오기: `pins`"
 output:
   html_document: 
     toc: yes
     toc_float: true
     highlight: tango
-    code_folding: hide
+    code_folding: show
     number_sections: TRUE
+editor_options: 
+  chunk_output_type: console
 ---
  
 ``` {r, include=FALSE}
-source("tools/chunk-options.R")
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
 ```
+
+# [`pins`](https://github.com/rstudio/pins) 팩키지 {#pins-rstudio}
+
+[`pins`](https://github.com/rstudio/pins)를 통해 데이터를 식별하고, 찾고, 공유할 수 있는 새로운 팩키지다. [`pins`](http://pins.rstudio.com/) 팩키지에는 다음 중요한 3가지 동사를 활용하여 `pins` 팩키지가 목표한 목적을 달성할 수 있다. 
+
+- `pin()` 동사를 사용해서 원격 자원을 로컬로 가져와서 작업할 수 있다.
+- `pin_find()` 동사를 사용해서 다양한 보드(board)에서 신규 자원을 검색할 수 있다.
+- `board_register()` 동사를 사용해서 로컬 폴더, GitHub, 캐글, RStudio Connect 에 연결하여 자원을 공유할 수 있다.
+
+`pin()`, `pin_-_get()`, `pin_find()` 동사를 사용해서 로컬 컴퓨터로 가져온 파일은 `board_local_storage()`를 통해 캐쉬로 저장되어 추후 사용할 수 있게 된다.
+
+
+```{r pins-cache}
+library(tidyverse)
+library(pins)
+
+tibble::tibble(paths = dir(board_local_storage(), full.names = TRUE))
+```
+
+
+## `pin()` 동사 {#pins-local}
+
+`pin()` 동사를 사용해서 원격 자원을 고정시키거나, 혹은 로컬 캐쉬로 저장해둬서 추후 재사용하게 된다.
+먼저, `pin(url)`을 통해 원격 파일을 고정시키고 이를 로컬 캐쉬에 저장시켜서 다운로드할 수 있다.
+
+```{r ingest-pin}
+url <- "https://raw.githubusercontent.com/facebook/prophet/master/examples/example_retail_sales.csv"
+retail_sales <- read.csv(pin(url))
+
+retail_sales %>% tbl_df() %>% head
+```
+
+`pin()` 캐쉬 객체를 `"sales_by_month"`로 저장시켜두고 나서 나중에 필요한 경우 `pin_get()` 함수로 꺼내 사용한다.
+
+```{r ingest-pin-get}
+retail_sales %>%
+  group_by(month = lubridate::month(ds, T)) %>%
+  summarise(total = sum(y)) %>%
+  pin("sales_by_month")
+
+pin_get("sales_by_month")
+```
+
+## `pin_find()`: CRAN {#ingest-pin-find-cran}
+
+`pin_find()` 동사를 사용해서 CRAN, 캐글, RStudio Connect 에 산재된 자원을 검색할 수 있다. 먼저 `packages`에 산재된 데이터 중 `cars` 검색어를 포함된 데이터를 검색해보자.
+
+```{r ingest-pin-find}
+pin_find("cars", board="packages")
+```
+
+`<소유자>/<명칭>` 형태로 데이터가 준비되어 있어 이를 `pin_get()` 동사를 사용해서 가져온다.
+
+```{r ingest-pin-find-get}
+pin_get("UsingR/carsafety")
+```
+
+`pin_info()` 동사를 사용해서 스키마 정보를 가져올 수 있다.
+
+```{r ingest-pin-find-info}
+pin_info("UsingR/carsafety")
+```
+
+이번에는 `cars` 검색어를 던져 `CRAN` 에서 가져올 수 있는 데이터를 모두 살펴보자.
+
+```{r ingest-pin-find-info-all}
+pin_find("cars", board="packages") %>% DT::datatable()
+```
+
+## `pin_find()`: 캐글 {#ingest-pin-find-kaggle}
+
+캐글(Kaggle) 웹사이트에 올라온 데이터를 찾으려고 하면, [캐글(Kaggle)](https://www.kaggle.com/) 사용자 정보 하단에 `API`에서 `Create New API Token`을 클릭하면 `kaggle.json` 파일을 다운로드 받게 된다. 이를 `board_register_kaggle()` 동사에 적용시키게 되면 캐글 데이터를 CRAN과 마찬가지로 검색할 수 있게 된다.
+
+```{r ingest-pin-find-kaggle}
+board_register_kaggle(token="~/Downloads/kaggle.json")
+pin_find("cars", board="kaggle") %>%  DT::datatable()
+```
+
+`pin_get()` 동사를 통해서 캐글 데이터를 수월하게 얻을 수 있게 된다.
+
+```{r kaggle-get-cars}
+cars_kaggle <- pin_get("orgesleka/used-cars-database")
+cars_kaggle
+
+read_csv(cars_kaggle[1])
+```
+
+## `board_register()` 공유 {#ingest-pin-register}
+
+[RStudio Team (2019-09-09), "pins: Pin, Discover and Share Resources"](https://blog.rstudio.com/2019/09/09/pin-discover-and-share-resources/) 참고한다.
+
+`vignette("boards-understanding")` 명령어를 참고하여 Azure, GitHub, Google Cloud, Kaggle, RStudio Connect, S3는 물론 데이터베이스와 개인 웹사이트에도 공유를 지원한다. 
 
 
 # 원천데이터  [^import-webinar] {#raw-data}
@@ -28,7 +124,7 @@ source("tools/chunk-options.R")
 <img src="fig/rstudio-data-import.png" alt="RStuio 데이터 가져오기" width="100%" />
 
 
-# 공공데이터 출처 {#r-open-data}
+## 공공데이터 출처 {#r-open-data}
 
 공공데이터는 과거 로컬디스크에서 `. csv`, `.xlsx`, SAS, SPSS, 미니탭 등 형식 파일로 제공되었으나, SQL 데이터베이스에
 ODBC, JDBC, DBI 등 인터페이스를 통해 직접 접근하여 데이터를 뽑아올 수도 있고, 인터넷 웹을 통해 XML, JSON 등의 형식으로 받아올 수도 있다.
@@ -205,9 +301,5 @@ $ sed -i ':a;N;$!ba;s/\n/,\n/g' sample-file.json
 $ sed -i '1i [' sample-file.json
 $ echo "]" >> sample-file.json
 ```
-
-
-
-
 
 
