@@ -1,0 +1,70 @@
+---
+layout: page
+title: 데이터 가져오기
+subtitle: "`GitHub` 데이터 분석: 프로젝트 평가"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_sections: TRUE
+editor_options: 
+  chunk_output_type: console
+---
+ 
+``` {r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+```
+
+# 들어가며 [^github-data-analysis] {#github-intro}
+
+[^github-data-analysis]: [BLOGR (MARCH 26, 2018), "Guide to tidy git analysis"](https://drsimonj.svbtle.com/embarking-on-a-tidy-git-analysis)
+
+# 
+
+```{r git-clone}
+library(tidyverse)
+library(fs)
+
+```
+
+# 프로젝트 GitHub 데이터 {#project-github-data}
+
+## 가져오기 {#project-github-data-import}
+
+```{r github-data-import, eval = FALSE}
+library(here)
+library(glue)
+
+project_dir <- glue("{here()}/data/project")
+
+# 팀 프로젝트 
+## 11대 0 프로젝트 --------------
+team_11_repo_url <- "https://github.com/whoareyouwhoami/ProjectTellus.git"
+
+# 프로젝트 저장 디렉토리
+clone_team_11_dir <- glue("{project_dir}/team_11")
+
+# CMD 명령어 생성
+clone_team_11_cmd <- glue("git clone {team_11_repo_url} {clone_team_11_dir}")
+system(clone_team_11_cmd)
+```
+
+## 가져오기 {#project-github-data-log}
+
+
+```{r github-log, eval = FALSE}
+log_format_options <- c(datetime = "cd", commit = "h", parents = "p", author = "an", subject = "s")
+option_delim <- "\t"
+log_format   <- glue("%{log_format_options}") %>% collapse(option_delim)
+log_options  <- glue('--pretty=format:"{log_format}" --date=format:"%Y-%m-%d %H:%M:%S"')
+log_cmd      <- glue('git -C {clone_team_11_dir} log {log_options}')
+log_cmd
+
+system(glue('git -C {clone_team_11_dir} log -3'))
+```
+
+

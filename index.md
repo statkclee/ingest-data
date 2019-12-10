@@ -39,7 +39,6 @@ title: 다양한 데이터 가져오기
         - [동적 웹페이지 - `RSelelinum`](dynamic-webpage-selenium.html)
         - [동적 웹페이지 - iMac](dynamic-webpage-imac.html)
         - [크롤링 자동화 - Azure/AWS](crawl-automation.html)
-    + [GitHub 저장소 - 데이터 사이언스](ingest-github-repo.html)
     + [텍스트 RSS 피드](ingest-rss.html)
     + 연관검색어
         + [네이버](http://statkclee.github.io/politics/naver-related-search.html)
@@ -65,6 +64,8 @@ title: 다양한 데이터 가져오기
     + [인스타그램(Instagram)](ingest-instagram.html)
     + [유튜브(Youtube)](ingest-youtube.html)
     + [네이버, 다음 뉴스](ingest-news.html)
+- [GitHub 저장소 - 데이터 사이언스](ingest-github-repo.html)
+    + [`GitHub` 데이터 분석: 프로젝트 평가](ingest-github-data-analysis.html)
 
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)

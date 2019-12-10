@@ -14,4 +14,4 @@ twitterOAuth.R
 data/weather
 data/raw_weather_data_aarhus.tar.gz
 twitter_token.rds
-
+data/project/
