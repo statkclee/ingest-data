@@ -65,7 +65,7 @@ title: 다양한 데이터 가져오기
     + [유튜브(Youtube)](ingest-youtube.html)
     + [네이버, 다음 뉴스](ingest-news.html)
 - [GitHub 저장소 - 데이터 사이언스](ingest-github-repo.html)
-    + [`GitHub` 데이터 분석: 프로젝트 평가](ingest-github-data-analysis.html)
+    + [`GitHub` 데이터 분석: 프로젝트 평가](ingest-data-github-data-analysis.html)
 
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)
