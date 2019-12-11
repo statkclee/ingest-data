@@ -1648,42 +1648,138 @@ div.tocify {
 <div id="github-intro" class="section level1">
 <h1><span class="header-section-number">1</span> 들어가며 <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></h1>
 </div>
-<div id="section" class="section level1">
-<h1><span class="header-section-number">2</span> </h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(fs)</a></code></pre></div>
-</div>
 <div id="project-github-data" class="section level1">
-<h1><span class="header-section-number">3</span> 프로젝트 GitHub 데이터</h1>
+<h1><span class="header-section-number">2</span> 프로젝트 GitHub 데이터</h1>
 <div id="project-github-data-import" class="section level2">
-<h2><span class="header-section-number">3.1</span> 가져오기</h2>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(here)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(glue)</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">project_dir &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;{here()}/data/project&quot;</span>)</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
-<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="co"># 팀 프로젝트 </span></a>
-<a class="sourceLine" id="cb2-7" data-line-number="7"><span class="co">## 11대 0 프로젝트 --------------</span></a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">team_<span class="dv">11</span>_repo_url &lt;-<span class="st"> &quot;https://github.com/whoareyouwhoami/ProjectTellus.git&quot;</span></a>
-<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="co"># 프로젝트 저장 디렉토리</span></a>
-<a class="sourceLine" id="cb2-11" data-line-number="11">clone_team_<span class="dv">11</span>_dir &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;{project_dir}/team_11&quot;</span>)</a>
-<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co"># CMD 명령어 생성</span></a>
-<a class="sourceLine" id="cb2-14" data-line-number="14">clone_team_<span class="dv">11</span>_cmd &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;git clone {team_11_repo_url} {clone_team_11_dir}&quot;</span>)</a>
-<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="kw">system</span>(clone_team_<span class="dv">11</span>_cmd)</a></code></pre></div>
+<h2><span class="header-section-number">2.1</span> 가져오기</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(fs)</a>
+<a class="sourceLine" id="cb1-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb1-4" data-line-number="4"><span class="kw">library</span>(here)</a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="kw">library</span>(glue)</a>
+<a class="sourceLine" id="cb1-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb1-7" data-line-number="7">project_dir &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;{here()}/data/project&quot;</span>)</a>
+<a class="sourceLine" id="cb1-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb1-9" data-line-number="9"><span class="co"># 팀 프로젝트 </span></a>
+<a class="sourceLine" id="cb1-10" data-line-number="10"><span class="co">## 11대 0 프로젝트 --------------</span></a>
+<a class="sourceLine" id="cb1-11" data-line-number="11">team_<span class="dv">11</span>_repo_url &lt;-<span class="st"> &quot;https://github.com/whoareyouwhoami/ProjectTellus.git&quot;</span></a>
+<a class="sourceLine" id="cb1-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb1-13" data-line-number="13"><span class="co"># 프로젝트 저장 디렉토리</span></a>
+<a class="sourceLine" id="cb1-14" data-line-number="14">clone_team_<span class="dv">11</span>_dir &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;{project_dir}/team_11&quot;</span>)</a>
+<a class="sourceLine" id="cb1-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb1-16" data-line-number="16"><span class="co"># CMD 명령어 생성</span></a>
+<a class="sourceLine" id="cb1-17" data-line-number="17">clone_team_<span class="dv">11</span>_cmd &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;git clone {team_11_repo_url} {clone_team_11_dir}&quot;</span>)</a>
+<a class="sourceLine" id="cb1-18" data-line-number="18"><span class="kw">system</span>(clone_team_<span class="dv">11</span>_cmd)</a></code></pre></div>
+<p><code>fs</code> 팩키지 <code>dir_ls()</code> 함수로 GitHub 저장소에서 클론하여 가져온 디렉토리와 파일을 확인한다.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">fs<span class="op">::</span><span class="kw">dir_ls</span>(<span class="st">&quot;data/project/team_11&quot;</span>)</a></code></pre></div>
 </div>
 <div id="project-github-data-log" class="section level2">
-<h2><span class="header-section-number">3.2</span> 가져오기</h2>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">log_format_options &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">datetime =</span> <span class="st">&quot;cd&quot;</span>, <span class="dt">commit =</span> <span class="st">&quot;h&quot;</span>, <span class="dt">parents =</span> <span class="st">&quot;p&quot;</span>, <span class="dt">author =</span> <span class="st">&quot;an&quot;</span>, <span class="dt">subject =</span> <span class="st">&quot;s&quot;</span>)</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">option_delim &lt;-<span class="st"> &quot;</span><span class="ch">\t</span><span class="st">&quot;</span></a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">log_format   &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;%{log_format_options}&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">collapse</span>(option_delim)</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">log_options  &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">'--pretty=format:&quot;{log_format}&quot; --date=format:&quot;%Y-%m-%d %H:%M:%S&quot;'</span>)</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">log_cmd      &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">'git -C {clone_team_11_dir} log {log_options}'</span>)</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">log_cmd</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7"></a>
-<a class="sourceLine" id="cb3-8" data-line-number="8"><span class="kw">system</span>(<span class="kw">glue</span>(<span class="st">'git -C {clone_team_11_dir} log -3'</span>))</a></code></pre></div>
+<h2><span class="header-section-number">2.2</span> 가져오기</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">setwd</span>(clone_team_<span class="dv">11</span>_dir)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">log_format_options &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">datetime =</span> <span class="st">&quot;cd&quot;</span>, <span class="dt">commit =</span> <span class="st">&quot;h&quot;</span>, <span class="dt">parents =</span> <span class="st">&quot;p&quot;</span>, <span class="dt">author =</span> <span class="st">&quot;an&quot;</span>, <span class="dt">subject =</span> <span class="st">&quot;s&quot;</span>)</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">option_delim &lt;-<span class="st"> &quot;</span><span class="ch">\t</span><span class="st">&quot;</span></a>
+<a class="sourceLine" id="cb3-4" data-line-number="4">log_format   &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;%{log_format_options}&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">glue_collapse</span>(option_delim)</a>
+<a class="sourceLine" id="cb3-5" data-line-number="5">log_options  &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">'--pretty=format:&quot;{log_format}&quot; --date=format:&quot;%Y-%m-%d %H:%M:%S&quot;'</span>)</a>
+<a class="sourceLine" id="cb3-6" data-line-number="6">log_cmd      &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">'git -C {clone_team_11_dir} log {log_options}'</span>)</a>
+<a class="sourceLine" id="cb3-7" data-line-number="7">log_cmd</a>
+<a class="sourceLine" id="cb3-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb3-9" data-line-number="9"><span class="kw">system</span>(<span class="kw">glue</span>(<span class="st">'{log_cmd} -3'</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">team_<span class="dv">11</span>_logs &lt;-<span class="st"> </span><span class="kw">system</span>(log_cmd, <span class="dt">intern =</span> <span class="ot">TRUE</span>) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="st">  </span><span class="kw">str_split_fixed</span>(option_delim, <span class="kw">length</span>(log_format_options)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3"><span class="st">  </span><span class="kw">as_tibble</span>() <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-4" data-line-number="4"><span class="st">  </span><span class="kw">setNames</span>(<span class="kw">names</span>(log_format_options)) <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb4-5" data-line-number="5"><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">parents =</span> <span class="kw">str_split</span>(parents, <span class="st">&quot; &quot;</span>))</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb4-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb4-8" data-line-number="8">team_<span class="dv">11</span>_logs</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="co"># Start with NA</span></a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">team_<span class="dv">11</span>_logs &lt;-<span class="st"> </span>team_<span class="dv">11</span>_logs <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">mutate</span>(<span class="dt">branch =</span> <span class="ot">NA_integer_</span>)</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb5-4" data-line-number="4"><span class="co"># Create a boolean vector to represent free columns (1000 should be plenty!)</span></a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">free_col &lt;-<span class="st"> </span><span class="kw">rep</span>(<span class="ot">TRUE</span>, <span class="dv">1000</span>)</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"><span class="cf">for</span> (i <span class="cf">in</span> <span class="kw">seq_len</span>(<span class="kw">nrow</span>(team_<span class="dv">11</span>_logs) <span class="op">-</span><span class="st"> </span><span class="dv">1</span>)) { <span class="co"># - 1 to ignore root</span></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">  <span class="co"># Check current branch col and assign open col if NA</span></a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">  branch &lt;-<span class="st"> </span>team_<span class="dv">11</span>_logs<span class="op">$</span>branch[i]</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">  <span class="cf">if</span> (<span class="kw">is.na</span>(branch)) {</a>
+<a class="sourceLine" id="cb5-12" data-line-number="12">    branch &lt;-<span class="st"> </span><span class="kw">which.max</span>(free_col)</a>
+<a class="sourceLine" id="cb5-13" data-line-number="13">    free_col[branch] &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb5-14" data-line-number="14">    team_<span class="dv">11</span>_logs<span class="op">$</span>branch[i] &lt;-<span class="st"> </span>branch</a>
+<a class="sourceLine" id="cb5-15" data-line-number="15">  }</a>
+<a class="sourceLine" id="cb5-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb5-17" data-line-number="17">  <span class="co"># Go through parents</span></a>
+<a class="sourceLine" id="cb5-18" data-line-number="18">  parents &lt;-<span class="st"> </span>team_<span class="dv">11</span>_logs<span class="op">$</span>parents[[i]]</a>
+<a class="sourceLine" id="cb5-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb5-20" data-line-number="20">  <span class="cf">for</span> (p <span class="cf">in</span> parents) {</a>
+<a class="sourceLine" id="cb5-21" data-line-number="21">    parent_col &lt;-<span class="st"> </span>team_<span class="dv">11</span>_logs<span class="op">$</span>branch[team_<span class="dv">11</span>_logs<span class="op">$</span>commit <span class="op">==</span><span class="st"> </span>p]</a>
+<a class="sourceLine" id="cb5-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb5-23" data-line-number="23">    <span class="co"># If col is missing, assign it to same branch (if first parent) or new</span></a>
+<a class="sourceLine" id="cb5-24" data-line-number="24">    <span class="co"># branch (if other)</span></a>
+<a class="sourceLine" id="cb5-25" data-line-number="25">    <span class="cf">if</span> (<span class="kw">is.na</span>(parent_col)) {</a>
+<a class="sourceLine" id="cb5-26" data-line-number="26">      parent_col &lt;-<span class="st"> </span><span class="kw">if_else</span>(p <span class="op">==</span><span class="st"> </span>parents[<span class="dv">1</span>], branch, <span class="kw">which.max</span>(free_col))</a>
+<a class="sourceLine" id="cb5-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb5-28" data-line-number="28">    <span class="co"># If NOT missing this means a split has occurred. Assign parent the lowest</span></a>
+<a class="sourceLine" id="cb5-29" data-line-number="29">    <span class="co"># and re-open both cols (parent closed at the end)</span></a>
+<a class="sourceLine" id="cb5-30" data-line-number="30">    } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb5-31" data-line-number="31">      free_col[<span class="kw">c</span>(branch, parent_col)] &lt;-<span class="st"> </span><span class="ot">TRUE</span></a>
+<a class="sourceLine" id="cb5-32" data-line-number="32">      parent_col &lt;-<span class="st"> </span><span class="kw">min</span>(branch, parent_col)</a>
+<a class="sourceLine" id="cb5-33" data-line-number="33"></a>
+<a class="sourceLine" id="cb5-34" data-line-number="34">    }</a>
+<a class="sourceLine" id="cb5-35" data-line-number="35"></a>
+<a class="sourceLine" id="cb5-36" data-line-number="36">    <span class="co"># Close parent col and assign</span></a>
+<a class="sourceLine" id="cb5-37" data-line-number="37">    free_col[parent_col] &lt;-<span class="st"> </span><span class="ot">FALSE</span></a>
+<a class="sourceLine" id="cb5-38" data-line-number="38">    team_<span class="dv">11</span>_logs<span class="op">$</span>branch[team_<span class="dv">11</span>_logs<span class="op">$</span>commit <span class="op">==</span><span class="st"> </span>p] &lt;-<span class="st"> </span>parent_col</a>
+<a class="sourceLine" id="cb5-39" data-line-number="39">  }</a>
+<a class="sourceLine" id="cb5-40" data-line-number="40">}</a>
+<a class="sourceLine" id="cb5-41" data-line-number="41"></a>
+<a class="sourceLine" id="cb5-42" data-line-number="42">team_<span class="dv">11</span>_logs</a></code></pre></div>
 </div>
+<div id="rstat-project" class="section level2">
+<h2><span class="header-section-number">2.3</span> 기술적 분석</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">team_<span class="dv">11</span>_logs <span class="op">%&gt;%</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb6-2" data-line-number="2"><span class="st">  </span><span class="kw">count</span>(author, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+</div>
+</div>
+<div id="project-github-function" class="section level1">
+<h1><span class="header-section-number">3</span> GitHub 데이터 - 함수</h1>
+<p>GitHub url을 넣으면 다운로드 받는 함수를 제작해보자.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">download_repo &lt;-<span class="st"> </span><span class="cf">function</span>(repo_url){</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">  project_dir &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;{here()}/data/project&quot;</span>)</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">  <span class="co"># 팀 프로젝트 </span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">  <span class="co">## 11대 0 프로젝트 --------------</span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">  repo_name &lt;-<span class="st"> </span><span class="kw">str_extract</span>(repo_url, <span class="st">&quot;[^/]*$&quot;</span>)</a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">  </a>
+<a class="sourceLine" id="cb7-8" data-line-number="8">  <span class="co"># 프로젝트 저장 디렉토리</span></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9">  clone_dir &lt;&lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;{project_dir}/{repo_name}&quot;</span>)</a>
+<a class="sourceLine" id="cb7-10" data-line-number="10">  </a>
+<a class="sourceLine" id="cb7-11" data-line-number="11">  <span class="co"># CMD 명령어 생성</span></a>
+<a class="sourceLine" id="cb7-12" data-line-number="12">  clone_cmd &lt;-<span class="st"> </span><span class="kw">glue</span>(<span class="st">&quot;git clone {repo_url} {clone_dir}&quot;</span>)</a>
+<a class="sourceLine" id="cb7-13" data-line-number="13">  <span class="kw">cat</span>(<span class="st">&quot;cloning...&quot;</span>, clone_cmd, <span class="st">&quot;</span><span class="ch">\n</span><span class="st">&quot;</span>)</a>
+<a class="sourceLine" id="cb7-14" data-line-number="14">  <span class="kw">system</span>(clone_cmd)</a>
+<a class="sourceLine" id="cb7-15" data-line-number="15">  <span class="co"># return(clone_cmd)</span></a>
+<a class="sourceLine" id="cb7-16" data-line-number="16">}</a>
+<a class="sourceLine" id="cb7-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb7-18" data-line-number="18"><span class="co"># 11대0 -----</span></a>
+<a class="sourceLine" id="cb7-19" data-line-number="19">team_url &lt;-<span class="st"> &quot;https://github.com/whoareyouwhoami/ProjectTellus&quot;</span></a>
+<a class="sourceLine" id="cb7-20" data-line-number="20"><span class="kw">download_repo</span>(team_url)</a>
+<a class="sourceLine" id="cb7-21" data-line-number="21">fs<span class="op">::</span><span class="kw">dir_ls</span>(clone_dir)</a>
+<a class="sourceLine" id="cb7-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb7-23" data-line-number="23"><span class="co"># 연세투어 -----</span></a>
+<a class="sourceLine" id="cb7-24" data-line-number="24">연세투어_url &lt;-<span class="st"> &quot;https://github.com/yonseijaewon/yonsei-tour&quot;</span></a>
+<a class="sourceLine" id="cb7-25" data-line-number="25"><span class="kw">download_repo</span>(연세투어_url)</a>
+<a class="sourceLine" id="cb7-26" data-line-number="26">fs<span class="op">::</span><span class="kw">dir_ls</span>(clone_dir)</a>
+<a class="sourceLine" id="cb7-27" data-line-number="27"></a>
+<a class="sourceLine" id="cb7-28" data-line-number="28"><span class="co"># 4달러 -----</span></a>
+<a class="sourceLine" id="cb7-29" data-line-number="29">four_달러_url &lt;-<span class="st"> &quot;https://github.com/lhmlhm1111/Data_GongHak&quot;</span></a>
+<a class="sourceLine" id="cb7-30" data-line-number="30"><span class="kw">download_repo</span>(four_달러_url)</a>
+<a class="sourceLine" id="cb7-31" data-line-number="31">fs<span class="op">::</span><span class="kw">dir_ls</span>(clone_dir)</a>
+<a class="sourceLine" id="cb7-32" data-line-number="32"></a>
+<a class="sourceLine" id="cb7-33" data-line-number="33"><span class="co"># 서울시 축제 대백과 -----</span></a>
+<a class="sourceLine" id="cb7-34" data-line-number="34">seoul_festival_url &lt;-<span class="st"> &quot;https://github.com/HGmin1159/Seoul_Festival&quot;</span></a>
+<a class="sourceLine" id="cb7-35" data-line-number="35"><span class="kw">download_repo</span>(seoul_festival_url)</a>
+<a class="sourceLine" id="cb7-36" data-line-number="36">fs<span class="op">::</span><span class="kw">dir_ls</span>(clone_dir)</a></code></pre></div>
 </div>
 <div class="footnotes">
 <hr />

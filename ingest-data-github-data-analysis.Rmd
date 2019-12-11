@@ -23,19 +23,14 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
 
 [^github-data-analysis]: [BLOGR (MARCH 26, 2018), "Guide to tidy git analysis"](https://drsimonj.svbtle.com/embarking-on-a-tidy-git-analysis)
 
-# 
-
-```{r git-clone}
-library(tidyverse)
-library(fs)
-
-```
-
 # 프로젝트 GitHub 데이터 {#project-github-data}
 
 ## 가져오기 {#project-github-data-import}
 
 ```{r github-data-import, eval = FALSE}
+library(tidyverse)
+library(fs)
+
 library(here)
 library(glue)
 
@@ -53,18 +48,135 @@ clone_team_11_cmd <- glue("git clone {team_11_repo_url} {clone_team_11_dir}")
 system(clone_team_11_cmd)
 ```
 
+`fs` 팩키지 `dir_ls()` 함수로 GitHub 저장소에서 클론하여 가져온 디렉토리와 파일을 확인한다.
+
+```{r github-data-import-check, eval = FALSE}
+fs::dir_ls("data/project/team_11")
+```
+
+
 ## 가져오기 {#project-github-data-log}
 
-
 ```{r github-log, eval = FALSE}
+setwd(clone_team_11_dir)
 log_format_options <- c(datetime = "cd", commit = "h", parents = "p", author = "an", subject = "s")
 option_delim <- "\t"
-log_format   <- glue("%{log_format_options}") %>% collapse(option_delim)
+log_format   <- glue("%{log_format_options}") %>% glue_collapse(option_delim)
 log_options  <- glue('--pretty=format:"{log_format}" --date=format:"%Y-%m-%d %H:%M:%S"')
 log_cmd      <- glue('git -C {clone_team_11_dir} log {log_options}')
 log_cmd
 
-system(glue('git -C {clone_team_11_dir} log -3'))
+system(glue('{log_cmd} -3'))
 ```
+
+
+```{r github-log-history, eval = FALSE}
+team_11_logs <- system(log_cmd, intern = TRUE) %>% 
+  str_split_fixed(option_delim, length(log_format_options)) %>% 
+  as_tibble() %>% 
+  setNames(names(log_format_options)) %>% 
+  mutate(parents = str_split(parents, " "))
+
+
+team_11_logs
+```
+
+
+```{r branch-field, eval = FALSE}
+# Start with NA
+team_11_logs <- team_11_logs %>% mutate(branch = NA_integer_)
+
+# Create a boolean vector to represent free columns (1000 should be plenty!)
+free_col <- rep(TRUE, 1000)
+
+for (i in seq_len(nrow(team_11_logs) - 1)) { # - 1 to ignore root
+  # Check current branch col and assign open col if NA
+  branch <- team_11_logs$branch[i]
+
+  if (is.na(branch)) {
+    branch <- which.max(free_col)
+    free_col[branch] <- FALSE
+    team_11_logs$branch[i] <- branch
+  }
+
+  # Go through parents
+  parents <- team_11_logs$parents[[i]]
+
+  for (p in parents) {
+    parent_col <- team_11_logs$branch[team_11_logs$commit == p]
+
+    # If col is missing, assign it to same branch (if first parent) or new
+    # branch (if other)
+    if (is.na(parent_col)) {
+      parent_col <- if_else(p == parents[1], branch, which.max(free_col))
+
+    # If NOT missing this means a split has occurred. Assign parent the lowest
+    # and re-open both cols (parent closed at the end)
+    } else {
+      free_col[c(branch, parent_col)] <- TRUE
+      parent_col <- min(branch, parent_col)
+
+    }
+
+    # Close parent col and assign
+    free_col[parent_col] <- FALSE
+    team_11_logs$branch[team_11_logs$commit == p] <- parent_col
+  }
+}
+
+team_11_logs
+```
+
+## 기술적 분석 {#rstat-project}
+
+```{r count_author, eval = FALSE}
+team_11_logs %>% 
+  count(author, sort = TRUE)
+```
+
+# GitHub 데이터 - 함수 {#project-github-function}
+
+GitHub url을 넣으면 다운로드 받는 함수를 제작해보자.
+
+```{r function-project, eval=FALSE}
+
+download_repo <- function(repo_url){
+  project_dir <- glue("{here()}/data/project")
+
+  # 팀 프로젝트 
+  ## 11대 0 프로젝트 --------------
+  repo_name <- str_extract(repo_url, "[^/]*$")
+  
+  # 프로젝트 저장 디렉토리
+  clone_dir <<- glue("{project_dir}/{repo_name}")
+  
+  # CMD 명령어 생성
+  clone_cmd <- glue("git clone {repo_url} {clone_dir}")
+  cat("cloning...", clone_cmd, "\n")
+  system(clone_cmd)
+  # return(clone_cmd)
+}
+
+# 11대0 -----
+team_url <- "https://github.com/whoareyouwhoami/ProjectTellus"
+download_repo(team_url)
+fs::dir_ls(clone_dir)
+
+# 연세투어 -----
+연세투어_url <- "https://github.com/yonseijaewon/yonsei-tour"
+download_repo(연세투어_url)
+fs::dir_ls(clone_dir)
+
+# 4달러 -----
+four_달러_url <- "https://github.com/lhmlhm1111/Data_GongHak"
+download_repo(four_달러_url)
+fs::dir_ls(clone_dir)
+
+# 서울시 축제 대백과 -----
+seoul_festival_url <- "https://github.com/HGmin1159/Seoul_Festival"
+download_repo(seoul_festival_url)
+fs::dir_ls(clone_dir)
+```
+
 
 
