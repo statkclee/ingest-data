@@ -22,6 +22,7 @@ title: 다양한 데이터 가져오기
         - [PDF 감옥에서 데이터를 탈출시키다.](ds-extract-text-from-pdf-survey.html)
         - **[문자인식(OCR) - `tesseract`](ingest-ocr.html)**
         - [PPT 장표 - OCR `tesseract`](ingest-ocr-ppt.html)
+        - [기계판독 가능한 PDF 문서에서 표추출](pdf-extract-table.html)
     - [문서(`tika`)](ingest-tika.html)
         - [CV 제작](create-cv.html)
 - **웹(Web)**
