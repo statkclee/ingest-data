@@ -25,6 +25,7 @@ title: 다양한 데이터 가져오기
         - [기계판독 가능한 PDF 문서에서 표추출](pdf-extract-table.html)
     - [문서(`tika`)](ingest-tika.html)
         - [CV 제작](create-cv.html)
+    - [PDF &rarr; 워드 - 리브레오피스(LibreOffice)](libreOffice-pdf-word.html)
 - **웹(Web)**
     + **[웹 데이터](https://statkclee.github.io/data-science/ds-webdata.html)**
         - [웹 스크래핑(Web Scraping)](https://statkclee.github.io/data-science/data-scraping.html)
