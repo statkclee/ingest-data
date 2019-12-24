@@ -23,6 +23,7 @@ title: 다양한 데이터 가져오기
         - **[문자인식(OCR) - `tesseract`](ingest-ocr.html)**
         - [PPT 장표 - OCR `tesseract`](ingest-ocr-ppt.html)
         - [기계판독 가능한 PDF 문서에서 표추출](pdf-extract-table.html)
+        - [~~기계판독~~ **불**가능한 PDF 문서에서 표추출](pdf-image-extract-table.html)
     - [문서(`tika`)](ingest-tika.html)
         - [CV 제작](create-cv.html)
     - [PDF &rarr; 워드 - 리브레오피스(LibreOffice)](libreOffice-pdf-word.html)
