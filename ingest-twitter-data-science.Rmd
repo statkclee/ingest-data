@@ -1,0 +1,72 @@
+---
+layout: page
+title: 다양한 데이터 가져오기
+subtitle: "트위터 데이터 과학"
+author:
+    name: xwMOOC
+    url: https://www.facebook.com/groups/tidyverse/
+    affiliation: Tidyverse Korea
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    toc: yes
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE,
+                    comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+library(tidyverse)
+```
+
+# 트위터 계정 - `rtweet` {#setup-twitter-account}
+
+[`httpuv`: HTTP and WebSocket server package for R](https://github.com/rstudio/httpuv)를 기반한 [`rtweet`: R client for accessing Twitter’s REST and stream APIs](https://rtweet.info/) 팩키지로 천하통일 되었다고 볼 수 있다.
+
+```{r}
+# 0. 환경설정 -----
+library(rtweet)  # install.packages("rtweet")
+library(tidyverse)
+
+tweets_got <- search_tweets("#gameofthrones", n = 1000, include_rts = TRUE, lang = "en")
+```
+
+
+# 트위터 SNS {#twitter-sns}
+
+"트윗(tweet)"이란 말은 작은 새가 지저귀는 소리를 나타내는 영어 낱말로, 
+[트위터(영어: Twitter)](https://www.twitter.com/)는 **소셜 네트워크 서비스(SNS)**이자 **마이크로블로그** 서비스로 볼 수 있다.
+
+단문 메시지 서비스(SMS), 인스턴트 메신저, 전자 우편(e-mail) 등을 통해 "트윗(tweet)"를 전송할 수 있고, 글 한 편에 해당하는 단위는 트윗으로 140자가 한도가 된다. 
+한글이든 영문이든, 공백과 기호를 포함해 한 번에 140 까지 글자를 올릴 수 있다.
+최근 [Donald J. Trump](https://twitter.com/realdonaldtrump) 대통령이 트워터를 적극적으로 정치에 활용하면서 다시 관심을 받고 있는 서비스이기도 하다.
+
+## 트위터 통계 [^twitter-stats] {#twitter-stats}
+
+[^twitter-stats]: [Hootsuite, "25 Twitter Stats All Marketers Need to Know in 2020"](https://blog.hootsuite.com/twitter-statistics/)
+
+월기준으로 3.3억 사용자가 있으며, 매일 5억개의 트윗이 있고, 사용자의 80%가 축복받은 1980~2000년 초반 출생한 밀레니얼 세대이며, 생중계 동안 트위터 광고는 11% 더 효과적으로 알려져 있으며 구매자의 40%는 트위터의 영향을 받는 것으로 조사된다.
+
+1. Twitter has 145 million monetizable daily active users
+2. Twitter’s U.S. user base is predicted to grow 0.3% in 2020
+3. 30 million (or 20%) of Twitter’s daily users are American
+4. 92% of the U.S. population is familiar with Twitter (even if they don’t use it)
+
+![트위터 기초 통계](fig/twitter-usage-statistics.png)
+
+## 트위터 데이터 {#twitter-stats-data}
+
+`rtweet` 팩키지 `stream_tweets()` 함수는 공개가 허락된 트윗 중에서 1%를 무작위로 가져오는데 기본설정으로 30초 동안 트윗을 추출한다.
+
+## 트위터 활용분야 {#twitter-data-application}
+
+
+
