@@ -27,19 +27,6 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE,
 library(tidyverse)
 ```
 
-# 트위터 계정 - `rtweet` {#setup-twitter-account}
-
-[`httpuv`: HTTP and WebSocket server package for R](https://github.com/rstudio/httpuv)를 기반한 [`rtweet`: R client for accessing Twitter’s REST and stream APIs](https://rtweet.info/) 팩키지로 천하통일 되었다고 볼 수 있다.
-
-```{r}
-# 0. 환경설정 -----
-library(rtweet)  # install.packages("rtweet")
-library(tidyverse)
-
-tweets_got <- search_tweets("#gameofthrones", n = 1000, include_rts = TRUE, lang = "en")
-```
-
-
 # 트위터 SNS {#twitter-sns}
 
 "트윗(tweet)"이란 말은 작은 새가 지저귀는 소리를 나타내는 영어 낱말로, 
@@ -68,5 +55,71 @@ tweets_got <- search_tweets("#gameofthrones", n = 1000, include_rts = TRUE, lang
 
 ## 트위터 활용분야 {#twitter-data-application}
 
+트위터 데이터를 분석해서 다양한 분야에 활용할 수 있다. 대표적으로 다음을 들 수 있다.
 
+- 최신 유행 주제 발굴
+- 고객 의견(customer opinion)
+- 대중 감정 / 민심
+- 브랜드/영화/연애인 영향력 범위
+- 이벤트 탐지: 시위 혹은 전염병
 
+# 트위터 계정 - `rtweet` {#setup-twitter-account}
+
+[`httpuv`: HTTP and WebSocket server package for R](https://github.com/rstudio/httpuv)를 기반한 [`rtweet`: R client for accessing Twitter’s REST and stream APIs](https://rtweet.info/) 팩키지로 천하통일 되었다고 볼 수 있다.
+
+- `httpuv`: 웹브라우저를 통해 트위터 API를 인증할 수 있게 함. 따라서, 별도 트위터 개발자 페이지에 접속해서 인증키를 받아 이를 활용할 필요가 없어짐.
+- `rtweet`: 트위터 API에서 데이터를 추출해서 분석이 가능한 형태의 데이터프레임으로 가공하여 반환시킴
+
+설치는 `install.packages("rtweet")`으로 하면 쉽게 설치되고 별도 인증절차 없이 처음 브라우저 인증을 위한 과정만 추가된다. 이후 `search_tweets()` 등 함수를 사용해서 트위터 API에서 데이터를 수집하면 된다.
+
+```{r rtweet-setup}
+# 0. 환경설정 -----
+library(rtweet)  # install.packages("rtweet")
+library(tidyverse)
+
+tidyverse_tw <- search_tweets("#tidyverse", n = 100, include_rts = TRUE, lang = "en")
+tidyverse_tw
+```
+
+# 최신 유행 주제 {#twitter-trends}
+
+가장 먼저 특정 지역에 가장 유행하는 주제가 무엇인지 찾아보자. 이를 **트위터 트렌드(twitter trend)**라고 흔히 부른다. `get_trends()` 함수를 사용하게 되면 전세계 트윗을 해쉬태그(hashtag), 키워드, 이벤트, 지역 등을 분석해서 최신 유행하는 주제를 파악할 수 있다.
+
+```{r trend-topics}
+trend_topics <- get_trends()
+trend_topics %>% 
+  DT::datatable()
+```
+
+`trends_available()` 함수를 사용하게 되면 추출가능한 트렌드에 대한 정보를 얻을 수 있는데 `countryCode`를 한국("KR")으로 특정해서 대한민국과 연관된 트렌드만 파악할 수 있도록 한다.
+
+```{r available-trend-topics}
+availabel_trends <- trends_available()
+
+availabel_trends %>% 
+  filter(countryCode == "KR")
+```
+
+## 대한민국 유행 주제 {#trend-korea}
+
+2019-12-28 오후 10시 "#SBS는_책임져라" 해쉬태그가 가장 유행하는 주제로 나온다.
+
+```{r trend-korea}
+korea_woeid <- availabel_trends %>% 
+  filter(countryCode == "KR", woeid == 23424868) %>% 
+  select(woeid) %>% 
+  pull(woeid)
+
+korea_trend <- get_trends(korea_woeid)
+
+korea_trend %>% 
+  group_by(trend) %>% 
+  summarise(mean_tweet_volume = mean(tweet_volume, na.rm = TRUE)) %>% 
+  arrange(desc(mean_tweet_volume))
+```
+
+궁금해서 twitter에 검색을 해보니... 레드벨벳 웬디가 SBS '가요대전' 추락사고가 발생되서 팬들이 SBS를 질타하는 내용임을 확인할 수 있다. 
+
+<blockquote class="twitter-tweet"><p lang="ko" dir="ltr">사고 발생 후 4일이 흘렀는데 아직도 이게 안됩니까?<br><br>사고 경위, 사고 발생 원인과 책임 소재 규명, 총책임자의 사과, 구체적인 피해 보상계획, 사고 재발 방지를 위한 대책이 포함된 정식 사과문. <a href="https://twitter.com/hashtag/SBS%EB%8A%94_%EC%B1%85%EC%9E%84%EC%A0%B8%EB%9D%BC?src=hash&amp;ref_src=twsrc%5Etfw">#SBS는_책임져라</a><a href="https://twitter.com/hashtag/TakeResponsibilitySBS?src=hash&amp;ref_src=twsrc%5Etfw">#TakeResponsibilitySBS</a><a href="https://twitter.com/SBSNOW?ref_src=twsrc%5Etfw">@SBSNOW</a><a href="https://twitter.com/hashtag/WaitingForWendy?src=hash&amp;ref_src=twsrc%5Etfw">#WaitingForWendy</a></p>&mdash; 린넨커튼&amp;벨벳로프 (@dj_netrider) <a href="https://twitter.com/dj_netrider/status/1210844831963996160?ref_src=twsrc%5Etfw">December 28, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+# 
