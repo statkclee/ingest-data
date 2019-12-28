@@ -122,4 +122,121 @@ korea_trend %>%
 
 <blockquote class="twitter-tweet"><p lang="ko" dir="ltr">사고 발생 후 4일이 흘렀는데 아직도 이게 안됩니까?<br><br>사고 경위, 사고 발생 원인과 책임 소재 규명, 총책임자의 사과, 구체적인 피해 보상계획, 사고 재발 방지를 위한 대책이 포함된 정식 사과문. <a href="https://twitter.com/hashtag/SBS%EB%8A%94_%EC%B1%85%EC%9E%84%EC%A0%B8%EB%9D%BC?src=hash&amp;ref_src=twsrc%5Etfw">#SBS는_책임져라</a><a href="https://twitter.com/hashtag/TakeResponsibilitySBS?src=hash&amp;ref_src=twsrc%5Etfw">#TakeResponsibilitySBS</a><a href="https://twitter.com/SBSNOW?ref_src=twsrc%5Etfw">@SBSNOW</a><a href="https://twitter.com/hashtag/WaitingForWendy?src=hash&amp;ref_src=twsrc%5Etfw">#WaitingForWendy</a></p>&mdash; 린넨커튼&amp;벨벳로프 (@dj_netrider) <a href="https://twitter.com/dj_netrider/status/1210844831963996160?ref_src=twsrc%5Etfw">December 28, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
-# 
+# 클라우드 인기 시계열 {#aws-azure-gcp}
+
+클라우드 경쟁이 치열하다. 아마존 AWS를 비롯하여 마이크로소프트 Azure, Google Cloud, IBM 그리고 최근에는 알리바바가 폭풍성장을 하고 있다. [CIODIVE, "AWS to encounter IaaS market 'erosion' as contenders mature"](https://www.ciodive.com/news/iaas-Azure-AWS-Google-Cloud-Alibaba/559716/) 기사 내용과 비교하여 한국에서 트윗되고 있는 내용과 비교해보자.
+
+```{r cloud-market-share}
+library(rvest)
+
+cloud_url <- "https://www.ciodive.com/news/iaas-Azure-AWS-Google-Cloud-Alibaba/559716/"
+
+cloud_df <- cloud_url %>% 
+  read_html() %>% 
+  html_nodes(xpath='//*[@id="main-content"]/article/div[2]/div[2]/div/div[1]/div[3]/table') %>% 
+  html_table() %>% 
+  .[[1]]
+
+cloud_df %>% 
+  select(-`Growth, 2017-2018`) %>% 
+  pivot_longer(cols=contains("Market")) %>% 
+  mutate(value = parse_number(value) / 100) %>% 
+  mutate(name = str_replace(name, "Market share, ", "MS_")) %>% 
+  mutate(Company = factor(Company, levels = c("Amazon", "Microsoft Azure", "Alibaba", "Google Cloud","IBM", "Others"))) %>% 
+  ggplot(aes(x=name, y=value, fill=name)) +
+    geom_col() +
+    scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
+    facet_wrap(~Company) +
+    labs(x="", y="시장 점유율(%)") +
+    scale_fill_manual(values=c("darkgray", "blue")) +
+    theme_bw() +
+    theme(legend.position = "none")
+```
+
+`lang="ko"`로 클라우드 3사를 비교하는 것은 트윗이 너무 적어서 포기함.
+
+```{r cloud-market-share-twitter, eval=FALSE}
+aws_tw <- search_tweets("#AWS", n = 18000, include_rts = FALSE, lang="ko")
+azure_tw <- search_tweets("#Azure", n = 18000, include_rts = FALSE, lang="ko")
+gcp_tw <- search_tweets("#GCP", n = 18000, include_rts = FALSE, lang="ko")
+alibaba_tw <- search_tweets("#AlibabaCloud", n = 18000, include_rts = FALSE, lang="ko")
+```
+
+`n = 18000`을 두는 이유는 최대 트윗 갯수가 18,000이라 최대한 트윗을 땡겨온다.
+**Rate limit exceeded - 88** 이슈가 있어 1,800으로 트윗 갯수를 줄여서 작업한다.
+현재 시점 `r Sys.Date()` 최근 1주일정도 추세를 보는데 큰 무리는 없어 보인다.
+
+```{r cloud-market-share-twitter-world, eval=TRUE}
+aws_tw <- search_tweets("#AWS", n = 1800, include_rts = FALSE)
+azure_tw <- search_tweets("#Azure", n = 1800, include_rts = FALSE)
+gcp_tw <- search_tweets("#googlecloud", n = 1800, include_rts = FALSE)
+alibaba_tw <- search_tweets("#AlibabaCloud", n = 1800, include_rts = FALSE)
+
+aws_ts_df <- ts_data(aws_tw, by="hours")
+azure_ts_tw <- ts_data(azure_tw, by="hours")
+gcp_ts_tw <- ts_data(gcp_tw, by="hours")
+alibaba_ts_tw <- ts_data(alibaba_tw, by="hours")
+
+aws_ts_df %>% 
+  rename(aws=n) %>% 
+  left_join(azure_ts_tw, by="time") %>% 
+  rename(azure=n) %>% 
+  left_join(gcp_ts_tw, by="time") %>% 
+  rename(google=n) %>% 
+  left_join(alibaba_ts_tw, by="time") %>% 
+  rename(alibaba=n) %>% 
+  pivot_longer(-time) %>% 
+  ggplot(aes(x=time, y=value, color=name, group=name)) +
+    geom_line() +
+    geom_point() +
+    labs(x="", y="트윗횟수", color="클라우드 서비스") +
+    theme_bw() +
+    theme(legend.position = "top")
+```
+
+
+# 활동성 - `#CloudComputing` {#cloud-computing-activity}
+
+`#CloudComputing`을 가장 많이 언급하는 트윗 사용자를 찾아보자.
+이를 위해서 먼저 `search_tweets()` 함수로 해쉬태그 "#CloudComputing"을 넣고 `screen_name`을 기준으로 트윗횟수를 세어본다.
+
+```{r cloud-computing-activity}
+cloud_twts <- search_tweets("#CloudComputing", n=18000)
+
+cloud_twts %>% 
+  count(screen_name, name="트윗수", sort=TRUE)
+```
+
+`#CloudComputing` 해쉬태그 상위 10명을 추출하여 `lookup_users()` 함수로 활동성과 관련된 지표를 추출한다.
+
+- status
+- followers
+- friends
+- favourites
+
+```{r cloud-computing-lookup-users}
+top_users <- cloud_twts %>% 
+  count(screen_name, name="트윗수", sort=TRUE) %>% 
+  top_n(10, wt=트윗수) %>% 
+  pull(screen_name)
+
+lookup_users(top_users) %>% 
+  # select(screen_name, contains("_count")) %>% 
+  select(screen_name, statuses_count, followers_count, friends_count, favourites_count)
+```
+
+트윗 유저 상기 활동성 지표를 `ggplot`으로 시각화하여 각 사용자별 특성을 직관적으로 파악할 수 있도록 한다.
+
+```{r cloud-computing-lookup-users-viz}
+lookup_users(top_users) %>% 
+  select(screen_name, statuses_count, followers_count, friends_count, favourites_count) %>% 
+  pivot_longer(-screen_name) %>% 
+  ggplot(aes(x=screen_name, y=value, fill=screen_name)) +
+    geom_col() +
+    coord_flip() +
+    scale_y_continuous(labels=scales::comma) +
+    facet_wrap(~name, scales = "free") +
+    labs(x="", y="") +
+    theme_bw() +
+    theme(legend.position = "none")
+```
