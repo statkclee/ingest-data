@@ -81,6 +81,56 @@ tidyverse_tw <- search_tweets("#tidyverse", n = 100, include_rts = TRUE, lang = 
 tidyverse_tw
 ```
 
+트위터 헬로월드를 찍게 되면 `get_trends()` 함수로 아무 생각없을 때 세상에 어떤 일이 일어나고 있는지 알아볼 수 있다. 어떤 주제가 뜨고 있고 어느 지역에서 그런 일이 일어나는지 파악하는데 도움이 된다. `search_tweets()`는 특정 해쉬태그 등 검색어를 넣어 관심 트윗을 얻어내는데 사용한다. `lookup_users()`는 트위터 계정에 대한 정보를 얻는데 도움을 얻을 수 있다.
+
+![트위터 주요 키워드: `rtweet` 함수](fig/twitter-keywords.png){#id .class width="50%"}
+
+## 트윗 검색 옵션 {#retweet-option}
+
+트윗 검색 함수에 검색어를 넣게 되면 모든 트윗을 다 가져온다. 마치 SQL 문의 `SELECT * FROM ...`와 같은 것이라 때로는 불필요한 정보가 포함되어 추후 다시 데이터 정제작업을 수행할 때가 있다. 이를 보완하고자 다양한 검색 옵션을 `rtweet` 팩키지에서 제공한다. 물론 트위터 API에서 따온 것이기는 하다.
+
+먼저 활동성 통계량을 특정하여 트윗검색하는 방법을 살펴보자.
+`search_tweets()` 함수 내부에 검색어와 `min_faves`, `min_retweets`를 넣는다. `lang='en'`으로 언어도 영어로 한정한다.
+
+- `#CloudComputing`
+- `min_faves:10` `AND` `min_retweets:10`
+- `lang='en'`
+
+```{r tweet-search-option}
+cloud_option_twts <- search_tweets("#CloudComputing min_faves:10 AND min_retweets:10", lang='en')
+
+cloud_option_twts %>% 
+  select(screen_name, favorite_count, retweet_count, text) %>% 
+  arrange(desc(favorite_count)) %>% 
+  DT::datatable()
+```
+
+이외에도 `retweets`, `quote`, `replies`를 제거한 트윗을 얻기 위해 `filter:` 선택옵션을 추가한다.
+
+- Exclude retweets via "-filter:retweets"
+- Exclude quotes via "-filter:quote"
+- Exclude replies via "-filter:replies"
+- Filter (return only) verified via "filter:verified"
+- Exclude verified via "-filter:verified"
+- Get everything (firehose for free) via "-filter:verified OR filter:verified"
+- Filter (return only) tweets with links to news articles via "filter:news"
+- Filter (return only) tweets with media "filter:media"
+
+```{r tweet-search-option-filter}
+cloud_filter_twts <- search_tweets("#CloudComputing 
+                                   min_faves:10 AND min_retweets:10
+                                   -filter:retweets
+                                   -filter:quote
+                                   -filter:replies", 
+                                   lang='en')
+
+cloud_filter_twts %>% 
+  select(screen_name, favorite_count, retweet_count, text) %>% 
+  arrange(desc(favorite_count)) %>% 
+  DT::datatable()
+```
+
+
 # 최신 유행 주제 {#twitter-trends}
 
 가장 먼저 특정 지역에 가장 유행하는 주제가 무엇인지 찾아보자. 이를 **트위터 트렌드(twitter trend)**라고 흔히 부른다. `get_trends()` 함수를 사용하게 되면 전세계 트윗을 해쉬태그(hashtag), 키워드, 이벤트, 지역 등을 분석해서 최신 유행하는 주제를 파악할 수 있다.
@@ -105,6 +155,8 @@ availabel_trends %>%
 2019-12-28 오후 10시 "#SBS는_책임져라" 해쉬태그가 가장 유행하는 주제로 나온다.
 
 ```{r trend-korea}
+library(glue)
+
 korea_woeid <- availabel_trends %>% 
   filter(countryCode == "KR", woeid == 23424868) %>% 
   select(woeid) %>% 
@@ -116,6 +168,9 @@ korea_trend %>%
   group_by(trend) %>% 
   summarise(mean_tweet_volume = mean(tweet_volume, na.rm = TRUE)) %>% 
   arrange(desc(mean_tweet_volume))
+
+korea_trend %>% 
+  write_rds(glue("data/kr_trend_{Sys.Date()}.rds"))
 ```
 
 궁금해서 twitter에 검색을 해보니... 레드벨벳 웬디가 SBS '가요대전' 추락사고가 발생되서 팬들이 SBS를 질타하는 내용임을 확인할 수 있다. 
@@ -201,7 +256,7 @@ aws_ts_df %>%
 이를 위해서 먼저 `search_tweets()` 함수로 해쉬태그 "#CloudComputing"을 넣고 `screen_name`을 기준으로 트윗횟수를 세어본다.
 
 ```{r cloud-computing-activity}
-cloud_twts <- search_tweets("#CloudComputing", n=18000)
+cloud_twts <- search_tweets("#CloudComputing", n=1800)
 
 cloud_twts %>% 
   count(screen_name, name="트윗수", sort=TRUE)
@@ -240,3 +295,35 @@ lookup_users(top_users) %>%
     theme_bw() +
     theme(legend.position = "none")
 ```
+
+# 네트워크 분석 {#tweet-network-analysis}
+
+`#CloudComputing`관련 트윗 검색어를 넣어 `include_rts = TRUE` 리트윗을 추적해보자. 
+이를 위해서 먼저 `screen_name`, `retweet_screen_name`을 넣어 엣지리스트 데이터프레임을 만든다.
+그리고 나서, `graph_from_data_frame()` 함수로 데이터프레임을 네트워크 자료형으로 변환시킨다. 
+
+```{r tweet-network-analysis}
+library(igraph)
+
+cc_twts <- search_tweets("#CloudComputing ", n=100, include_rts = TRUE)
+
+cc_twts_edgelist <- cc_twts %>% 
+  select(screen_name, retweet_screen_name, followers_count) %>% 
+  filter(complete.cases(.))
+
+cc_twts_nw <- graph_from_data_frame(cc_twts_edgelist, directed = TRUE)
+
+plot(cc_twts_nw,
+     asp = 9/16,
+     vertex.size = 5,
+     vertex.color = "skyblue",
+     edge.arrow.size = 0.1,
+     edge.color = "darkgray",
+     vertex.label.cex = 1.3,
+     vertex.label.color = "black")
+```
+
+네트워크 분석의 중요한 내용으로 중심성(centrality) 등 기술통계량을 추출하여 고급 분석을 이어간다. 이에 대한 자세한 사항은 [데이터 과학 – 네트워크](https://statkclee.github.io/network/)를 참조한다.
+
+
+
