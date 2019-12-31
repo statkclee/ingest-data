@@ -353,3 +353,30 @@ geo_twts_df %>%
                                                    "&middot; 트윗: ", text))) 
 
 ```
+
+# 트윗 텍스트 분석 {#tweet-text}
+
+`#CloudComputing`관련 트윗 검색어를 텍스트 데이터로 놓고 이를 자연어처리 분석을 추진한다.
+이를 위해서 `tidytext` 팩키지를 통해 단어 토큰을 만들이고 불용어 처리한 후에 단어 빈도수를 시각화해 보자.
+
+```{r tweet-text-mining}
+library(tidytext)
+
+cc_twts <- search_tweets("#CloudComputing ", n=1000, include_rts = FALSE)
+
+count_df <- cc_twts %>% 
+  select(status_id, text) %>% 
+  unnest_tokens(word, text) %>% 
+  anti_join(stop_words, by = "word") %>%
+  count(word, sort = TRUE) %>% 
+  top_n(15, wt=n)
+
+
+count_df %>% 
+  ggplot(aes(x=fct_reorder(word, n), y=n)) +
+    geom_col() +
+    coord_flip() +
+    labs(x="", y="") +
+    scale_y_continuous(labels = scales::comma) +
+    theme_bw()
+```
