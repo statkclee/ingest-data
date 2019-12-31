@@ -200,7 +200,8 @@ cloud_df %>%
   mutate(Company = factor(Company, levels = c("Amazon", "Microsoft Azure", "Alibaba", "Google Cloud","IBM", "Others"))) %>% 
   ggplot(aes(x=name, y=value, fill=name)) +
     geom_col() +
-    scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
+    # scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
+    scale_y_continuous(labels = scales::percent) +
     facet_wrap(~Company) +
     labs(x="", y="시장 점유율(%)") +
     scale_fill_manual(values=c("darkgray", "blue")) +
@@ -319,11 +320,36 @@ plot(cc_twts_nw,
      vertex.color = "skyblue",
      edge.arrow.size = 0.1,
      edge.color = "darkgray",
-     vertex.label.cex = 1.3,
+     vertex.label.cex = 0.7,
      vertex.label.color = "black")
 ```
 
 네트워크 분석의 중요한 내용으로 중심성(centrality) 등 기술통계량을 추출하여 고급 분석을 이어간다. 이에 대한 자세한 사항은 [데이터 과학 – 네트워크](https://statkclee.github.io/network/)를 참조한다.
 
 
+# 공간정보 {#tweet-geospatial}
 
+`#volcano`관련 트윗 검색어를 어디에서 많이 하는지 공간정보가 포함되어 있는 경우 이를 반영시킨다.
+`lat_lng()` 함수를 사용하면 "coords_coords", "bbox_coords", "geo_coords" 칼럼을 참고해서 위경도 정보를 추출한다. 이를 `leaflet` 팩키지를 활용하여 공간정보 시각화를 한다.
+
+
+```{r tweet-geospatial}
+library(leaflet)
+
+# 트윗 가져오기
+geo_twts <- search_tweets("#volcano ", n=1000, include_rts = TRUE)
+
+geo_twts_df <- lat_lng(geo_twts) %>% 
+  select(screen_name, text, lng, lat) %>% 
+  filter(!is.na(lng))
+
+
+geo_twts_df %>% 
+  leaflet() %>% 
+    addProviderTiles(providers$OpenStreetMap) %>% 
+    addMarkers(lng=~lng, lat=~lat, clusterOptions = markerClusterOptions(),
+                     popup = ~ as.character(paste0("<strong>", paste0("유저명: ",`screen_name`), "</strong><br>",
+                                                   "-----------------------------------------------------------<br>",
+                                                   "&middot; 트윗: ", text))) 
+
+```
