@@ -65,7 +65,7 @@ title: 다양한 데이터 가져오기
     + [~~페이스북(Facebook)~~](ingest-facebook.html)
     + [트위터(Twitter)](ingest-twitter.html)
         - [트위터 데이터 과학](ingest-twitter-data-science.html)
-    + [~~인스타그램(Instagram)~~](ingest-instagram.html)
+    + [인스타그램(Instagram)](ingest-instagram.html): 파이썬 크롤러, 셀레이움
     + [~~유튜브(Youtube)~~](ingest-youtube.html)
     + [~~네이버, 다음 뉴스](ingest-news.html)
 - [GitHub 저장소 - 데이터 사이언스](ingest-github-repo.html)
