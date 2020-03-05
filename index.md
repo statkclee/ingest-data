@@ -10,7 +10,7 @@ title: 다양한 데이터 가져오기
 > 금수저, 은수저 슈퍼파워를 받은 사람과 기계학습을 통달한 흑수저들간의 무한경쟁이 드뎌 시작되었다. 물론, 
 > 금수저를 입에 물고 기계학습을 통달한 사람이 가장 유리한 출발을 시작한 것도 사실이다.
 
-
+![Tim Berners-Lee [5-star deployment scheme for Open Data](https://www.w3.org/DesignIssues/LinkedData.html)](fig/5-star-steps.png)
 
 ## 학습목차 
 
@@ -51,6 +51,8 @@ title: 다양한 데이터 가져오기
         - [선관위 지방선거(2018) - POST, 로컬, 도커](election-post-docker.html)
         - [속초시 CCTV](cctv-sokcho.html)
 - [데이터베이스 (SQL)](https://statkclee.github.io/data-science/) &larr; **관계형 데이터베이스(RDBMS)**
+- **API(Application Programming Interface)**
+    - [API](ingest-api.html)
 - [사물인터넷(IoT) - `mqtt`](ingest-mqtt.html)
     - [IoT 센서 - JSON](ingest-iot-json.html)
 - 소프트웨어 카펜트리
