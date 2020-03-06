@@ -122,12 +122,15 @@ knitr::include_graphics('fig/twoblockai.png')
 <https://repo.continuum.io/archive/> 웹사이트에서 다운로드 받을 해당 버전을 선택하여 설치를 했으나 맥OS가 Catalina로 버전업 되면서 루트에 설치하는 것이 원칙적으로 금지되었다. 
 이런 경우 `reticulate::install_miniconda()` 명령어로 설치를 진행한다.
 
-
 ```{r install-miniconda, eval = FALSE}
 reticulate::install_miniconda()
 use_python('/Users/statkclee/Library/r-miniconda/bin/python')
 repl_python()
-Error in py_discover_config(required_module, use_environment) : 
-  Python specified in RETICULATE_PYTHON (/anaconda3/bin/python3) does not exist
+```
+
+[Stackoverflow, "Unable to change python path in reticulate (R)"](https://stackoverflow.com/questions/50145643/unable-to-change-python-path-in-reticulate-r)를 참조하여 ".Renviron" 파일에 `RETICULATE_PYTHON`을 지정한다.
+
+```{r reticulate-python-home, eval = FALSE}
+RETICULATE_PYTHON="/usr/local/bin/python3"
 ```
 
