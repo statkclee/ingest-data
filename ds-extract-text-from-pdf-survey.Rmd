@@ -1,11 +1,9 @@
 ---
 layout: page
-title: 데이터 과학
-subtitle: PDF 감옥에서 데이터를 탈출시키다.
+title: "다양한 데이터 가져오기"
+subtitle: "기계판독 가능한 PDF 표 &rarr; 데이터프레임"
 author:
-    name: xwMOOC
-    url: https://www.facebook.com/groups/tidyverse/
-    affiliation: Tidyverse Korea
+    name: "[Tidyverse Korea](https://www.facebook.com/groups/tidyverse/)"
 date: "`r Sys.Date()`"
 output:
   html_document: 
@@ -35,8 +33,6 @@ loadfonts()
 ```
 
 
-
-
 # `.pdf` 감옥에 감금된 데이터 [^tesseract-ocr] [^extract-data-and-text] [^extract-data-from-pdf] {#pdf-realmeter}
 
 [^tesseract-ocr]: [The new Tesseract package: High Quality OCR in R](https://www.r-bloggers.com/the-new-tesseract-package-high-quality-ocr-in-r/)
@@ -54,7 +50,7 @@ PDF 감옥에 감금된 공개 데이터를 탈옥시켜서 `.pdf` 파일에서 
 
 <img src="fig/twitter-pdf-open.png" alt="트위터 문제제기" width="77%" />
 
-# `.pdf` 파일에 감금된 데이터 해방 {#pdf-realmeter-liberation}
+## `.pdf` 감금된 데이터 해방 {#pdf-realmeter-liberation}
 
 여론조사 전문기관에서 여론조사 결과를 다양한 형태로 제공하고 있지만, 빅데이터를 활용하는 입장에서는 `.pdf` 파일 형태로 제공되는 것도 매우 고마운 일이다.
 중앙선거관리위원회를 비롯한 다수 기관에서 제공되는 데이터는 pdf 파일을 이미지로 만들어서 OCR 같은 기술을 추가로 동원하지 않으면 활용도 불가능하기 때문이다.
@@ -64,7 +60,14 @@ PDF 감옥에 감금된 공개 데이터를 탈옥시켜서 `.pdf` 파일에서 
 
 여론조사에서 나름대로 체계적으로 데이터를 제공하는 곳은 현재 [리얼미터](http://www.realmeter.net/category/pdf/) 정도가 아닌가 판단된다.
 
-# 리얼미터 여론조사 데이터 분석 {#pdf-realmeter-analysis}
+## 감금된 `.pdf` 해방 방법 {#pdf-realmeter-liberation-strategy}
+
+`.pdf`파일에서 표(table)를 추출하는 방법은 기계판독 가능한 PDF 파일일 때 정규표현식을 사용하는 방법과 자바기반 `tabulizer` 팩키지를 활용하는 방법으로 크게 나눌 수 있다.
+
+![`.pdf`파일에서 표(table)추출 방법](fig/pdf-to-dataframe.png)
+
+
+# 정규표현식 방식 {#pdf-realmeter-analysis}
 
 리얼미터도 설문조사 원데이터를 바탕으로 대선 후보 여론동향에 대한 분석결과를 제공한다. 
 하지만, 한정된 지면과 분석인력 및 전달 방법, 데이터를 바라보는 분석자의 관점 등에 따라 데이터의 가치는 달라질 수 있다.
@@ -168,4 +171,39 @@ support_by_age_df %>% gather(후보, 지지율, -연령) %>%
     theme(legend.position="none")
 ```
 
+# `tabulizer` 방식 {#pdf-realmeter-analysis}
+
+정규표현식의 경우 매번 일일이 표를 찾아 표를 인식하고 해당 열과 칼럼을 데이터프레임으로 변환시키는 작업을 해야된다는 측면에서 고생스럽다. 자바기반 `tabulizer` 도구를 사용하면 훨씬 간결하게 표를 추출할 수 있다.
+
+## `webshot` {#pdf-realmeter-webshot}
+
+`webshot` PDF 파일 찍는 것은 잘 동작하지 않네요!!!
+
+```{r realmeter-webshot, eval = FALSE}
+webshot::webshot("http://www.realmeter.net/wp-content/uploads/2017/04/realmeter_w17041321.pdf", "fig/realmeter-pdf.png", delay = 3)
+```
+
+## 표 추출 {#pdf-realmeter-webshot-tabulizer}
+
+
+```{r extract-table-from-pdf, eval = FALSE}
+library(tabulizer)
+
+## 여론조사 다운로드
+download.file(url="http://www.realmeter.net/wp-content/uploads/2017/04/realmeter_w17041321.pdf", destfile = "data/realmeter_w17041321.pdf")
+
+realmeter_table <- extract_tables("data/realmeter_w17041321.pdf",
+  pages=6,
+  output = "data.frame",
+  method = "decide",
+  # guess = TRUE,
+  area = list(c(75, 472.62, 75+447.83, 472.62+292.47)))
+
+realmeter_df <- realmeter_table %>% .[[1]] %>% janitor::clean_names()
+
+press_df %>% 
+  select(-no) %>% 
+  mutate(`기_사_제_목` = str_sub(`기_사_제_목`, 1, 20)) %>% 
+  DT::datatable()
+```
 
