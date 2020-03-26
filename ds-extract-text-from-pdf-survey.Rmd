@@ -174,36 +174,73 @@ support_by_age_df %>% gather(후보, 지지율, -연령) %>%
 # `tabulizer` 방식 {#pdf-realmeter-analysis}
 
 정규표현식의 경우 매번 일일이 표를 찾아 표를 인식하고 해당 열과 칼럼을 데이터프레임으로 변환시키는 작업을 해야된다는 측면에서 고생스럽다. 자바기반 `tabulizer` 도구를 사용하면 훨씬 간결하게 표를 추출할 수 있다.
+[코로나바이러스감염증-19 국내 발생 현황(3월 26일, 0시 기준)](https://www.cdc.go.kr/board/board.es?mid=a20501000000&bid=0015) PDF 파일을 대상으로 표를 추출해본다. 리얼미터 표는 SPSS 출력방식인데 여러 문제가 있음이 밝혀져서 대안으로 최근 관심이 많은 코로나19로 대상을 바꿔 추진해나간다.
 
-## `webshot` {#pdf-realmeter-webshot}
+## `magick` 문서 &rarr; 이미지 {#pdf-realmeter-webshot}
 
-`webshot` PDF 파일 찍는 것은 잘 동작하지 않네요!!!
+`magick` 팩키지 `image_read_pdf()` 함수를 사용해서 `tabulizer` 팩키지에서 추출할 표를 시각화시킨다.
+직사각형을 이미지에 올리기 위해서는 `image_draw()` 함수를 사용해서 메모리에 떠 있는 magick 객체를 가져와서 그 위에 `rect()` 함수로 직사각형을 위치시켜 찍는다.
 
-```{r realmeter-webshot, eval = FALSE}
-webshot::webshot("http://www.realmeter.net/wp-content/uploads/2017/04/realmeter_w17041321.pdf", "fig/realmeter-pdf.png", delay = 3)
+```{r realmeter-webshot}
+library(magick)
+
+cdc_img <- image_read_pdf("data/covid19-20200326.pdf", density = 300, pages = 1)
+
+cdc_draw_img <- cdc_img %>% 
+  image_scale("350")
+
+image_draw(cdc_draw_img)
+
+rect(20, 350, 330, 450, border = "red", lty = "dashed", lwd = 2)
+# dev.off()
 ```
 
 ## 표 추출 {#pdf-realmeter-webshot-tabulizer}
 
+`tabulizer` 팩키지 `extract_tables()` 함수로 기계판독 가능한 PDF 파일에서 표를 추출한다.
 
-```{r extract-table-from-pdf, eval = FALSE}
+```{r extract-table-from-pdf, eval = TRUE}
 library(tabulizer)
+library(tidyverse)
 
-## 여론조사 다운로드
-download.file(url="http://www.realmeter.net/wp-content/uploads/2017/04/realmeter_w17041321.pdf", destfile = "data/realmeter_w17041321.pdf")
+cdc_table <- extract_tables("data/covid19-20200326.pdf", encoding = "UTF-8")
 
-realmeter_table <- extract_tables("data/realmeter_w17041321.pdf",
-  pages=6,
-  output = "data.frame",
-  method = "decide",
-  # guess = TRUE,
-  area = list(c(75, 472.62, 75+447.83, 472.62+292.47)))
-
-realmeter_df <- realmeter_table %>% .[[1]] %>% janitor::clean_names()
-
-press_df %>% 
-  select(-no) %>% 
-  mutate(`기_사_제_목` = str_sub(`기_사_제_목`, 1, 20)) %>% 
-  DT::datatable()
+## 6 페이지: 확진자 성별, 연령별 현황
+cdc_table[[3]]  %>% 
+  as.data.frame() %>% 
+  janitor::clean_names() %>% 
+  slice(5:13) %>% 
+  select(v1, v2, v3) %>% 
+  arrange(v1) %>% 
+  set_names(c("연령", "확진자", "사망자")) %>% 
+  mutate(확진자 = str_extract(확진자, "[0-9]?,?[0-9]{3}"),
+         사망자 = str_extract(사망자, "[0-9]{1,3}")) %>% 
+  mutate(확진자 = parse_number(확진자),
+         사망자 = parse_number(사망자)) %>% 
+  mutate(치명률 = 사망자 / 확진자) %>% 
+  DT::datatable() %>% 
+    DT::formatRound(c("확진자", "사망자"), digits=0) %>% 
+    DT::formatPercentage("치명률", digits=1)
 ```
 
+## 표 추출: 영역 {#pdf-realmeter-webshot-tabulizer-area}
+
+앞의 방식으로 표를 추출할 수 없는 경우 `locate_areas()` 함수로 표의 좌표를 특정하여 특정된 영역의 표만 추출한다.
+
+```{r extract-area, eval = FALSE}
+locate_areas("data/covid19-20200326.pdf", pages=1, widget = "native")
+```
+
+ `locate_areas()` 함수로 추출된 표를 데이터프레임으로 바뀌었으나 성능이 영 좋지 못하다.
+
+```{r extract-table-from-pdf-final}
+# cdc_img %>% 
+#   image_write(path = "fig/cdc-corona9.png", format = "png")
+
+cdc_page <- extract_tables("data/covid19-20200326.pdf", encoding = "UTF-8",
+                            pages=1,
+                            output = "data.frame",
+                            method = "decide",
+                            guess = TRUE,
+                            area = list(c(627.80382, 59.12739, 729.58089,562.65605)))
+```
