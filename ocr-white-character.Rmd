@@ -31,10 +31,18 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
 
 ```
 
+![](fig/ocr-process.png){#id .class width="37%"}
 
-# OCR 대상 이미지 [^ocr-images] {#ocr-image}
+# OCR 대상 이미지 [^ocr-basics] [^ocr-images] [^ocr-preprocessing] [^ocr-segmentation] {#ocr-image}
 
 [^ocr-images]: [stackoverflow, "tesseract in R - read white font on black background"](https://stackoverflow.com/questions/59750745/tesseract-in-r-read-white-font-on-black-background)
+
+[^ocr-basics]: [Susmith Reddy (Mar 25, 2019), "What is OCR ?", Medium.com](https://medium.com/@susmithreddyvedere/what-is-ocr-7d46dc419eb9)
+
+[^ocr-preprocessing]: [Susmith Reddy (Mar 25, 2019), "Pre-Processing in OCR !!!", Medium.com](https://medium.com/@susmithreddyvedere/what-is-ocr-7d46dc419eb9)
+
+[^ocr-segmentation]: [Susmith Reddy (Mar 26, 2019), Segmentation in OCR !!", Medium.com](https://medium.com/@susmithreddyvedere/what-is-ocr-7d46dc419eb9)
+
 
 검은색 배경에 흰색글씨가 담긴 이미지에서 텍스트를 추출하는 사례를 살펴보자. 스택오버플로우 ["tesseract in R - read white font on black background"](https://stackoverflow.com/questions/59750745/tesseract-in-r-read-white-font-on-black-background)에 올라온 한장의 이미지를 가지고 시작해보자.
 
@@ -47,7 +55,6 @@ char_image <- image_read("fig/white-character.jpeg")
 
 char_image %>% 
   image_resize("2000x")
-
 ```
 
 ## 이미지 전처리 {#preprocess-images}
@@ -65,10 +72,46 @@ image_read(ifelse(input < .9, 1, 0) )
 
 ## 텍스트 추출 {#extract-ocr-text}
 
+`tessearact` 팩키지 `ocr()` 함수를 사용해서 텍스트를 추출한다.
+
 ```{r extract-text-from-image}
-ifelse(input < .9, 1, 0) %>% 
+ocr_characters <- ifelse(input < .9, 1, 0) %>% 
   image_read() %>% 
   image_resize('500x') %>% # make it smaller to work around the errors
-  tesseract::ocr( engine = "eng")
+  tesseract::ocr( engine = "eng") %>% 
+  str_remove("\n")
+
+ocr_characters
 ```
+
+## 성능 평가 {#evaluate-ocr-text}
+
+추출된 텍스트와 라벨(정답) 데이터간 문자열 거리(`stringdist`)를 사용하여 거리를 성능지표로 계산해 본다.
+
+```{r evaluate-text-from-image}
+library(stringdist)
+
+label <- "TLC200 PRO 2019/10/31 17:33:00"
+stringdist(label, ocr_characters)
+```
+
+# OCR 성능지표 [^abbyy-accuracy] [@tomaschek2018evaluation] {#ocr-evaluation-metric}
+
+[^abbyy-accuracy]: [ABBYY Technology Portal, "OCR Accuracy Measurement"](https://abbyy.technology/en:kb:tip:ocr-accuracy)
+
+- 글자 단위 정확도 (character metric)
+- 단어 단위 정확도 (word metric)
+
+글자 단위 성능지표는 다음과 같이 Precision, Recall을 정의한다.
+
+- $C_\text{precision} = \frac{C_\text{truth}}{C_\text{model}}$
+- $C_\text{recall} = \frac{C_\text{model}}{C_\text{truth}}$
+
+단어 단위 성능지표는 `Levenshtein` 거리를 사용하는 것도 좋을 듯 싶다.
+
+OCR 평가 도구는 다음과 같다.
+
+- The ISRI Analytic Tools: [`ocreval`](https://github.com/eddieantonio/ocreval)
+- hOCR tools: [`hocr-tools`](https://github.com/tmbdev/hocr-tools)
+- An open-source OCR evaluation tool: 자바 [`ocrevalUAtion`](https://github.com/impactcentre/ocrevalUAtion)
 
