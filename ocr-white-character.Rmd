@@ -1,8 +1,9 @@
 ---
 layout: page
-title: "검정배경 흰색글자 인식"
+title: "광학문자인식(OCR, Optical Character Recognition)"
+subtitle: "검정배경 흰색글자 인식"
 author:
-  - name: Tidyverse Korea
+  - name: "[Tidyverse Korea](https://www.facebook.com/groups/tidyverse/)"
     url: https://www.facebook.com/groups/tidyverse/
     affiliation: Tidyverse Korea
     affiliation_url: https://www.facebook.com/groups/tidyverse/
