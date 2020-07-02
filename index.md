@@ -30,6 +30,7 @@ title: 다양한 데이터 가져오기
     - **광학문자인식(OCR, Optical Character Recognition)**
         - [검정배경 흰색글자 인식](ocr-white-character.html)
         - [문자 분리(character segmentation)](ocr-white-segmentation.html)
+        - [기계판독 가능한 테이블(표)](ocr-table.html)
 - **웹(Web)**
     + **[웹 데이터](https://statkclee.github.io/data-science/ds-webdata.html)**
         - [웹 스크래핑(Web Scraping)](https://statkclee.github.io/data-science/data-scraping.html)
