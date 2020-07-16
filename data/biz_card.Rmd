@@ -1,0 +1,11 @@
+---
+name: 박지원
+title: '&nbsp;'
+phone: (02) 5556335
+email: jane.doe@example.com
+url: www.example.com
+address: ;;강남구 역삼동 668-4번지, 1 층 7티느;서울시;;;
+logo: ../fig/biz_card_logo.png
+repeat: 1.0
+output: pagedown::business_card
+---
