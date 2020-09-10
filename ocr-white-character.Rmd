@@ -10,7 +10,9 @@ author:
 date: "`r Sys.Date()`"
 output:
   html_document: 
-    theme: journal
+    include:
+      after_body: footer.html
+      before_body: header.html
     toc: yes
     toc_depth: 2
     toc_float: true
@@ -18,7 +20,7 @@ output:
     code_folding: show
     number_section: true
     self_contained: true
-bibliography: bibliography.bib
+bibliography: bibliography_ingest.bib
 csl: biomed-central.csl
 urlcolor: blue
 linkcolor: blue
@@ -32,7 +34,9 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
 
 ```
 
+<center>
 ![](fig/ocr-process.png){#id .class width="37%"}
+</center>
 
 # OCR 대상 이미지 [^ocr-basics] [^ocr-images] [^ocr-preprocessing] [^ocr-segmentation] {#ocr-image}
 
@@ -116,3 +120,75 @@ OCR 평가 도구는 다음과 같다.
 - hOCR tools: [`hocr-tools`](https://github.com/tmbdev/hocr-tools)
 - An open-source OCR evaluation tool: 자바 [`ocrevalUAtion`](https://github.com/impactcentre/ocrevalUAtion)
 
+# 이미지 이진화 [^image-binarization] {#image-binarization}
+
+OCR (Optical Character Recognition), HTR(Handwritten Text Recognition) 성능향상을 위해서 adaptive thresholding 기법을 적용하는 이미지 이진화(Image Binarization)를 손쉽게 적용할 수 있는 팩키지가 도입되었다. ["image.binarization"](https://github.com/DIGI-VUB/image.binarization) 팩키지는 사실 [Δoxa Binarization Framework](https://github.com/brandonmpetty/Doxa) C/C++ 코드를 R 팩키지로 묶어놓은 것이다. [WebAssembly Demo - Local Adaptive Binarization](https://brandonmpetty.github.io/Doxa/WebAssembly/) 데모가 있으니 살펴보면 좋을 듯 싶다.
+
+[^image-binarization]: [Github, "image.binarization"](https://github.com/DIGI-VUB/image.binarization)
+
+지원되는 알고리즘은 다음과 같다.
+
+- Otsu - "A threshold selection method from gray-level histograms", 1979.
+- Bernsen - "Dynamic thresholding of gray-level images", 1986.
+- Niblack - "An Introduction to Digital Image Processing", 1986.
+- Sauvola - "Adaptive document image binarization", 1999.
+- Wolf - "Extraction and Recognition of Artificial Text in Multimedia Documents", 2003.
+- Gatos - "Adaptive degraded document image binarization", 2005. (Partial)
+- NICK - "Comparison of Niblack inspired Binarization methods for ancient documents", 2009.
+- Su - "Binarization of Historical Document Images Using the Local Maximum and Minimum", 2010.
+- T.R. Singh - "A New local Adaptive Thresholding Technique in Binarization", 2011.
+- Bataineh - "An adaptive local binarization method for document images based on a novel thresholding method and dynamic windows", 2011. (unreproducible)
+- ISauvola - "ISauvola: Improved Sauvola’s Algorithm for Document Image Binarization", 2016.
+- WAN - "Binarization of Document Image Using Optimum Threshold Modification", 2018.
+
+## 이미지 전처리 {#helloworld-image-binarization}
+
+OTSU 알고리즘으로 텍스트 OCR 작업 수행하기 전에 전처리 작업을 진행한다.
+
+```{r image-binarization-hello-world}
+library(magick)
+# remotes::install_github("DIGI-VUB/image.binarization")
+library(image.binarization)
+test_img <- image_read("fig/white-character.jpeg") %>%  image_resize('500x')
+converted_img <- image_convert(test_img, format = "PGM", colorspace = "Gray")
+processed_img <- image_binarization(converted_img, type = "otsu")
+
+processed_img
+```
+
+## 텍스트 추출 {#helloworld-image-binarization-ocr}
+
+`tesseract` 팩키지를 통해 텍스트를 추출하고 정답과 비교해보자.
+
+```{r image-binarization-ocr}
+ocred_text <- tesseract::ocr(processed_img, engine = "eng") %>% 
+  stringr::str_remove("\n")
+
+ocred_text
+
+stringdist::stringdist(label, ocred_text)
+```
+
+## 다양한 방법 {#image-binarization-ocr-automation}
+
+문서에 대해 적절한 방법을 탐색해 본다. 
+
+```{r image-binarization-search-method}
+test_img <- image_read("fig/white-character.jpeg") %>%  image_resize('500x')
+converted_img <- image_convert(test_img, format = "PGM", colorspace = "Gray")
+
+methods_list <- c("otsu", "sauvola", "wolf")
+
+for(i in seq_along(methods_list)) {
+  
+  processed_img <- image_binarization(converted_img, type = methods_list[i])
+  
+  ocred_text <- tesseract::ocr(processed_img, engine = "eng") %>% 
+    stringr::str_remove("\n")
+
+  cat(methods_list[i], "- Error :", stringdist::stringdist(label, ocred_text), "\n",
+      "Label:", label, "\n",
+      "OCRED:", ocred_text, "\n")
+}
+
+```
