@@ -55,6 +55,7 @@ title: 다양한 데이터 가져오기
     - **공공데이터**
         - [선관위 지방선거(2018) - POST, 로컬, 도커](election-post-docker.html)
         - [속초시 CCTV](cctv-sokcho.html)
+    - [구글 스프레드쉬트(Google Spreadsheets)](ingest-google-sheets.html)    
 - [데이터베이스 (SQL)](https://statkclee.github.io/data-science/) &larr; **관계형 데이터베이스(RDBMS)**
 - **API(Application Programming Interface)**
     - [API](ingest-api.html)
