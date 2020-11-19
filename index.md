@@ -74,9 +74,11 @@ title: 다양한 데이터 가져오기
         - [트위터 데이터 과학](ingest-twitter-data-science.html)
     + [인스타그램(Instagram)](ingest-instagram.html): 파이썬 크롤러, 셀레이움
     + [~~유튜브(Youtube)~~](ingest-youtube.html)
-    + [~~네이버, 다음 뉴스](ingest-news.html)
+    + [~~네이버, 다음 뉴스~~](ingest-news.html)
 - [GitHub 저장소 - 데이터 사이언스](ingest-github-repo.html)
     + [`GitHub` 데이터 분석: 프로젝트 평가](ingest-data-github-data-analysis.html)
+- [직사각형이 아닌 데이터 - `JSON`, `XML`](non-rectangular-to-dataframe.html)
+
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)
 
