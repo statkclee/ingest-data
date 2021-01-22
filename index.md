@@ -79,7 +79,7 @@ title: 다양한 데이터 가져오기
     + [`GitHub` 데이터 분석: 프로젝트 평가](ingest-data-github-data-analysis.html)
 - [직사각형이 아닌 데이터 - `JSON`, `XML`](non-rectangular-to-dataframe.html)
     + [`JSON`, `XML` &rarr; 데이터프레임](dataframe-to-xml-json.html)
-
+- [**논문**](ingest-bibtex.html)
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)
 
