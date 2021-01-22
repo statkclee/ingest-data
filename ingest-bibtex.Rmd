@@ -54,16 +54,99 @@ $$1. Knuth DE. The art of computer programming. Pearson Education; 1997.$$
 }
 ```
 
-## `BibTeX` 데이터베이스 {#bibtex-database}
+# `BibTeX` 데이터프레임 {#bibtex-dataframe}
 
 `BibTeX` 형태의 정보가 쌓이게 되면 이를 변환하여 데이터프레임으로 변환시킬 수 있다. 정형 데이터로부터 다양한 분석과 경우에 따라서는 예측모형 구축도 가능하게 된다.
 
 ![](fig/bibliography-to-dataframe.png)
 
 [`bib2df`](https://docs.ropensci.org/bib2df/) 팩키지의 도움으로 `BibTeX` 파일을 데이터프레임으로 변환시킬 수 있다.
+`bib2df`에 기본으로 내장된 `BibTeX` 파일을 대상으로 작업을 수행해보자. 
 
 ```{r bib2df}
 library(tidyverse)
 library(bib2df)
+
+bibtex_dat <- system.file("extdata", "LiteratureOnCommonKnowledgeInGameTheory.bib", package = "bib2df")
+
+readr::read_lines(bibtex_dat) %>% 
+  head(10)
 ```
+
+
+`bib2df()` 함수를 통해 `BibTeX` 파일을 정형 데이터프레임으로 변환시킬 수 있다. 데이터프레임으로 변환이 되면 이후 다양한 분석작업을 수행할 수 있게 된다.
+
+```{r bib2df-dataframe}
+bibtex_tbl <- bib2df(bibtex_dat)
+
+bibtex_tbl %>% 
+  sample_n(10) %>% 
+  janitor::clean_names() %>% 
+  select(bibtexkey, author, title, year, journal) %>% 
+  reactable::reactable()
+```
+
+데이터프레임으로 변환이 되었기 때문에 `dplyr`와 `ggplot`을 결합시켜 탐색적 데이터분석 업무를 후속으로 이어 작업하면 좋다.
+
+```{r bib2df-df-example}
+bibtex_tbl %>% 
+  janitor::clean_names() %>% 
+  select(year, author) %>% 
+  unnest(cols = author) %>%
+  mutate(author = fct_reorder(author, year)) %>% 
+  ggplot(aes(x = year, y = author)) + 
+    geom_point() +
+    theme_light()
+```
+
+# `BibTeX` 원자료 준비 {#bibtex-raw-data}
+
+[https://www.dimensions.ai/](https://www.dimensions.ai/) 웹사이트 가입하고 코로나19와 자연어처리 관련 논문을 추출하여 데이터를 준비해보자.
+
+`(Covid-19 OR CORONAVIRUS) AND (NLP OR Natural Language Processing)`
+
+다운로드 받은 데이터를 불러와서 본격적인 분석을 위한 준비를 한다.
+
+```{r bib2df-rawdata}
+covid_tbl <- bib2df("data/Dimensions-Publication-citations-2021-01-22_06-55-18.bib")
+
+covid_tbl %>% 
+  sample_n(10) %>% 
+  janitor::clean_names() %>% 
+  select(bibtexkey, author, title, year, journal) %>% 
+  reactable::reactable()
+```
+
+
+# 참고문헌 분석 [^bibliometrics-analysis] {#bibtex-bibliography}
+
+[^bibliometrics-analysis]: [Massimo Aria and Corrado Cuccurullo, "A brief introduction to bibliometrix", https://www.bibliometrix.org/](https://www.bibliometrix.org/vignettes/Introduction_to_bibliometrix.html)
+
+```{r bibliography-analysis}
+library(bibliometrix)
+
+covid_bib <- convert2df(file = "https://export.uberresearch.com/2021-01-22/6b0265153305b9c30071e0da2bb0a3ec/Dimensions-Publication-2021-01-22_07-16-41.csv.zip", dbsource = "dimensions", format = "csv")
+
+covid_results <- biblioAnalysis(covid_bib, sep = ";")
+
+covid_summary <- summary(object = covid_results, k = 10, pause = FALSE)
+
+covid_summary
+```
+
+
+```{r bibliography-descriptive}
+plot(x = covid_results, k = 10, pause = FALSE)
+
+```
+
+
+```{r bibliography-network, eval=FALSE}
+covid_network <- biblioNetwork(covid_bib, analysis = "coupling", network = "references", sep = ".  ")
+```
+
+```{r bibliography-network-2, eval=FALSE}
+CS <- conceptualStructure(covid_bib, field="ID", method="CA", minDegree=2, clust=3, stemming=FALSE, labelsize=10, documents=2)
+```
+
 

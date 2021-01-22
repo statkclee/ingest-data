@@ -26,6 +26,12 @@
 <script src="ingest-bibtex_files/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="ingest-bibtex_files/navigation-1.1/tabsets.js"></script>
 <script src="ingest-bibtex_files/navigation-1.1/codefolding.js"></script>
+<script src="ingest-bibtex_files/core-js-2.5.3/shim.min.js"></script>
+<script src="ingest-bibtex_files/react-16.12.0/react.min.js"></script>
+<script src="ingest-bibtex_files/react-16.12.0/react-dom.min.js"></script>
+<script src="ingest-bibtex_files/reactwidget-1.0.0/react-tools.js"></script>
+<script src="ingest-bibtex_files/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<script src="ingest-bibtex_files/reactable-binding-0.2.3/reactable.js"></script>
 
 <style type="text/css">
   code{white-space: pre-wrap;}
@@ -425,19 +431,374 @@ div.tocify {
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  year<span class="ot">=</span>{<span class="dv">1997</span>},</span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  publisher<span class="ot">=</span>{Pearson Education}</span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<div id="bibtex-database" class="section level2" number="1.1">
-<h2 number="1.1"><span class="header-section-number">1.1</span> <code>BibTeX</code> 데이터베이스</h2>
+</div>
+<div id="bibtex-dataframe" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> <code>BibTeX</code> 데이터프레임</h1>
 <p><code>BibTeX</code> 형태의 정보가 쌓이게 되면 이를 변환하여 데이터프레임으로 변환시킬 수 있다. 정형 데이터로부터 다양한 분석과 경우에 따라서는 예측모형 구축도 가능하게 된다.</p>
 <p><img src="fig/bibliography-to-dataframe.png" /></p>
-<p><a href="https://docs.ropensci.org/bib2df/"><code>bib2df</code></a> 팩키지의 도움으로 <code>BibTeX</code> 파일을 데이터프레임으로 변환시킬 수 있다.</p>
+<p><a href="https://docs.ropensci.org/bib2df/"><code>bib2df</code></a> 팩키지의 도움으로 <code>BibTeX</code> 파일을 데이터프레임으로 변환시킬 수 있다. <code>bib2df</code>에 기본으로 내장된 <code>BibTeX</code> 파일을 대상으로 작업을 수행해보자.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bib2df)</span></code></pre></div>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bib2df)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>bibtex_dat <span class="ot">&lt;-</span> <span class="fu">system.file</span>(<span class="st">&quot;extdata&quot;</span>, <span class="st">&quot;LiteratureOnCommonKnowledgeInGameTheory.bib&quot;</span>, <span class="at">package =</span> <span class="st">&quot;bib2df&quot;</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">read_lines</span>(bibtex_dat) <span class="sc">%&gt;%</span> </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">10</span>)</span></code></pre></div>
+<pre><code> [1] &quot;@Article{Arrow1986,&quot;                                                                 
+ [2] &quot;  Title                    = {Rationality of Self and Others in an Economic System},&quot;
+ [3] &quot;  Author                   = {Arrow, Kenneth J.},&quot;                                   
+ [4] &quot;  Journal                  = {The Journal of Business},&quot;                             
+ [5] &quot;  Year                     = {1986},&quot;                                                
+ [6] &quot;  Number                   = {4},&quot;                                                   
+ [7] &quot;  Pages                    = {385--399},&quot;                                            
+ [8] &quot;  Volume                   = {59}&quot;                                                   
+ [9] &quot;}&quot;                                                                                   
+[10] &quot;&quot;                                                                                    </code></pre>
+<p><code>bib2df()</code> 함수를 통해 <code>BibTeX</code> 파일을 정형 데이터프레임으로 변환시킬 수 있다. 데이터프레임으로 변환이 되면 이후 다양한 분석작업을 수행할 수 있게 된다.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>bibtex_tbl <span class="ot">&lt;-</span> <span class="fu">bib2df</span>(bibtex_dat)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>bibtex_tbl <span class="sc">%&gt;%</span> </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(bibtexkey, author, title, year, journal) <span class="sc">%&gt;%</span> </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  reactable<span class="sc">::</span><span class="fu">reactable</span>()</span></code></pre></div>
+<div id="htmlwidget-1bd64fd408f0f4ddcc28" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1bd64fd408f0f4ddcc28">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"bibtexkey":["Geanakoplos1994","Luce1957","Pearce1984","Harsanyi1967","Tan1988","Monderer1989","Arrow1986","Schiffer1972","Nozick1963","Bicchieri1989"],"author":[["Geanakoplos, John"],["Luce, R. Duncan","Raiffa, Howard"],["Pearce, David G."],["Harsanyi, John C."],["Tan, Tommy Chin-Chiu","Werlang, Sergio Ribeiro da Costa"],["Monderer, Dov","Samet, Dov"],["Arrow, Kenneth J."],["Schiffer, Stephen R."],["Nozick, Robert"],["Bicchieri, Cristina"]],"title":["Common knowledge","Games and Decisions - Introduction and Critical Survey","Rationalizable Strategic Behaviour and the Problem of Perfection","Games with Incomplete Information Played by \"Bayesian\" Players, I-III. Part I. The Basic Model","The Bayesian Foundations of Solution Concepts of Games","Approximating Common Knowledge with Common Beliefs","Rationality of Self and Others in an Economic System","Meaning","The Normative Theory of Individual Choice","Self-refuting Theories of Strategic Interaction: A Paradox of Common Knowledge"],"year":[1994,1957,1984,1967,1988,1989,1986,1972,1963,1989],"journal":[null,null,"Econometrica","Management Science","Journal of Economic Theory","Games and Economic Behavior","The Journal of Business",null,null,"Erkenntnis"]},"columns":[{"accessor":"bibtexkey","name":"bibtexkey","type":"character"},{"accessor":"author","name":"author","type":"list"},{"accessor":"title","name":"title","type":"character"},{"accessor":"year","name":"year","type":"numeric"},{"accessor":"journal","name":"journal","type":"character"}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"1736f1888bcf49d20e0d5223ba0e0ffa","key":"1736f1888bcf49d20e0d5223ba0e0ffa"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<p>데이터프레임으로 변환이 되었기 때문에 <code>dplyr</code>와 <code>ggplot</code>을 결합시켜 탐색적 데이터분석 업무를 후속으로 이어 작업하면 좋다.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bibtex_tbl <span class="sc">%&gt;%</span> </span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(year, author) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>(<span class="at">cols =</span> author) <span class="sc">%&gt;%</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">author =</span> <span class="fu">fct_reorder</span>(author, year)) <span class="sc">%&gt;%</span> </span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> author)) <span class="sc">+</span> </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_light</span>()</span></code></pre></div>
+<p><img src="ingest-bibtex_files/figure-html/bib2df-df-example-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="bibtex-raw-data" class="section level1" number="3">
+<h1 number="3"><span class="header-section-number">3</span> <code>BibTeX</code> 원자료 준비</h1>
+<p><a href="https://www.dimensions.ai/">https://www.dimensions.ai/</a> 웹사이트 가입하고 코로나19와 자연어처리 관련 논문을 추출하여 데이터를 준비해보자.</p>
+<p><code>(Covid-19 OR CORONAVIRUS) AND (NLP OR Natural Language Processing)</code></p>
+<p>다운로드 받은 데이터를 불러와서 본격적인 분석을 위한 준비를 한다.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>covid_tbl <span class="ot">&lt;-</span> <span class="fu">bib2df</span>(<span class="st">&quot;data/Dimensions-Publication-citations-2021-01-22_06-55-18.bib&quot;</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>covid_tbl <span class="sc">%&gt;%</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sample_n</span>(<span class="dv">10</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  janitor<span class="sc">::</span><span class="fu">clean_names</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(bibtexkey, author, title, year, journal) <span class="sc">%&gt;%</span> </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  reactable<span class="sc">::</span><span class="fu">reactable</span>()</span></code></pre></div>
+<div id="htmlwidget-a9785ff7af2bf5d83055" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-a9785ff7af2bf5d83055">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"bibtexkey":["pub.1132867213","pub.1134666819","pub.1134548032","pub.1134449738","pub.1132042278","pub.1134472271","pub.1134669049","pub.1134662668","pub.1132999206","pub.1134202406"],"author":[["Hänninen, Mikko","Paavola, Lauri"],["McDevitt, Seung Eun"],["Cohn, Michelle","Pycha, Anne","Zellou, Georgia"],["Avelino, João","Garcia-Marques, Leonel","Ventura, Rodrigo","Bernardino, Alexandre"],["Cobanoglu, H Bengu","Department of Otolaryngology, Head","Neck Surgery","Enver, Necati","Akbulut, Sevtap","Atmis, E Ozlem","Birkent, Hakan","Buyukatalay, Ciler","Demirhan, Erhan","Denizoglu, Ilter","Hasimli, Ramil","Korkmaz, Muge Ozcelik","Ozgursoy, Selmin Karatayli","Ozturk, Kayhan","Paltura, Ceki","Sirin, Seher","Tatar, Emel Cadalli","Tuzuner, Arzu","Yelken, Kursat","Coskun, H Hakan","Oguz, Haldun","Oz, Ferhan","Department of Otolaryngology, Head","Neck Surgery","Department of Otolaryngology, Head","Neck Surgery","Department of Otolaryngology, Head","Neck Surgery","Department of Otolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otolaryngology, Head","Neck Surgery","Department of Otorhinolaryngology, Head","Neck Surgery","Department of Otolaryngology, Head","Neck Surgery"],["Blum, Sonja"],["Fouda, Basem","Tram, Ha P.B.","Makram, Omar M.","Abdalla, Abdelrahman S.","Singh, Tushar","Hung, I-Chun","Raut, Akshay","Hemmeda, Lina","Alahmar, Majd","ElHawary, Ahmed S.","Awad, Dina","Huy, Nguyen T."],["Tan, Kelly R.","Santacroce, Sheila J.","Wood, William A.","Mayer, Deborah K.","Santos, Hudson","Mucha, Peter J.","Schwartz, Todd A.","Fredrickson, Barbara L."],[],["Smilowitz, Nathaniel R","Kunichoff, Dennis","Garshick, Michael","Shah, Binita","Pillinger, Michael","Hochman, Judith S","Berger, Jeffrey S"]],"title":["Managing transformations in retail agglomerations:Case Itis shopping center","While quarantined: An online parent education and training model for families of children with autism in China","Intelligibility of face-masked speech depends on speaking style: Comparing casual, clear, and emotional speech","Break the Ice: a Survey on Socially Aware Engagement for Human–Robot First Encounters","Laryngoscopic Examination During the COVID-19 Pandemic: Turkish Voice Speech and Swallowing Disorders Society and Turkish Professional Voice Society Recommendations","Failure to Perceive Change: From Neurons to Social Networks","Identifying SARS-CoV2 transmission cluster category: An analysis of country government database","Positive psychological states and stress responses in caregivers of adults receiving an allogeneic bone marrow transplant: A study protocol","Routledge Companion to Global Cyber-Security Strategy","C-reactive protein and clinical outcomes in patients with COVID-19"],"year":[2021,2021,2021,2021,2021,2021,2021,2021,2021,2021],"journal":["Journal of Retailing and Consumer Services","Research in Developmental Disabilities","Cognition","International Journal of Social Robotics","Turkish Archives of Otorhinolaryngology","Human Arenas","Journal of Infection and Public Health","Journal of Advanced Nursing",null,"European Heart Journal"]},"columns":[{"accessor":"bibtexkey","name":"bibtexkey","type":"character"},{"accessor":"author","name":"author","type":"list"},{"accessor":"title","name":"title","type":"character"},{"accessor":"year","name":"year","type":"numeric"},{"accessor":"journal","name":"journal","type":"character"}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"dataKey":"439fccde2c8fb2c3bbe90898c786a36e","key":"439fccde2c8fb2c3bbe90898c786a36e"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div id="bibtex-bibliography" class="section level1" number="4">
+<h1 number="4"><span class="header-section-number">4</span> 참고문헌 분석<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></h1>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bibliometrix)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>covid_bib <span class="ot">&lt;-</span> <span class="fu">convert2df</span>(<span class="at">file =</span> <span class="st">&quot;https://export.uberresearch.com/2021-01-22/6b0265153305b9c30071e0da2bb0a3ec/Dimensions-Publication-2021-01-22_07-16-41.csv.zip&quot;</span>, <span class="at">dbsource =</span> <span class="st">&quot;dimensions&quot;</span>, <span class="at">format =</span> <span class="st">&quot;csv&quot;</span>)</span></code></pre></div>
+<pre><code>
+Converting your dimensions collection into a bibliographic dataframe
+
+Done!</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>covid_results <span class="ot">&lt;-</span> <span class="fu">biblioAnalysis</span>(covid_bib, <span class="at">sep =</span> <span class="st">&quot;;&quot;</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>covid_summary <span class="ot">&lt;-</span> <span class="fu">summary</span>(<span class="at">object =</span> covid_results, <span class="at">k =</span> <span class="dv">10</span>, <span class="at">pause =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<pre><code>
+
+MAIN INFORMATION ABOUT DATA
+
+ Timespan                              2021 : 2021 
+ Sources (Journals, Books, etc)        254 
+ Documents                             500 
+ Average years from publication        0 
+ Average citations per documents       0.036 
+ Average citations per year per doc    0.036 
+ References                            1 
+ 
+DOCUMENT TYPES                     
+ article          377 
+ chapter          79 
+ edited book      12 
+ monograph        15 
+ preprint         17 
+ 
+DOCUMENT CONTENTS
+ Keywords Plus (ID)                    47 
+ Author&#39;s Keywords (DE)                47 
+ 
+AUTHORS
+ Authors                               2149 
+ Author Appearances                    2239 
+ Authors of single-authored documents  93 
+ Authors of multi-authored documents   2056 
+ 
+AUTHORS COLLABORATION
+ Single-authored documents             99 
+ Documents per Author                  0.233 
+ Authors per Document                  4.3 
+ Co-Authors per Documents              4.48 
+ Collaboration Index                   5.35 
+ 
+
+Annual Scientific Production
+
+ Year    Articles
+    2021      500
+
+Annual Percentage Growth Rate 0 
+
+
+Most Productive Authors
+
+                           Authors        Articles Authors        Articles Fractionalized
+1  DEPARTMENT OF OTORHINOLARYNGOLOGY HANS       11    ROMANIUK SN                    3.33
+2  DEPARTMENT OF OTOLARYNGOLOGY HANS             8    ASH C                          3.00
+3  ROMANIUK SN                                   8    CRISTIANO F                    2.00
+4  WANG J                                        4    HINES PJ                       2.00
+5  ASH C                                         3    OECD O                         2.00
+6  HAYES S                                       3    SCANLON ST                     2.00
+7  ISLAM S                                       3    ISLAM S                        1.70
+8  JANDRIÄ‡ P                                    3    GJESVIK L                      1.50
+9  PETERS MA                                     3    MANJIKIAN M                    1.50
+10 WANG S                                        3    WANG J                         1.17
+
+
+Top manuscripts per citations
+
+                                                        Paper                                       DOI TC TCperYear
+1  WANG S, 2021, INFORMATION FUSION                                    10.1016/J.INFFUS.2020.11.005      2         2
+2  KHANRA S, 2021, JOURNAL OF HOSPITALITY AND TOURISM MANAGEMENT       10.1016/J.JHTM.2020.11.004        2         2
+3  LI J, 2021, SAFETY SCIENCE                                          10.1016/J.SSCI.2020.105093        2         2
+4  GUO Z, 2021, FUTURE GENERATION COMPUTER SYSTEMS                     10.1016/J.FUTURE.2020.11.028      1         1
+5  WINDASARI NA, 2021, INTERNATIONAL JOURNAL OF INFORMATION MANAGEMENT 10.1016/J.IJINFOMGT.2020.102292   1         1
+6  CLARK L, 2021, SMART HEALTH                                         10.1016/J.SMHL.2020.100168        1         1
+7  ALLAM Z, 2021, LAND USE POLICY                                      10.1016/J.LANDUSEPOL.2020.105201  1         1
+8  GARG P, 2021, TECHNOLOGICAL FORECASTING AND SOCIAL CHANGE           10.1016/J.TECHFORE.2020.120407    1         1
+9  AKSHINTALA VS, 2021, JOURNAL OF GASTROENTEROLOGY AND HEPATOLOGY     10.1111/JGH.15343                 1         1
+10 HIE B, 2021, SCIENCE                                                10.1126/SCIENCE.ABD7331           1         1
+    NTC
+1  55.6
+2  55.6
+3  55.6
+4  27.8
+5  27.8
+6  27.8
+7  27.8
+8  27.8
+9  27.8
+10 27.8
+
+
+Corresponding Author&#39;s Countries
+
+    Country Articles   Freq SCP MCP MCP_Ratio
+1 CHINA            5 0.4167   5   0         0
+2 INDONESIA        2 0.1667   2   0         0
+3 AUSTRALIA        1 0.0833   1   0         0
+4 GEORGIA          1 0.0833   1   0         0
+5 KOREA            1 0.0833   1   0         0
+6 MEXICO           1 0.0833   1   0         0
+7 SINGAPORE        1 0.0833   1   0         0
+
+
+SCP: Single Country Publications
+
+MCP: Multiple Country Publications
+
+
+Total Citations per Country
+
+  Country      Total Citations Average Article Citations
+1    AUSTRALIA               0                         0
+2    CHINA                   0                         0
+3    GEORGIA                 0                         0
+4    INDONESIA               0                         0
+5    KOREA                   0                         0
+6    MEXICO                  0                         0
+7    SINGAPORE               0                         0
+
+
+Most Relevant Sources
+
+                              Sources        Articles
+1                                                  93
+2  SCIENCE                                         22
+3  CYPRUS JOURNAL OF MEDICAL SCIENCES              16
+4  EMERGING INFECTIOUS DISEASES                    16
+5  RESEARCH SQUARE                                 14
+6  ADDICTA THE TURKISH JOURNAL ON ADDICTIONS        8
+7  SHS WEB OF CONFERENCES                           7
+8  LECTURE NOTES IN NETWORKS AND SYSTEMS            6
+9  APPLIED SOFT COMPUTING                           4
+10 COMPUTERS IN HUMAN BEHAVIOR                      4
+
+
+Most Relevant Keywords
+
+   Author Keywords (DE)      Articles Keywords-Plus (ID)     Articles
+1      HUMANS                       4  HUMANS                       4
+2      COVID-19                     3  COVID-19                     3
+3      ADULT                        2  ADULT                        2
+4      AGED                         2  AGED                         2
+5      COGNITION                    2  COGNITION                    2
+6      FEMALE                       2  FEMALE                       2
+7      MALE                         2  MALE                         2
+8      MIDDLE AGED                  2  MIDDLE AGED                  2
+9      ACCESS TO INFORMATION        1  ACCESS TO INFORMATION        1
+10     ADOLESCENT                   1  ADOLESCENT                   1</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>covid_summary</span></code></pre></div>
+<pre><code>$MainInformation
+ [1] &quot;\n\nMAIN INFORMATION ABOUT DATA\n\n&quot;                  &quot;Timespan                              2021 : 2021 \n&quot;
+ [3] &quot;Sources (Journals, Books, etc)        254 \n&quot;         &quot;Documents                             500 \n&quot;        
+ [5] &quot;Average years from publication        0 \n&quot;           &quot;Average citations per documents       0.036 \n&quot;      
+ [7] &quot;Average citations per year per doc    0.036 \n&quot;       &quot;References                            1 \n&quot;          
+ [9] &quot;\nDOCUMENT TYPES                     \n&quot;              &quot;article          377 \n&quot;                             
+[11] &quot;chapter          79 \n&quot;                               &quot;edited book      12 \n&quot;                              
+[13] &quot;monograph        15 \n&quot;                               &quot;preprint         17 \n&quot;                              
+[15] &quot;\nDOCUMENT CONTENTS\n&quot;                                &quot;Keywords Plus (ID)                    47 \n&quot;         
+[17] &quot;Author&#39;s Keywords (DE)                47 \n&quot;          &quot;\nAUTHORS\n&quot;                                         
+[19] &quot;Authors                               2149 \n&quot;        &quot;Author Appearances                    2239 \n&quot;       
+[21] &quot;Authors of single-authored documents  93 \n&quot;          &quot;Authors of multi-authored documents   2056 \n&quot;       
+[23] &quot;\nAUTHORS COLLABORATION\n&quot;                            &quot;Single-authored documents             99 \n&quot;         
+[25] &quot;Documents per Author                  0.233 \n&quot;       &quot;Authors per Document                  4.3 \n&quot;        
+[27] &quot;Co-Authors per Documents              4.48 \n&quot;        &quot;Collaboration Index                   5.35 \n&quot;       
+[29] &quot;\n&quot;                                                  
+
+$MainInformationDF
+                            Description   Results
+1           MAIN INFORMATION ABOUT DATA          
+2                              Timespan 2021:2021
+3        Sources (Journals, Books, etc)       254
+4                             Documents       500
+5        Average years from publication         0
+6       Average citations per documents     0.036
+7    Average citations per year per doc     0.036
+8                            References         1
+9                        DOCUMENT TYPES          
+10                              article       377
+11                              chapter        79
+12                          edited book        12
+13                            monograph        15
+14                             preprint        17
+15                    DOCUMENT CONTENTS          
+16                   Keywords Plus (ID)        47
+17               Author&#39;s Keywords (DE)        47
+18                              AUTHORS          
+19                              Authors      2149
+20                   Author Appearances      2239
+21 Authors of single-authored documents        93
+22  Authors of multi-authored documents      2056
+23                AUTHORS COLLABORATION          
+24            Single-authored documents        99
+25                 Documents per Author     0.233
+26                 Authors per Document       4.3
+27             Co-Authors per Documents      4.48
+28                  Collaboration Index      5.35
+29                                               
+
+$AnnualProduction
+  Year    Articles
+1    2021      500
+
+$AnnualGrowthRate
+[1] 0
+
+$MostProdAuthors
+                           Authors        Articles Authors        Articles Fractionalized
+1  DEPARTMENT OF OTORHINOLARYNGOLOGY HANS       11    ROMANIUK SN                    3.33
+2  DEPARTMENT OF OTOLARYNGOLOGY HANS             8    ASH C                          3.00
+3  ROMANIUK SN                                   8    CRISTIANO F                    2.00
+4  WANG J                                        4    HINES PJ                       2.00
+5  ASH C                                         3    OECD O                         2.00
+6  HAYES S                                       3    SCANLON ST                     2.00
+7  ISLAM S                                       3    ISLAM S                        1.70
+8  JANDRIÄ‡ P                                    3    GJESVIK L                      1.50
+9  PETERS MA                                     3    MANJIKIAN M                    1.50
+10 WANG S                                        3    WANG J                         1.17
+
+$MostCitedPapers
+                                                        Paper                                       DOI TC TCperYear
+1  WANG S, 2021, INFORMATION FUSION                                    10.1016/J.INFFUS.2020.11.005      2         2
+2  KHANRA S, 2021, JOURNAL OF HOSPITALITY AND TOURISM MANAGEMENT       10.1016/J.JHTM.2020.11.004        2         2
+3  LI J, 2021, SAFETY SCIENCE                                          10.1016/J.SSCI.2020.105093        2         2
+4  GUO Z, 2021, FUTURE GENERATION COMPUTER SYSTEMS                     10.1016/J.FUTURE.2020.11.028      1         1
+5  WINDASARI NA, 2021, INTERNATIONAL JOURNAL OF INFORMATION MANAGEMENT 10.1016/J.IJINFOMGT.2020.102292   1         1
+6  CLARK L, 2021, SMART HEALTH                                         10.1016/J.SMHL.2020.100168        1         1
+7  ALLAM Z, 2021, LAND USE POLICY                                      10.1016/J.LANDUSEPOL.2020.105201  1         1
+8  GARG P, 2021, TECHNOLOGICAL FORECASTING AND SOCIAL CHANGE           10.1016/J.TECHFORE.2020.120407    1         1
+9  AKSHINTALA VS, 2021, JOURNAL OF GASTROENTEROLOGY AND HEPATOLOGY     10.1111/JGH.15343                 1         1
+10 HIE B, 2021, SCIENCE                                                10.1126/SCIENCE.ABD7331           1         1
+    NTC
+1  55.6
+2  55.6
+3  55.6
+4  27.8
+5  27.8
+6  27.8
+7  27.8
+8  27.8
+9  27.8
+10 27.8
+
+$MostProdCountries
+    Country Articles   Freq SCP MCP MCP_Ratio
+1 CHINA            5 0.4167   5   0         0
+2 INDONESIA        2 0.1667   2   0         0
+3 AUSTRALIA        1 0.0833   1   0         0
+4 GEORGIA          1 0.0833   1   0         0
+5 KOREA            1 0.0833   1   0         0
+6 MEXICO           1 0.0833   1   0         0
+7 SINGAPORE        1 0.0833   1   0         0
+
+$TCperCountries
+  Country      Total Citations Average Article Citations
+1    AUSTRALIA               0                         0
+2    CHINA                   0                         0
+3    GEORGIA                 0                         0
+4    INDONESIA               0                         0
+5    KOREA                   0                         0
+6    MEXICO                  0                         0
+7    SINGAPORE               0                         0
+
+$MostRelSources
+                              Sources        Articles
+1                                                  93
+2  SCIENCE                                         22
+3  CYPRUS JOURNAL OF MEDICAL SCIENCES              16
+4  EMERGING INFECTIOUS DISEASES                    16
+5  RESEARCH SQUARE                                 14
+6  ADDICTA THE TURKISH JOURNAL ON ADDICTIONS        8
+7  SHS WEB OF CONFERENCES                           7
+8  LECTURE NOTES IN NETWORKS AND SYSTEMS            6
+9  APPLIED SOFT COMPUTING                           4
+10 COMPUTERS IN HUMAN BEHAVIOR                      4
+
+$MostRelKeywords
+   Author Keywords (DE)      Articles Keywords-Plus (ID)     Articles
+1      HUMANS                       4  HUMANS                       4
+2      COVID-19                     3  COVID-19                     3
+3      ADULT                        2  ADULT                        2
+4      AGED                         2  AGED                         2
+5      COGNITION                    2  COGNITION                    2
+6      FEMALE                       2  FEMALE                       2
+7      MALE                         2  MALE                         2
+8      MIDDLE AGED                  2  MIDDLE AGED                  2
+9      ACCESS TO INFORMATION        1  ACCESS TO INFORMATION        1
+10     ADOLESCENT                   1  ADOLESCENT                   1</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="at">x =</span> covid_results, <span class="at">k =</span> <span class="dv">10</span>, <span class="at">pause =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p><img src="ingest-bibtex_files/figure-html/bibliography-descriptive-1.png" width="672" style="display: block; margin: auto;" /><img src="ingest-bibtex_files/figure-html/bibliography-descriptive-2.png" width="672" style="display: block; margin: auto;" /><img src="ingest-bibtex_files/figure-html/bibliography-descriptive-3.png" width="672" style="display: block; margin: auto;" /><img src="ingest-bibtex_files/figure-html/bibliography-descriptive-4.png" width="672" style="display: block; margin: auto;" /><img src="ingest-bibtex_files/figure-html/bibliography-descriptive-5.png" width="672" style="display: block; margin: auto;" /></p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>covid_network <span class="ot">&lt;-</span> <span class="fu">biblioNetwork</span>(covid_bib, <span class="at">analysis =</span> <span class="st">&quot;coupling&quot;</span>, <span class="at">network =</span> <span class="st">&quot;references&quot;</span>, <span class="at">sep =</span> <span class="st">&quot;.  &quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>CS <span class="ot">&lt;-</span> <span class="fu">conceptualStructure</span>(covid_bib, <span class="at">field=</span><span class="st">&quot;ID&quot;</span>, <span class="at">method=</span><span class="st">&quot;CA&quot;</span>, <span class="at">minDegree=</span><span class="dv">2</span>, <span class="at">clust=</span><span class="dv">3</span>, <span class="at">stemming=</span><span class="cn">FALSE</span>, <span class="at">labelsize=</span><span class="dv">10</span>, <span class="at">documents=</span><span class="dv">2</span>)</span></code></pre></div>
 <div id="refs" class="references csl-bib-body">
 <div id="ref-knuth1997art" class="csl-entry">
 1. Knuth DE. The art of computer programming. Pearson Education; 1997.
 </div>
 </div>
 </div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p><a href="https://www.bibliometrix.org/vignettes/Introduction_to_bibliometrix.html">Massimo Aria and Corrado Cuccurullo, “A brief introduction to bibliometrix,” https://www.bibliometrix.org/</a><a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
 </div>
 
 &nbsp;
