@@ -17,4 +17,4 @@ twitter_token.rds
 data/project/
 .Rproj.user
 .Rhistory
-
+.Rhistory/
