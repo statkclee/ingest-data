@@ -33,6 +33,7 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
                       comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
 ```
 
+![](fig/public-opendata.png)
 
 # 공공데이터 선택 기준 [@oh2021] {#public-open-data}
 
@@ -63,7 +64,16 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
     - 원천 데이터 웹사이트: [한국행정연구원](https://www.kipa.re.kr/)
         - [정보공개] &rarr; [DB활용신청] &rarr; [이용안내] &rarr; [데이터 신청 바로가기]
     - 한국행정연구원 [갈등 DB](https://www.kipa.re.kr/site/kipa/conflict/selectCaseList.do)
-    
+- 서울의 음식점 현황 분석
+    - 원천 데이터 웹사이트: [지방행정 인허가 데이터 개방](https://www.localdata.go.kr/)
+        -  [데이터 받기] &rarr; [데이터 다운로드] &rarr; 전체 데이터 다운로드, 업종 다운로드, 지역 다운로드
+- 한국인의 급여 실태 분석
+    - 원천 데이터 웹사이트: 한국보건사회연구원 [한국복지패널 홈페이지](https://www.koweps.re.kr/)
+        - [데이터&설문지] &rarr; [15차 웨이브]
+- 전국 산불 피해면적 
+    - 원천 데이터 웹사이트: [산림청 산불발생현황](https://huyang.forest.go.kr/kfsweb/kfi/kfs/frfr/selectFrfrStatsNow.do?mn=NKFS_02_02_01_05)
+        - Geocoding 된 [엑셀 다운로드](data/sanbul_geocode_r_meetup.xlsx)
+
 # 갈등 DB {#conflict-db}    
 
 ## 갈등 DB 첫 테이블 {#conflict-table}    
