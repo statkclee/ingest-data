@@ -46,6 +46,7 @@ title: 다양한 데이터 가져오기
         - [동적 웹페이지 - `RSelelinum`](dynamic-webpage-selenium.html)
         - [동적 웹페이지 - iMac](dynamic-webpage-imac.html)
         - [크롤링 자동화 - Azure/AWS](crawl-automation.html)
+        - [한국 R 컨퍼런스 도서 후원](crawl-rconf.html)        
     + [텍스트 RSS 피드](ingest-rss.html)
     + 연관검색어
         + [네이버](http://statkclee.github.io/politics/naver-related-search.html)

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="pandoc">
+    <title>Software Carpentry: 데이터 가져오기</title>
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+    <link rel="stylesheet" type="text/css" href="css/swc.css" />
+    <link rel="alternate" type="application/rss+xml" title="Software Carpentry Blog" href="http://software-carpentry.org/feed.xml"/>
+    <meta charset="UTF-8" />
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-59802572-17', 'auto');
+      ga('send', 'pageview');
+    
+    </script>
+  </head>
+  <body class="lesson">
+    <div class="container card">
+      <div class="banner">
+        <a href="http://software-carpentry.org" title="Software Carpentry">
+          <img alt="Software Carpentry banner" src="img/software-carpentry-banner.png" />
+        </a>
+      </div>
+      <article>
+      <div class="row">
+        <div class="col-md-10 col-md-offset-1">
+                    <a href="index.html"><h1 class="title">데이터 가져오기</h1></a>
+          <h2 class="subtitle">한국 R 컨퍼런스 도서 후원</h2>
+          <h1 id="get-one-book">책 한권</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">library</span>(rvest)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">library</span>(xml2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>jpub_url &lt;-<span class="st"> &quot;https://jpub.tistory.com/1177&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>jpub_html &lt;-<span class="st"> </span>jpub_url <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="st">  </span><span class="kw">read_html</span>()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>jpub_selects &lt;-<span class="st"> </span>jpub_html <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&#39;span+ span , b&#39;</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>jpub_attributes &lt;-<span class="st"> </span><span class="kw">xml_attr</span>(jpub_selects, <span class="st">&quot;style&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>jpub_values &lt;-<span class="st"> </span><span class="kw">xml_text</span>(jpub_selects, <span class="st">&quot;style&quot;</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>jpub_tbl &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">key  =</span> jpub_attributes, </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>                   <span class="dt">value =</span> jpub_values)  <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a><span class="st">  </span><span class="kw">filter</span>(key <span class="op">==</span><span class="st"> &quot;color: #000000;&quot;</span>, </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>         value <span class="op">!=</span><span class="st"> &quot;&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a><span class="st">  </span><span class="kw">select</span>(value) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">key =</span> <span class="kw">c</span>(<span class="st">&quot;출판사&quot;</span>,<span class="st">&quot;지은이&quot;</span>, <span class="st">&quot;출판일&quot;</span>, <span class="st">&quot;페이지&quot;</span>, <span class="st">&quot;판형&quot;</span>, <span class="st">&quot;제본&quot;</span>, <span class="st">&quot;정가&quot;</span>, <span class="st">&quot;ISBN&quot;</span>, <span class="st">&quot;키워드&quot;</span>, <span class="st">&quot;분야&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> key, <span class="dt">values_from =</span> value)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a>jpub_tbl</span></code></pre></div>
+<pre><code># A tibble: 1 x 10
+  출판사  지은이  출판일  페이지  판형   제본   정가  ISBN   키워드       분야  
+  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt; 
+1 &lt;U+00A0&gt;제이펍 &quot; 이기~ &lt;U+00A0&gt;2021~  &quot; 284~  &lt;U+00A0&gt;46배~ &lt;U+00A0&gt;무선~ &lt;U+00A0&gt;24,~ &lt;U+00A0&gt;979-~ &quot; 신경망, ~  &quot; R /~</code></pre>
+        </div>
+      </div>
+      </article>
+      <div class="footer">
+        <a class="label swc-blue-bg" href="http://software-carpentry.org">Software Carpentry</a>
+        <a class="label swc-blue-bg" href="https://github.com/swcarpentry/lesson-template">Source</a>
+        <a class="label swc-blue-bg" href="mailto:admin@software-carpentry.org">Contact</a>
+        <a class="label swc-blue-bg" href="LICENSE.html">License</a>
+      </div>
+    </div>
+    <!-- Javascript placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="css/bootstrap/bootstrap-js/bootstrap.js"></script>
+    <script src='https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML'></script>
+  </body>
+</html>

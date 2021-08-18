@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+<meta name="date" content="2021-08-18" />
+
+<title>데이터 가져오기</title>
+
+<script src="ingest-rconf_files/header-attrs-2.10/header-attrs.js"></script>
+<script src="ingest-rconf_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="ingest-rconf_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="ingest-rconf_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="ingest-rconf_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="ingest-rconf_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="ingest-rconf_files/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="ingest-rconf_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="ingest-rconf_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="ingest-rconf_files/navigation-1.1/tabsets.js"></script>
+<script src="ingest-rconf_files/navigation-1.1/codefolding.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+
+.sourceCode .row {
+  width: 100%;
+}
+.sourceCode {
+  overflow-x: auto;
+}
+.code-folding-btn {
+  margin-right: -30px;
+}
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+<!-- <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" /> 
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="css/bootstrap/bootstrap-theme.css" />
+<link rel="stylesheet" type="text/css" href="css/swc.css" />  -->
+<link rel="alternate" type="application/rss+xml" title="Tidyverse Korea" href="https://www.facebook.com/groups/tidyverse/"/>
+<meta charset="UTF-8" />
+
+<!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+<!--[if lt IE 9]>
+  <script src="https://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-59802572-23"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-59802572-23');
+</script>
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">데이터 가져오기</h1>
+<h3 class="subtitle">한국 R 컨퍼런스 도서 후원</h3>
+<h4 class="author">이광춘</h4>
+<address class="author_afil">
+<a href="https://www.facebook.com/groups/tidyverse/">Tidyverse Korea</a><br><h4 class="date">2021-08-18</h4>
+
+</div>
+
+
+<div id="get-one-book" class="section level1" number="1">
+<h1 number="1"><span class="header-section-number">1</span> 책 한권</h1>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="kw">library</span>(tidyverse)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">library</span>(rvest)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="kw">library</span>(xml2)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a>jpub_url &lt;-<span class="st"> &quot;https://jpub.tistory.com/1177&quot;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a>jpub_html &lt;-<span class="st"> </span>jpub_url <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="st">  </span><span class="kw">read_html</span>()</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a>jpub_selects &lt;-<span class="st"> </span>jpub_html <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="st">  </span><span class="kw">html_nodes</span>(<span class="st">&#39;span+ span , b&#39;</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a>jpub_attributes &lt;-<span class="st"> </span><span class="kw">xml_attr</span>(jpub_selects, <span class="st">&quot;style&quot;</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a>jpub_values &lt;-<span class="st"> </span><span class="kw">xml_text</span>(jpub_selects, <span class="st">&quot;style&quot;</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a>jpub_tbl &lt;-<span class="st"> </span><span class="kw">tibble</span>(<span class="dt">key  =</span> jpub_attributes, </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a>                   <span class="dt">value =</span> jpub_values)  <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a><span class="st">  </span><span class="kw">filter</span>(key <span class="op">==</span><span class="st"> &quot;color: #000000;&quot;</span>, </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a>         value <span class="op">!=</span><span class="st"> &quot;&quot;</span>) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a><span class="st">  </span><span class="kw">select</span>(value) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="st">  </span><span class="kw">mutate</span>(<span class="dt">key =</span> <span class="kw">c</span>(<span class="st">&quot;출판사&quot;</span>,<span class="st">&quot;지은이&quot;</span>, <span class="st">&quot;출판일&quot;</span>, <span class="st">&quot;페이지&quot;</span>, <span class="st">&quot;판형&quot;</span>, <span class="st">&quot;제본&quot;</span>, <span class="st">&quot;정가&quot;</span>, <span class="st">&quot;ISBN&quot;</span>, <span class="st">&quot;키워드&quot;</span>, <span class="st">&quot;분야&quot;</span>)) <span class="op">%&gt;%</span><span class="st"> </span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a><span class="st">  </span><span class="kw">pivot_wider</span>(<span class="dt">names_from =</span> key, <span class="dt">values_from =</span> value)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a>jpub_tbl</span></code></pre></div>
+<pre><code># A tibble: 1 x 10
+  출판사  지은이  출판일  페이지  판형   제본   정가  ISBN   키워드       분야  
+  &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt; 
+1 &lt;U+00A0&gt;제이펍 &quot; 이기~ &lt;U+00A0&gt;2021~  &quot; 284~  &lt;U+00A0&gt;46배~ &lt;U+00A0&gt;무선~ &lt;U+00A0&gt;24,~ &lt;U+00A0&gt;979-~ &quot; 신경망, ~  &quot; R /~</code></pre>
+</div>
+
+&nbsp;
+<hr />
+<p style="text-align: center;">데이터 과학자 <a href="https://github.com/statkclee/">이광춘</a> 저작</p>
+<p style="text-align: center;">
+    <span style="color: #808080;"><em>kwangchun.lee.7@gmail.com</em></span>
+</p>
+<!-- Add icon library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+<!-- Add font awesome icons -->
+<p style="text-align: center;">
+    <a href="https://education.rstudio.com/trainers/people/lee+kwangchun/" class="fa fa-registered"></a>
+    <a href="https://www.facebook.com/groups/tidyverse/" class="fa fa-facebook"></a>
+    <a href="https://www.linkedin.com/in/kwangchunlee/" class="fa fa-linkedin"></a>
+    <a href="https://github.com/statkclee/" class="fa fa-github"></a>
+</p>
+&nbsp;
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
