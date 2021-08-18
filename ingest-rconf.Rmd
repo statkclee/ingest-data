@@ -18,7 +18,7 @@ output:
     highlight: tango
     code_folding: show
     number_section: true
-    self_contained: false
+    self_contained: true
 bibliography: bibliography_ingest.bib
 csl: biomed-central.csl
 urlcolor: blue
