@@ -18,7 +18,7 @@ output:
     highlight: tango
     code_folding: show
     number_section: true
-    self_contained: true
+    self_contained: false
 bibliography: bibliography_ingest.bib
 csl: biomed-central.csl
 urlcolor: blue
@@ -100,11 +100,66 @@ jpub_tbl %>%
   ))
 ```
 
-# 제이펍 후원도서 이미지 {#image-jpub}
+# 후원도서 회전목마 {#image-jpub-slickr}
 
-제이펍에서 전달해 주신 후원도서 이미지도 함께 표에 넣어두고 후원도서에 대한 URL도 함께 표에 넣어 편의성도 높여보자.
+도서 이미지가 여러권이라 회전목마를 태워 쭉 후원도서를 일별하는 것도 큰 의미가 있다고 할 것이다.
 
-```{r jpub-img}
-
+```{r jpub-img-slickr}
+library(slickR)
+slickR(jpub_tbl$image, height = 600)
 
 ```
+
+# 도서 상세 {#jpub-details}
+
+제이펍에서 올해 한국 R 컨퍼런스에 지원한 도서는 6권이지만 내년에는 더욱 늘어날 것을 기대하고 이런 유형의 데이터를 다루기 쉽도록 분석 및 개발 방안을 살펴보자.
+
+```{r jpub-details}
+library(trelliscopejs)
+
+book_1177 <- read_excel("data/후원도서_한국 R 컨퍼런스.xlsx", sheet = "1177", col_names = FALSE) %>% 
+  pivot_wider(names_from = `...1`, values_from = `...2`)
+book_1131 <- read_excel("data/후원도서_한국 R 컨퍼런스.xlsx", sheet = "1131", col_names = FALSE) %>% 
+  pivot_wider(names_from = `...1`, values_from = `...2`)
+book_930 <- read_excel("data/후원도서_한국 R 컨퍼런스.xlsx", sheet = "930", col_names = FALSE) %>% 
+  pivot_wider(names_from = `...1`, values_from = `...2`)
+book_903 <- read_excel("data/후원도서_한국 R 컨퍼런스.xlsx", sheet = "903", col_names = FALSE) %>% 
+  pivot_wider(names_from = `...1`, values_from = `...2`)
+book_901 <- read_excel("data/후원도서_한국 R 컨퍼런스.xlsx", sheet = "901", col_names = FALSE) %>% 
+  pivot_wider(names_from = `...1`, values_from = `...2`)
+book_748 <- read_excel("data/후원도서_한국 R 컨퍼런스.xlsx", sheet = "748", col_names = FALSE) %>% 
+  pivot_wider(names_from = `...1`, values_from = `...2`)
+
+book_raw <- bind_rows(book_1177, book_1131) %>% 
+  bind_rows(book_930) %>% 
+  bind_rows(book_903) %>% 
+  bind_rows(book_901) %>% 
+  bind_rows(book_748) %>% 
+  mutate(도서명 = c("실전에서 바로 쓰는 시계열 데이터 처리와 분석 in R",
+"R을 이용한 퀀트 투자 포트폴리오 만들기(개정판)",
+"R로 배우는 텍스트 마이닝",
+"앤디 필드의 유쾌한 R 통계학",
+"케라스 창시자의 딥러닝 with R",
+"R로 배우는 실무 데이터 과학"))
+
+
+jpub_eng_fs <- fs::dir_ls("jpub_local/images/")
+
+book_trelliscope_tbl <- book_raw %>% 
+  mutate(저자명 = ifelse(is.na(저자명), 지은이, 저자명)) %>% 
+  select(출판일, 페이지, 판형, 정가, 키워드, 도서명, 저자명) %>% 
+  mutate(출판일 = lubridate::make_date(year  = str_extract(출판일, "^[0-9]{4}"),
+                                       month = str_extract(출판일, "(?<=년)(.*?)(?=월)"),
+                                       day   = str_extract(출판일, "(?<=월)(.*?)(?=일)"))) %>% 
+  mutate(페이지 = parse_number(페이지),
+         정가   = parse_number(정가)) %>% 
+  mutate(cover = as.character(jpub_eng_fs) %>% str_remove(., pattern="jpub_local/")) %>% 
+  filter(str_detect(cover, "jpg")) %>% 
+  mutate(image = img_panel_local(cover)) %>% 
+  set_names(c("date", "page", "size", "price", "keyword", "name", "author", "cover", "image"))
+
+trelliscope(book_trelliscope_tbl, name = "jpub", 
+            path="jpub_local")
+
+```
+
