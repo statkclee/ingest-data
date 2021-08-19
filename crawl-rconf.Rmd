@@ -1,0 +1,110 @@
+---
+layout: page
+title: "데이터 가져오기"
+subtitle: "한국 R 컨퍼런스 도서 후원"
+author:
+- name: "이광춘"
+  affiliation: "[Tidyverse Korea](https://www.facebook.com/groups/tidyverse/)"
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    include:
+      after_body: footer.html
+      before_body: header.html
+    theme: default
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
+bibliography: bibliography_ingest.bib
+csl: biomed-central.csl
+urlcolor: blue
+linkcolor: blue
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+```
+
+# 제이펍 도서 후원 {#get-one-book}
+
+[제이펍](https://jpub.tistory.com/)에서 [한국 R 컨퍼런스](https://use-r.kr/) 도서후원을 해주셨습니다. Early Birds 참여자 모집에 제이펍에서 후원한 도서를 모두 배포하도록 할 계혹입니다.
+
+
+```{r jpub-book}
+library(tidyverse)
+library(readxl)
+library(reactable)
+
+jpub_raw <- read_excel("data/후원도서_한국 R 컨퍼런스.xlsx")
+
+jpub_tbl <- jpub_raw %>% 
+  set_names(c("address", "title", "publisher", "price", "quantity", "description"))
+
+jpub_tbl %>% 
+  reactable(columns = list(
+    address = colDef(cell = function(value) {
+      htmltools::tags$a(href = value, target = "_blank", value)
+      }),
+    price =  colDef(minWidth = 80, format = colFormat(currency = "", separators = TRUE, locales = "ko-KR")),
+    title =  colDef(minWidth = 150),
+    publisher =  colDef(minWidth = 80),
+    quantity =  colDef(minWidth = 80),
+    description =  colDef(minWidth = 300))
+    )
+
+total_amount <- jpub_tbl %>% 
+  mutate(amount = quantity * price) %>% 
+  summarise(total_amount = sum(amount)) %>% 
+  pull()
+
+
+```
+
+제이펍에서 후원한 도서 금액은 `r scales::comma(total_amount)` 원 이다.
+
+# 제이펍 후원도서 이미지 {#image-jpub}
+
+제이펍에서 전달해 주신 후원도서 이미지도 함께 표에 넣어두고 후원도서에 대한 URL도 함께 표에 넣어 편의성도 높여보자.
+
+```{r jpub-table}
+library(htmltools)
+
+jpub_fs <- fs::dir_ls("data/한국 R 컨퍼런스 후원도서 표지/")
+
+jpub_tbl <- jpub_tbl %>% 
+  mutate(image = jpub_fs)
+
+jpub_tbl %>% 
+  select(image, everything()) %>% 
+  reactable(columns = list(
+    image = colDef(cell = function(value) {
+        img_src <- knitr::image_uri(value)
+        image <- img(src = img_src, height = "100px", alt = "")
+      }),
+        address = colDef(cell = function(value) {
+      htmltools::tags$a(href = value, target = "_blank", value)
+      }),
+    price =  colDef(minWidth = 80, format = colFormat(currency = "", separators = TRUE, locales = "ko-KR")),
+    title =  colDef(minWidth = 150),
+    publisher =  colDef(minWidth = 80),
+    quantity =  colDef(minWidth = 80),
+    description =  colDef(minWidth = 300)
+  ))
+```
+
+# 제이펍 후원도서 이미지 {#image-jpub}
+
+제이펍에서 전달해 주신 후원도서 이미지도 함께 표에 넣어두고 후원도서에 대한 URL도 함께 표에 넣어 편의성도 높여보자.
+
+```{r jpub-img}
+
+
+```
