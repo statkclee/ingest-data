@@ -23,6 +23,7 @@ title: 다양한 데이터 가져오기
         - [애비(Abbyy): Access Abbyy Cloud OCR from R](ocr-abbyy.html)
         - **[문자인식(OCR) - `tesseract`](ingest-ocr.html)**
         - [PPT 장표 - OCR `tesseract`](ingest-ocr-ppt.html)
+- [구글 드라이브 - `googledrive`](ingest-google-drive.html)
 - **[PDF 문서](ds-extract-pdf.html)**
     - [이미지 PDF 파일 데이터 추출](ds-extract-text-from-pdf.html)
     - [PDF 감옥에서 데이터를 탈출시키다.](ds-extract-text-from-pdf-survey.html)
