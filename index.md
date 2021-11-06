@@ -84,8 +84,7 @@ title: 다양한 데이터 가져오기
 - [**논문**](ingest-bibtex.html)
     + [`dimensions.ai` API](ingest-dimensions-ai.html)
 - [유튜브, 영화자막](ingest-srt.html)
-
-
+- [News API - `newsapi`](ingest-news-api.html)
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)
 
