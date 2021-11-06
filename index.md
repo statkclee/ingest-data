@@ -83,6 +83,9 @@ title: 다양한 데이터 가져오기
     + [`JSON`, `XML` &rarr; 데이터프레임](dataframe-to-xml-json.html)
 - [**논문**](ingest-bibtex.html)
     + [`dimensions.ai` API](ingest-dimensions-ai.html)
+- [유튜브, 영화자막](ingest-srt.html)
+
+
 
 ### [xwMOOC 오픈 교재](https://statkclee.github.io/xwMOOC/)
 

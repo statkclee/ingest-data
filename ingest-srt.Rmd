@@ -1,0 +1,85 @@
+---
+layout: page
+title: "데이터 가져오기"
+subtitle: "유튜브, 영화자막"
+author:
+- name: "이광춘"
+  affiliation: "[Tidyverse Korea](https://www.facebook.com/groups/tidyverse/)"
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    include:
+      after_body: footer.html
+      before_body: header.html
+    theme: default
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: false
+bibliography: bibliography_ingest.bib
+csl: biomed-central.csl
+urlcolor: blue
+linkcolor: blue
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+```
+
+# 자막 [^srt-smi] {#subRip}
+
+[^srt-smi]: [네이버 포스트, "SRT" 파일이란 무엇인가? (feat. SMI)](https://post.naver.com/viewer/postView.nhn?volumeNo=10723387&memberNo=21067082)
+
+[위키백과, 서브랩](https://ko.wikipedia.org/wiki/%EC%84%9C%EB%B8%8C%EB%A6%BD)에 따르면, 서브립(SubRip)은 자막을 리핑(추출)하는 윈도우용 소프트웨어 프로그램이다. 자유 소프트웨어이며, GNU GPL로 출시된다. 또, 서브립은 이 소프트웨어가 만든 자막 텍스트 파일 포맷의 이름이기도 하다. 확장자는 `.srt`이다.
+
+자막은 연속된 숫자로 나열되며, 1부터 시작한다. 사용되는 타임코드 포맷은 **시간:분:초,밀리초**이다.
+서브립 `.srt` 파일 형식은 대부분의 소프트웨어 비디오 플레이어에서 지원된다.
+
+```{r srt-example, eval = FALSE}
+168
+00:20:41,150 --> 00:20:45,109
+- How did he do that?
+- Made him an offer he couldn't refuse.
+```
+
+**SAMI**(Synchronized Accessible Media Interchange)는 마이크로소프트에서 처음 방송에서 사용되던 Closed Caption 기능을 PC에서 영상, 음악 등 다양한 멀티미디어 환경에서 활용하도록 개발한 형식이다. SAMI의 상당부분이 HTML 이라 HTML 문법을 알게 되면 다채로운 자막 작업을 수행할 수 있다.
+
+- 참고: [NEETs' vault, "srt 자막 파일과 smi 자막 파일의 차이점"](https://neetsvault.tistory.com/355)
+
+# `srt` 패키지 {#srt-pkg}
+
+[`srt`](https://github.com/kiernann/srt) 패키지가 있어 이를 활용하면 쉽게 동영상의 자막 작업을 수행할 수 있다.
+팩키지에 내장된 전형적인 `.srt` 확장자를 갖는 파일을 살펴보자. [`.srt` 예제 파일](data/Its-a-Wonderful-Life.srt)
+
+```{r srt-helloworld}
+# remotes::install_github("kiernann/srt")
+library(srt)
+library(tidyverse)
+library(tidytext)
+srt <- srt_example()
+
+srt_raw_text <- read_lines(srt)
+
+srt_text <- srt_raw_text[srt_raw_text != ""]
+
+srt_text[1:10]
+```
+
+`read_srt()` 함수는 `.srt` 파일을 사용해서 깔끔한 데이터로 변환시켜 후속 작업을 수월히 진행시킬 수 있도록 시간을 많이 단축해 준다.
+
+```{r srt-tidy-dataset}
+(wonderful_life <- read_srt(path = srt, collapse = " "))
+```
+
+
+
+
+
+
