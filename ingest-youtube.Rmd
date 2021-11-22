@@ -1,0 +1,205 @@
+---
+layout: page
+title: "데이터 가져오기"
+subtitle: "SNS - 유튜브(Youtube)"
+author:
+- name: "이광춘"
+  affiliation: "[Tidyverse Korea](https://www.facebook.com/groups/tidyverse/)"
+date: "`r Sys.Date()`"
+output:
+  html_document: 
+    include:
+      after_body: footer.html
+      before_body: header.html
+    theme: default
+    toc: yes
+    toc_depth: 2
+    toc_float: true
+    highlight: tango
+    code_folding: show
+    number_section: true
+    self_contained: true
+bibliography: bibliography_ingest.bib
+csl: biomed-central.csl
+urlcolor: blue
+linkcolor: blue
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE,
+                      comment="", digits = 3, tidy = FALSE, prompt = FALSE, fig.align = 'center')
+
+```
+
+# 유튜브 계정 설정 [^youtube-stat] {#youtube-setting}
+
+[^youtube-stat]: [재보선 2019 선거, "유튜브"](https://statkclee.github.io/text/nlp-youtube-comment.html)
+
+"API & Services"에 최근 "Google OAuth consent screen" 메뉴가 추가되어 Test User에 해당 사용자 전자우편을 추가하는 것이 추가되었다. 그외 다음 두가지 방식으로 "Youtube Data API v3" 사용이 가능하다.
+
+- API 방식: [Yuichi Otsuka, "How to Extract Data from YouTube using R and the YouTube API"](https://www.yuichiotsuka.com/youtube-data-extract-r/)
+- OAuth 방식: [Storybench, "How to download YouTube data in R using “tuber” and “purrr”"](https://www.storybench.org/how-to-download-youtube-data-in-r-using-tuber-and-purrr/)
+
+```{r youtube-setting, eval = FALSE}
+
+library(tidyverse)
+library(tuber)
+
+yt_oauth(app_id = Sys.getenv("yt_client_id"),
+         app_secret = Sys.getenv("yt_secret"),
+         token = '')
+
+get_stats(video_id = "N708P-A45D0")
+```
+
+# 국회의원 유튜브 계정 {#youtube-congressman}
+
+## 김병욱 국회의원 {#youtube-congressman-kbu}
+
+먼저 경기도 성남시 분당을 선거구의 국회의원 김병욱 의원의 유튜브 채널을 살펴보자.
+
+- 국회의원 김병욱 [유튜브 채널](https://www.youtube.com/channel/UCkKmE-matF_3iwaw-Q7BjZA)
+
+```{r congressman-youtube-kbu, eval = FALSE}
+
+yt_channel_info <- tuber::get_channel_stats(channel_id = "UCkKmE-matF_3iwaw-Q7BjZA")
+
+yt_channel_tbl <- yt_channel_info$statistics %>% 
+  enframe() %>% 
+  mutate(value = map_chr(value, unlist)) %>% 
+  pivot_wider() %>% 
+  mutate(의원명 = "김병욱") %>% 
+  select(의원명, everything())
+
+yt_channel_tbl
+```
+
+![](fig/youtube-kim.jpeg)
+
+## 전체 국회 의원 {#youtube-congressman-all}
+
+유튜브 채널을 갖고 있는 국회의원 전체에 대해서 조회수(viewCount), 구독자(subscriberCount), 동영상수(videoCount)를 데이터로 만들어 살펴보자.
+
+
+```{r congressman-youtube-kbu-all, eval = FALSE}
+# 유튜브 채널 마스터 ---------------------------
+SNS_tbl <- read_rds("data/congressman/SNS_tbl.rds")
+
+youtube_link_raw <- SNS_tbl %>% 
+  filter(str_detect(링크, pattern = "youtube")) %>% 
+  select(-사이트)
+
+```
+
+
+### 채널명 &rarr; 채널ID {#get-youtube-channel-id}
+
+`https://www.youtube.com/c/김병욱TV` 와 같이 채널명("김병욱TV")를 채널 ID로 변환시켜야 제대로된 유튜브 채널에 대한 통계 정보를 얻을 수 있다. 
+
+- 채널명: `https://www.youtube.com/c/김병욱TV`
+- 채널ID: `https://www.youtube.com/channel/UCkKmE-matF_3iwaw-Q7BjZA`
+
+
+```{r convert-youtube-channel-id, eval = FALSE}
+library(httr)
+
+get_channel_id_from_channel <- function(channel_name = "김병욱TV") {
+  
+  channel_request <- glue::glue("https://www.googleapis.com/youtube/v3/search?key={Sys.getenv('YOUTUBE_CHANNEL_APIKEY')}&part=snippet&q={channel_name}&type=channelId")
+  
+  req_result <- GET(url = channel_request)
+  
+  req_result_list <- content(req_result)
+  
+  # channel_id <- req_result_list$items[[1]]$id$channelId
+  channel_id <- req_result_list$items[[1]]$snippet$channelId
+  
+  return(channel_id)
+}
+
+get_channel_id_from_channel("황운하_국회의원")
+
+
+get_channel_id_from_user <- function(user_name = "iljiam") {
+  
+  channel_request <- glue::glue("https://www.googleapis.com/youtube/v3/channels?key={Sys.getenv('YOUTUBE_CHANNEL_APIKEY')}&forUsername={user_name}&part=id")
+  
+  req_result <- GET(url = channel_request)
+  
+  req_result_list <- content(req_result)
+  
+  return(req_result_list$items[[1]]$id)
+}
+
+get_channel_id_from_user()
+
+
+```
+
+### 국회의원 채널명 &rarr; 채널ID 변환 {#get-youtube-channel-id-convert}
+
+```{r convert-youtube-channel, eval = FALSE}
+youtube_link_tbl <- youtube_link_raw %>% 
+  mutate(raw_channel_id = 
+           case_when(str_detect(링크, "channel") ~ str_remove(링크, pattern = "https://www.youtube.com/channel/"),
+                     str_detect(링크, "user") ~ str_remove(링크, pattern = "https://www.youtube.com/user/"),
+                     str_detect(링크, "/c/") ~ str_remove(링크, pattern = "https://www.youtube.com/c/"),
+                     TRUE ~ str_remove(링크, pattern = "https://www.youtube.com/"))
+           ) %>% 
+  mutate(channel_id = ifelse(str_length(raw_channel_id) >= 24, 
+                                   str_sub(raw_channel_id, start = 1L, end = 24), 
+                                   raw_channel_id)) %>% 
+  mutate(channel_type = case_when(str_length(channel_id) == 24 ~ "채널ID",
+                                str_detect(링크, "user") ~ "사용자명",
+                                TRUE ~ "채널명")) 
+
+
+## 1. https://www.youtube.com/channel/UCDFPB0rbbcRF8rgf4S1WTrQ 유형의 유튜브채널 -----
+
+youtube_link_tbl %>% 
+  filter(str_detect(channel_type, "채널ID")) %>% 
+  select(의원명, channel_id) %>% 
+  write_csv("data/congressman/channel_id.csv")
+
+## 2. https://www.youtube.com/c/강대식tv 유형의 유튜브채널 -----
+
+channel_name <- youtube_link_tbl %>% 
+  filter(str_detect(channel_type, "채널명"))
+  
+channel_name_list <- map(channel_name$channel_id, get_channel_id_from_channel)  
+names(channel_name_list) <- channel_name$의원명
+
+channel_name_tbl <- channel_name_list %>% 
+  plyr::compact() %>% 
+  enframe(name = "의원명") %>% 
+  mutate(channel_id = map_chr(value, as.character))
+
+channel_name_tbl %>% 
+  select(의원명, channel_id) %>% 
+  write_csv("data/congressman/channel_name.csv")
+
+## 3. 문제 유형의 유튜브채널 -----
+
+channel_name %>% 
+  anti_join(channel_name_tbl, by = "의원명")
+```
+
+
+```{r congressman-trinity, eval = FALSE}
+channel_id_tbl <- read_csv("data/congressman/channel_id.csv")
+channel_name_tbl <- read_csv("data/congressman/channel_name.csv")
+channel_problem_tbl <- read_csv("data/congressman/channel_problem.csv")
+
+yt_channel_tbl <- bind_rows(channel_id_tbl, channel_name_tbl) %>% 
+  bind_rows(channel_problem_tbl)
+
+youtube_link_raw %>% 
+  anti_join(yt_channel_tbl, by = "의원명")
+
+yt_channel_tbl %>% 
+  write_csv("data/congressman/youtube_congress_channel_id.csv")
+
+```
+
